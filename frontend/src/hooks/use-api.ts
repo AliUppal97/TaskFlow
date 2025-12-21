@@ -11,19 +11,33 @@ import {
   TaskQueryParams,
   PaginatedResponse,
   TaskStats,
-  ApiResponse,
-} from '@/types/api';
+  UserQueryParams,
+} from '@/types';
 
-// Query Keys
+/**
+ * React Query key factory
+ * 
+ * Centralized query key management for cache invalidation
+ * 
+ * Structure:
+ * - Hierarchical keys for related queries
+ * - Parameters included in keys for proper cache differentiation
+ * - Type-safe with 'as const' for TypeScript inference
+ * 
+ * Benefits:
+ * - Easy cache invalidation (invalidate all tasks: queryKeys.tasks.all())
+ * - Prevents cache key typos
+ * - Type-safe query key usage
+ */
 export const queryKeys = {
   auth: {
     profile: () => ['auth', 'profile'] as const,
   },
   tasks: {
-    all: () => ['tasks'] as const,
-    lists: (params?: TaskQueryParams) => ['tasks', 'list', params] as const,
-    detail: (id: string) => ['tasks', 'detail', id] as const,
-    stats: () => ['tasks', 'stats'] as const,
+    all: () => ['tasks'] as const, // Parent key for all task queries
+    lists: (params?: TaskQueryParams) => ['tasks', 'list', params] as const, // Task list with filters
+    detail: (id: string) => ['tasks', 'detail', id] as const, // Single task detail
+    stats: () => ['tasks', 'stats'] as const, // Task statistics
   },
 };
 
@@ -59,11 +73,22 @@ export function useProfile(options?: UseQueryOptions<User>) {
 }
 
 // Task Hooks
+/**
+ * Fetch tasks list with filtering and pagination
+ * 
+ * Caching strategy:
+ * - staleTime: 30 seconds (data considered fresh for 30s)
+ * - Prevents unnecessary refetches during rapid navigation
+ * - Cache key includes params (different filters = different cache entries)
+ * 
+ * @param params - Filtering and pagination parameters
+ * @param options - Additional React Query options
+ */
 export function useTasks(params?: TaskQueryParams, options?: Omit<UseQueryOptions<PaginatedResponse<Task>>, 'queryKey' | 'queryFn'>) {
   return useQuery({
-    queryKey: queryKeys.tasks.lists(params),
+    queryKey: queryKeys.tasks.lists(params), // Cache key includes params
     queryFn: () => apiClient.getTasks(params),
-    staleTime: 30 * 1000, // 30 seconds
+    staleTime: 30 * 1000, // 30 seconds - data fresh for 30s
     ...options,
   });
 }
@@ -87,35 +112,54 @@ export function useTaskStats(options?: UseQueryOptions<TaskStats>) {
   });
 }
 
+/**
+ * Create task mutation hook
+ * 
+ * Cache management:
+ * - Invalidates task list cache (triggers refetch)
+ * - Invalidates task stats cache (counts changed)
+ * 
+ * This ensures UI stays in sync after task creation
+ */
 export function useCreateTask(options?: UseMutationOptions<Task, Error, CreateTaskRequest>) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: apiClient.createTask.bind(apiClient),
     onSuccess: (newTask) => {
-      // Invalidate and refetch tasks list
+      // Invalidate all task-related queries to trigger refetch
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all() });
 
-      // Update stats
+      // Invalidate stats (task count changed)
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.stats() });
     },
     ...options,
   });
 }
 
+/**
+ * Update task mutation hook
+ * 
+ * Optimistic updates:
+ * - Immediately updates task detail cache (instant UI feedback)
+ * - Invalidates list cache (may have changed sorting/filtering)
+ * - Invalidates stats (status/priority changes affect counts)
+ * 
+ * This provides instant UI updates while ensuring data consistency
+ */
 export function useUpdateTask(options?: UseMutationOptions<Task, Error, { id: string; data: UpdateTaskRequest }>) {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({ id, data }) => apiClient.updateTask(id, data),
     onSuccess: (updatedTask, { id }) => {
-      // Update the specific task in cache
+      // Optimistically update task detail cache (instant UI update)
       queryClient.setQueryData(queryKeys.tasks.detail(id), updatedTask);
 
-      // Invalidate tasks list to refetch
+      // Invalidate list cache (task may have moved in sorted list)
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all() });
 
-      // Update stats
+      // Invalidate stats (status/priority changes affect counts)
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.stats() });
     },
     ...options,
@@ -160,13 +204,13 @@ export function useAssignTask(options?: UseMutationOptions<Task, Error, { id: st
 // Users hooks
 export const usersQueryKeys = {
   all: () => ['users'] as const,
-  list: (params?: any) => ['users', 'list', params] as const,
+  list: (params?: UserQueryParams) => ['users', 'list', params] as const,
 };
 
-export function useUsers(params?: { role?: string; limit?: number }) {
+export function useUsers(params?: UserQueryParams) {
   return useQuery({
     queryKey: usersQueryKeys.list(params),
-    queryFn: () => apiClient.get('/users', { params }),
+    queryFn: () => apiClient.get<PaginatedResponse<User>>('/users', { params }),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

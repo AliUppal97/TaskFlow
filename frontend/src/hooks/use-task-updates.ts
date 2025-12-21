@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useWebSocket } from '@/providers/websocket-provider';
 import { queryKeys } from './use-api';
-import { TaskEvent, TaskEventType } from '@/types/api';
+import { TaskEvent, TaskEventType } from '@/types';
 
 export function useTaskUpdates() {
   const { onTaskEvent } = useWebSocket();
