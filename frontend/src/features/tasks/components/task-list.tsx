@@ -99,9 +99,9 @@ export function TaskList({
           />
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center">
           <Select value={filters.status || 'all'} onValueChange={handleStatusFilter}>
-            <SelectTrigger className="w-36 bg-white/5 backdrop-blur-md border-white/10 text-white">
+            <SelectTrigger className="w-36 bg-white/5 backdrop-blur-md border-white/10 text-white h-9">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent className="bg-slate-800 border-white/10">
@@ -114,7 +114,7 @@ export function TaskList({
           </Select>
 
           <Select value={filters.priority || 'all'} onValueChange={handlePriorityFilter}>
-            <SelectTrigger className="w-36 bg-white/5 backdrop-blur-md border-white/10 text-white">
+            <SelectTrigger className="w-36 bg-white/5 backdrop-blur-md border-white/10 text-white h-9">
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
             <SelectContent className="bg-slate-800 border-white/10">
@@ -126,12 +126,12 @@ export function TaskList({
             </SelectContent>
           </Select>
 
-          <div className="inline-flex border border-white/10 rounded-md bg-white/5 backdrop-blur-md overflow-hidden m-0 p-0">
+          <div className="inline-flex border border-white/10 rounded-md bg-white/5 backdrop-blur-md overflow-hidden h-9">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('grid')}
-              className={`rounded-r-none border-0 h-9 px-3 m-0 ${viewMode === 'grid' ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+              className={`rounded-r-none border-0 h-full px-3 m-0 shadow-none ${viewMode === 'grid' ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
@@ -139,7 +139,7 @@ export function TaskList({
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('list')}
-              className={`rounded-l-none border-0 h-9 px-3 m-0 ${viewMode === 'list' ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+              className={`rounded-l-none border-0 h-full px-3 m-0 shadow-none ${viewMode === 'list' ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
             >
               <List className="h-4 w-4" />
             </Button>
