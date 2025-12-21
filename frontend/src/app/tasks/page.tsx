@@ -66,12 +66,26 @@ export default function TasksPage() {
 
   // Memoized data
   const tasks = useMemo(() => {
-    if (!tasksResponse) return [];
+    if (!tasksResponse) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Tasks Page] No tasksResponse');
+      }
+      return [];
+    }
+    
     // Handle both direct response and wrapped response
     if (Array.isArray(tasksResponse)) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[Tasks Page] tasksResponse is array, length:', tasksResponse.length);
+      }
       return tasksResponse;
     }
-    return tasksResponse.data || [];
+    
+    const taskList = tasksResponse.data || [];
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[Tasks Page] tasksResponse.data length:', taskList.length, 'pagination:', tasksResponse.pagination);
+    }
+    return taskList;
   }, [tasksResponse]);
   
   const pagination = useMemo(() => {

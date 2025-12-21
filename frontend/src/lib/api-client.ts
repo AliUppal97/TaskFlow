@@ -251,6 +251,18 @@ class ApiClient {
     // Handle both wrapped (ApiResponse) and direct (PaginatedResponse) formats
     const responseData = response.data;
     
+    // Debug logging (remove in production)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[API Client] Tasks response:', {
+        hasData: !!responseData,
+        isArray: Array.isArray(responseData),
+        keys: responseData && typeof responseData === 'object' ? Object.keys(responseData) : [],
+        dataLength: responseData && typeof responseData === 'object' && 'data' in responseData 
+          ? (Array.isArray((responseData as { data: unknown }).data) ? (responseData as { data: unknown[] }).data.length : 'not array')
+          : 'no data field'
+      });
+    }
+    
     // Check if it's wrapped in ApiResponse
     if (responseData && typeof responseData === 'object' && 'data' in responseData && 'success' in responseData) {
       // Wrapped format: { success: true, data: { data: [...], pagination: {...} } }
@@ -265,8 +277,17 @@ class ApiClient {
       return responseData as PaginatedResponse<Task>;
     }
     
-    // Fallback
-    return responseData as unknown as PaginatedResponse<Task>;
+    // Fallback - return empty response if structure doesn't match
+    console.warn('[API Client] Unexpected response structure for tasks:', responseData);
+    return {
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 0,
+        totalPages: 0,
+      },
+    };
   }
 
   async getTask(id: string): Promise<Task> {
