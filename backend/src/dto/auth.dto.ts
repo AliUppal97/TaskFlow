@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEmail, IsString, MinLength, IsEnum, IsOptional, IsObject } from 'class-validator';
+import { IsEmail, IsString, MinLength, IsEnum, IsOptional, IsObject, IsInt, Min, Max } from 'class-validator';
+import { Type } from 'class-transformer';
 import { UserRole } from '../entities/user.entity';
 
 export class RegisterDto {
@@ -116,6 +117,62 @@ export class UserProfileDto {
 
   @ApiProperty()
   updatedAt: Date;
+}
+
+export class UserQueryDto {
+  @ApiPropertyOptional({
+    description: 'Page number (1-based)',
+    example: 1,
+    default: 1,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number = 1;
+
+  @ApiPropertyOptional({
+    description: 'Number of items per page',
+    example: 10,
+    default: 10,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit?: number = 10;
+
+  @ApiPropertyOptional({
+    description: 'Filter by user role',
+    enum: UserRole,
+    example: UserRole.USER,
+  })
+  @IsOptional()
+  @IsEnum(UserRole)
+  role?: UserRole;
+}
+
+export class UserListResponseDto {
+  @ApiProperty({
+    type: [UserProfileDto],
+  })
+  data: UserProfileDto[];
+
+  @ApiProperty({
+    example: {
+      page: 1,
+      limit: 10,
+      total: 25,
+      totalPages: 3,
+    },
+  })
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 

@@ -6,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { User } from '../../entities/user.entity';
 import { AuthController } from './auth.controller';
+import { UsersController } from './users.controller';
 import { AuthService } from './auth.service';
 import { UserService } from './user.service';
 import { JwtStrategy } from './jwt.strategy';
@@ -30,7 +31,7 @@ import { CacheService } from '../../common/cache/cache.service';
     }),
     EventsModule,
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, UsersController],
   providers: [
     AuthService,
     UserService,
