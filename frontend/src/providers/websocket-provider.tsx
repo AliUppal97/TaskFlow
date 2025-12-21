@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './auth-provider';
-import { TaskEvent, WebSocketNotification } from '@/types/api';
+import { TaskEvent, WebSocketNotification } from '@/types';
 
 interface WebSocketContextType {
   socket: Socket | null;

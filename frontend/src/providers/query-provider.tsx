@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
+import { ApiErrorResponse } from '@/types';
 
 interface QueryProviderProps {
   children: React.ReactNode;
@@ -17,10 +19,20 @@ export function QueryProvider({ children }: QueryProviderProps) {
             // above 0 to avoid refetching immediately on the client
             staleTime: 60 * 1000, // 1 minute
             gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
-            retry: (failureCount, error: any) => {
+            retry: (failureCount, error: unknown) => {
               // Don't retry on 4xx errors
-              if (error?.status >= 400 && error?.status < 500) {
-                return false;
+              if (error && typeof error === 'object' && 'status' in error) {
+                const status = (error as { status: number }).status;
+                if (status >= 400 && status < 500) {
+                  return false;
+                }
+              }
+              // Also check for AxiosError
+              if (error && typeof error === 'object' && 'isAxiosError' in error) {
+                const axiosError = error as AxiosError<ApiErrorResponse>;
+                if (axiosError.response?.status && axiosError.response.status >= 400 && axiosError.response.status < 500) {
+                  return false;
+                }
               }
               return failureCount < 3;
             },
@@ -44,7 +56,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
 // Separate component for devtools to avoid SSR issues
 function DevTools() {
   const [isClient, setIsClient] = useState(false);
-  const [DevtoolsComponent, setDevtoolsComponent] = useState<React.ComponentType<any> | null>(null);
+  const [DevtoolsComponent, setDevtoolsComponent] = useState<React.ComponentType<{ initialIsOpen?: boolean }> | null>(null);
 
   useEffect(() => {
     setIsClient(true);

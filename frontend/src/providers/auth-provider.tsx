@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { User, UserRole, RegisterRequest } from '@/types/api';
+import { User, UserRole, RegisterRequest } from '@/types';
 import { apiClient } from '@/lib/api-client';
 // Import mock auth utilities to make them available globally
 import '@/utils/mock-auth';
@@ -23,16 +23,30 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Check if mock auth mode is enabled
+/**
+ * Check if mock authentication mode is enabled
+ * 
+ * Mock auth allows frontend development without backend
+ * Useful for UI development and testing
+ * 
+ * Priority:
+ * 1. Environment variable (NEXT_PUBLIC_MOCK_AUTH)
+ * 2. localStorage flag (mockAuth)
+ * 
+ * @returns true if mock auth is enabled
+ */
 const isMockAuthEnabled = () => {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined') return false; // SSR safety
   // Check environment variable first, then localStorage
   const envMock = process.env.NEXT_PUBLIC_MOCK_AUTH === 'true';
   const storageMock = localStorage.getItem('mockAuth') === 'true';
   return envMock || storageMock;
 };
 
-// Create a mock user for development
+/**
+ * Create a mock user for development/testing
+ * Used when mock auth is enabled
+ */
 const createMockUser = (): User => ({
   id: 'mock-user-id',
   email: 'dev@taskflow.com',
@@ -57,12 +71,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     checkAuthStatus();
   }, []);
 
+  /**
+   * Check authentication status on app load
+   * 
+   * Flow:
+   * 1. Check if mock auth is enabled (development mode)
+   * 2. If real auth: Verify token by fetching user profile
+   * 3. If token invalid: Clear tokens and set user to null
+   * 4. If backend unavailable (dev): Optionally enable mock auth
+   */
   const checkAuthStatus = async () => {
-    // If mock auth is enabled, use mock user
+    // Mock auth mode: Use mock user for development
     if (isMockAuthEnabled()) {
       const mockUser = createMockUser();
       setUser(mockUser);
-      // Set a mock token so other parts of the app work
+      // Set mock token so API client doesn't fail
       if (!localStorage.getItem('accessToken')) {
         localStorage.setItem('accessToken', 'mock-token');
       }
@@ -74,16 +97,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       const token = localStorage.getItem('accessToken');
       if (!token) {
         setIsLoading(false);
-        return;
+        return; // No token = not authenticated
       }
 
-      // Try to get user profile to verify token validity
+      // Verify token validity by fetching user profile
+      // If token is invalid, API will return 401 and interceptor will handle it
       const profile = await apiClient.getProfile();
       setUser(profile);
     } catch {
-      // If backend is not available and we're in development, optionally enable mock auth
+      // Token invalid or backend unavailable
       if (process.env.NODE_ENV === 'development') {
-        // Check if user wants to enable mock auth automatically
+        // Development: Optionally enable mock auth if backend is down
         const autoMock = localStorage.getItem('autoMockAuth') === 'true';
         if (autoMock) {
           const mockUser = createMockUser();
@@ -92,7 +116,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           localStorage.setItem('mockAuth', 'true');
         }
       } else {
-        // Token is invalid, clear it
+        // Production: Clear invalid token
         localStorage.removeItem('accessToken');
         setUser(null);
       }
