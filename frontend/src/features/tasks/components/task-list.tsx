@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Plus, Filter, Search, Grid3X3, List } from 'lucide-react';
 
-import { Task, TaskQueryParams } from '@/types/api';
+import { Task, TaskQueryParams, TaskStatus, TaskPriority } from '@/types';
 import { TaskCard } from './task-card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { TaskStatus, TaskPriority } from '@/types/api';
 
 interface TaskListProps {
   tasks: Task[];

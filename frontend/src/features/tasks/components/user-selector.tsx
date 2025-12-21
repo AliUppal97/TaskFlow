@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { User as UserType } from '@/types/api';
+import { User as UserType } from '@/types';
 import { cn } from '@/lib/utils';
 
 interface UserSelectorProps {

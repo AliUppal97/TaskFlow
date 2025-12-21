@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { TaskCard } from './task-card';
-import { Task, TaskStatus, TaskPriority } from '@/types/api';
+import { Task, TaskStatus, TaskPriority } from '@/types';
 
 const mockTask: Task = {
   id: 'task-123',

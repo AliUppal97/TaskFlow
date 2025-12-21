@@ -7,7 +7,7 @@ import { z } from 'zod';
 import { format } from 'date-fns';
 import { CalendarIcon, X } from 'lucide-react';
 
-import { Task, TaskPriority, CreateTaskRequest, UpdateTaskRequest } from '@/types/api';
+import { Task, TaskPriority, CreateTaskRequest, UpdateTaskRequest, CreateTaskFormData, UpdateTaskFormData } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -53,8 +53,8 @@ const updateTaskSchema = createTaskSchema.extend({
   version: z.number(),
 });
 
-type CreateTaskFormData = z.infer<typeof createTaskSchema>;
-type UpdateTaskFormData = z.infer<typeof updateTaskSchema>;
+type CreateTaskFormDataInput = z.infer<typeof createTaskSchema>;
+type UpdateTaskFormDataInput = z.infer<typeof updateTaskSchema>;
 
 interface TaskFormProps {
   isOpen: boolean;
@@ -86,18 +86,18 @@ export function TaskForm({ isOpen, onClose, task, onSubmit, isLoading }: TaskFor
         priority: task.priority,
         dueDate: task.dueDate ? new Date(task.dueDate) : undefined,
         version: task.version,
-      } as any);
+      } as UpdateTaskFormDataInput);
     } else {
       form.reset({
         title: '',
         description: '',
         priority: TaskPriority.MEDIUM,
         dueDate: undefined,
-      } as any);
+      } as CreateTaskFormDataInput);
     }
   }, [task, form]);
 
-  const handleSubmit = async (data: CreateTaskFormData | UpdateTaskFormData) => {
+  const handleSubmit = async (data: CreateTaskFormDataInput | UpdateTaskFormDataInput) => {
     try {
       const submitData = {
         ...data,

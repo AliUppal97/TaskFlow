@@ -15,7 +15,7 @@ import {
   UserCheck
 } from 'lucide-react';
 
-import { Task, TaskStatus, TaskPriority } from '@/types/api';
+import { Task, TaskStatus, TaskPriority } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
