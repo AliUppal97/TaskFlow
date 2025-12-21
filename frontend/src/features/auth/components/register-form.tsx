@@ -48,8 +48,18 @@ export function RegisterForm() {
       setIsLoading(true);
       setError(null);
 
-      const { confirmPassword, ...registerData } = data;
-      await register(registerData);
+      const { confirmPassword, firstName, lastName, ...registerData } = data;
+      // Transform form data to match backend DTO structure (profile object)
+      const transformedData = {
+        ...registerData,
+        ...(firstName || lastName ? {
+          profile: {
+            ...(firstName && { firstName }),
+            ...(lastName && { lastName }),
+          },
+        } : {}),
+      };
+      await register(transformedData);
 
       // Registration successful, redirect will be handled by the auth provider
     } catch (err: unknown) {
