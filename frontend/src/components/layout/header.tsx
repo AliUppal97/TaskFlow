@@ -61,7 +61,7 @@ export function Header() {
           {/* Logo and Navigation */}
           <div className="flex items-center">
             <Link href="/dashboard">
-              <Logo size="md" />
+              <Logo size="md" clickable={false} />
             </Link>
 
             {/* Desktop Navigation */}
