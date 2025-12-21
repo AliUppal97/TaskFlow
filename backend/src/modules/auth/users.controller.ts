@@ -17,7 +17,10 @@ import {
 
 import { UserService } from './user.service';
 import { JwtPermissionsGuard } from '../../guards/jwt-permissions.guard';
+import { RolesGuard } from '../../guards/roles.guard';
 import { Permission, RequirePermissions } from '../../decorators/permissions.decorator';
+import { Roles } from '../../decorators/roles.decorator';
+import { UserRole } from '../../entities/user.entity';
 import {
   UserQueryDto,
   UserProfileDto,
@@ -29,7 +32,8 @@ import { User } from '../../entities/user.entity';
 
 @ApiTags('Users')
 @Controller('users')
-@UseGuards(JwtPermissionsGuard)
+@UseGuards(JwtPermissionsGuard, RolesGuard)
+@Roles(UserRole.ADMIN)
 @RequirePermissions(Permission.USER_READ)
 @ApiBearerAuth()
 @UseInterceptors(LoggingInterceptor)
