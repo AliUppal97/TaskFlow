@@ -123,7 +123,14 @@ export class TaskService {
       timestamp: new Date(),
     });
 
-    return savedTask;
+    // Reload task with relations for response transformation
+    // The controller's transformTaskResponse needs creator and assignee relations
+    const taskWithRelations = await this.taskRepository.findOne({
+      where: { id: savedTask.id },
+      relations: ['creator', 'assignee'],
+    });
+
+    return taskWithRelations || savedTask;
   }
 
   /**
