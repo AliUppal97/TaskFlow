@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import { useAuth } from '@/providers/auth-provider';
+import { UserRole } from '@/types';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -142,15 +143,15 @@ export function Header() {
                     Help & Support
                   </Link>
                 </DropdownMenuItem>
-                {user?.role === 'admin' && (
+                {user?.role === UserRole.ADMIN && (
                   <>
+                    <DropdownMenuSeparator />
                     <DropdownMenuItem asChild>
                       <Link href="/admin" className="flex items-center">
                         <Shield className="mr-2 h-4 w-4" />
                         Admin Panel
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
                   </>
                 )}
                 <DropdownMenuSeparator />
