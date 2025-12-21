@@ -31,7 +31,9 @@ export default () => ({
 
   // Application
   app: {
-    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3000,
+    // Default to 3001 for local development to avoid conflicts with Docker (which uses 3000)
+    // Docker will override this via PORT=3000 in docker-compose.yml
+    port: process.env.PORT ? parseInt(process.env.PORT, 10) : 3001,
     nodeEnv: process.env.NODE_ENV || 'development',
     corsOrigin: process.env.CORS_ORIGIN || 'http://localhost:3000',
   },
@@ -44,6 +46,3 @@ export default () => ({
     },
   },
 });
-
-
-
