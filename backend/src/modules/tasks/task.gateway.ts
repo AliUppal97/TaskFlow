@@ -40,18 +40,39 @@ export interface TaskEvent {
   timestamp: Date;
 }
 
+/**
+ * WebSocket Gateway for real-time task updates
+ * 
+ * Architecture:
+ * - Namespace: /tasks (isolated from other WebSocket connections)
+ * - Authentication: JWT token required for connection
+ * - Room-based messaging: Clients join task-specific rooms for targeted updates
+ * 
+ * Connection lifecycle:
+ * 1. Client connects with JWT token
+ * 2. Server validates token and loads user
+ * 3. Client joins user-specific room (user:{userId})
+ * 4. Admin clients also join 'admin' room
+ * 5. Clients can subscribe to specific tasks (task:{taskId})
+ * 
+ * Event broadcasting:
+ * - Task events broadcast to task-specific room
+ * - Also broadcast globally for list updates
+ * - Assignment notifications sent to user-specific rooms
+ */
 @WebSocketGateway({
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
-    credentials: true,
+    credentials: true, // Required for cookie-based auth
   },
-  namespace: '/tasks',
+  namespace: '/tasks', // Isolated namespace for task events
 })
 export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
   server: Server;
 
   private readonly logger = new Logger(TaskGateway.name);
+  // Track connected clients for connection management and statistics
   private connectedClients = new Map<string, AuthenticatedSocket>();
 
   constructor(
@@ -67,38 +88,58 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log('Task WebSocket Gateway initialized');
   }
 
+  /**
+   * Handle new WebSocket connection
+   * 
+   * Authentication flow:
+   * 1. Extract JWT token from handshake (auth, headers, or query)
+   * 2. Verify token signature and expiration
+   * 3. Load user from database
+   * 4. Attach user to socket for authorization checks
+   * 
+   * Room management:
+   * - user:{userId}: Personal notifications (assignments, updates)
+   * - admin: Admin-only events (if user is admin)
+   * - task:{taskId}: Task-specific updates (joined via subscribe)
+   * 
+   * @param client - Socket.IO client connection
+   */
   async handleConnection(client: AuthenticatedSocket, ...args: any[]) {
     try {
+      // Extract JWT token from handshake (supports multiple methods for flexibility)
       const token = this.extractTokenFromSocket(client);
       if (!token) {
-        client.disconnect();
+        client.disconnect(); // No token = unauthorized connection
         return;
       }
 
+      // Verify token signature and expiration
       const payload = this.jwtService.verify(token, {
         secret: this.configService.get('jwt.accessTokenSecret'),
       }) as JwtPayload;
 
+      // Load user to ensure they still exist and get latest role/permissions
       const user = await this.userService.findById(payload.sub);
       if (!user) {
-        client.disconnect();
+        client.disconnect(); // User deleted or invalid
         return;
       }
 
+      // Attach user to socket for authorization in message handlers
       client.user = user;
       this.connectedClients.set(client.id, client);
 
-      // Join user-specific room for personalized events
+      // Join user-specific room for personalized notifications (assignments, etc.)
       client.join(`user:${user.id}`);
 
-      // Join admin room if user is admin
+      // Admins get access to admin-only room for system-wide events
       if (user.role === 'admin') {
         client.join('admin');
       }
 
       this.logger.log(`Client connected: ${client.id} (User: ${user.email})`);
 
-      // Send welcome message
+      // Send connection confirmation with user info
       client.emit('connected', {
         message: 'Successfully connected to TaskFlow real-time updates',
         user: {
@@ -110,7 +151,7 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     } catch (error) {
       this.logger.error(`Connection failed for client ${client.id}:`, error);
-      client.disconnect();
+      client.disconnect(); // Invalid token or other error
     }
   }
 
@@ -123,15 +164,27 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     }
   }
 
+  /**
+   * Subscribe to real-time updates for a specific task
+   * 
+   * Room-based subscription:
+   * - Client joins task:{taskId} room
+   * - Receives all events for that task (updates, assignments, etc.)
+   * - Useful for task detail pages that need live updates
+   * 
+   * @param client - Authenticated socket client
+   * @param data - Contains taskId to subscribe to
+   * @returns Confirmation message
+   */
   @SubscribeMessage('subscribe-to-task')
   handleSubscribeToTask(
     @ConnectedSocket() client: AuthenticatedSocket,
     @MessageBody() data: { taskId: string },
   ) {
-    if (!client.user) return;
+    if (!client.user) return; // Unauthenticated clients ignored
 
     const { taskId } = data;
-    client.join(`task:${taskId}`);
+    client.join(`task:${taskId}`); // Join task-specific room
 
     this.logger.log(`User ${client.user.email} subscribed to task ${taskId}`);
 
@@ -158,11 +211,27 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     return { event: 'pong', timestamp: new Date() };
   }
 
-  // Public methods to emit events from other services
+  /**
+   * Emit task event to all relevant clients
+   * 
+   * Broadcasting strategy:
+   * 1. Task-specific room: Clients subscribed to this task get immediate update
+   * 2. Global broadcast: All clients get event (for list view updates)
+   * 
+   * This dual-broadcast ensures:
+   * - Task detail pages get instant updates
+   * - Task list pages stay synchronized
+   * 
+   * Side effects:
+   * - Event logged to MongoDB for audit trail
+   * - Actor information loaded and included in event
+   * 
+   * @param event - Task event to broadcast
+   */
   async emitTaskEvent(event: TaskEvent): Promise<void> {
     const { type, taskId, actorId, payload } = event;
 
-    // Get actor information
+    // Load actor information to include in event (who performed the action)
     const actor = await this.userService.findById(actorId);
 
     const eventData = {
@@ -177,13 +246,13 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       timestamp: event.timestamp,
     };
 
-    // Emit to task-specific room
+    // Broadcast to task-specific room (clients viewing this task)
     this.server.to(`task:${taskId}`).emit('task-event', eventData);
 
-    // Emit to all connected clients (for global task list updates)
+    // Broadcast globally (clients viewing task lists)
     this.server.emit('task-event', eventData);
 
-    // Log the real-time event
+    // Log event to MongoDB for audit trail and compliance
     await this.eventsService.logEvent({
       type: type as any,
       actorId,
@@ -191,13 +260,26 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       entityType: 'task',
       payload: {
         ...payload,
-        realTimeBroadcast: true,
+        realTimeBroadcast: true, // Mark as real-time event
       },
     });
 
     this.logger.log(`Emitted task event: ${type} for task ${taskId}`);
   }
 
+  /**
+   * Send assignment notification to relevant users
+   * 
+   * Notification targets:
+   * - New assignee: Gets notification in user:{assigneeId} room
+   * - Assignor: Gets confirmation notification
+   * 
+   * Uses user-specific rooms for targeted delivery (more efficient than global broadcast)
+   * 
+   * @param taskId - Task that was assigned
+   * @param assigneeId - New assignee (null if unassigned)
+   * @param assignorId - User who performed the assignment
+   */
   async notifyTaskAssignment(taskId: string, assigneeId: string | null, assignorId: string): Promise<void> {
     const assignor = await this.userService.findById(assignorId);
 
@@ -213,12 +295,12 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       timestamp: new Date(),
     };
 
-    // Notify the assignee if they exist
+    // Notify new assignee (if task was assigned, not unassigned)
     if (assigneeId) {
       this.server.to(`user:${assigneeId}`).emit('notification', notification);
     }
 
-    // Notify the assignor
+    // Notify assignor (confirmation of their action)
     this.server.to(`user:${assignorId}`).emit('notification', notification);
 
     this.logger.log(`Task ${taskId} assignment notification sent`);
