@@ -226,14 +226,14 @@ export default function NotificationsPage() {
 
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between">
-                                  <p className="text-sm font-medium text-gray-900">
+                                  <div className="text-sm font-medium text-gray-900">
                                     {notification.title}
                                     {!notification.read && (
                                       <Badge variant="secondary" className="ml-2 text-xs">
                                         New
                                       </Badge>
                                     )}
-                                  </p>
+                                  </div>
                                   <div className="flex items-center space-x-2">
                                     {!notification.read && (
                                       <Button
