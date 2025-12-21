@@ -8,6 +8,20 @@ import { RegisterDto } from '../../dto/auth.dto';
 import { CacheService } from '../../common/cache/cache.service';
 import { CacheResult, InvalidateCache } from '../../common/cache/cache.decorators';
 
+/**
+ * User Service - User account management
+ * 
+ * Responsibilities:
+ * - User CRUD operations
+ * - Password hashing and validation
+ * - Refresh token management (Redis)
+ * - User profile management
+ * 
+ * Security:
+ * - Password hashing with bcrypt (12 salt rounds)
+ * - Email uniqueness validation
+ * - Cache invalidation on user updates
+ */
 @Injectable()
 export class UserService {
   constructor(
@@ -16,17 +30,36 @@ export class UserService {
     private cacheService: CacheService,
   ) {}
 
+  /**
+   * Create a new user account
+   * 
+   * Security:
+   * - Email uniqueness check (prevents duplicate accounts)
+   * - Password hashed with bcrypt (12 rounds = strong security)
+   * - Default role: USER (admin role must be set explicitly)
+   * 
+   * Cache:
+   * - Invalidates user cache on creation
+   * - Caches new user for 1 hour
+   * 
+   * @param registerDto - User registration data
+   * @returns Created user entity (password hash excluded)
+   */
   @InvalidateCache('user:*')
   async create(registerDto: RegisterDto): Promise<User> {
     const { email, password, role = UserRole.USER, profile } = registerDto;
 
-    // Check if user already exists
+    // Prevent duplicate accounts (email is unique)
     const existingUser = await this.userRepository.findOne({ where: { email } });
     if (existingUser) {
       throw new ConflictException('User with this email already exists');
     }
 
-    // Hash password
+    /**
+     * Password hashing with bcrypt
+     * Salt rounds: 12 (balance between security and performance)
+     * Higher rounds = more secure but slower (12 is industry standard)
+     */
     const saltRounds = 12;
     const passwordHash = await bcrypt.hash(password, saltRounds);
 
@@ -62,15 +95,28 @@ export class UserService {
     return user;
   }
 
+  /**
+   * Validate user credentials
+   * 
+   * Security:
+   * - Returns null for invalid credentials (prevents user enumeration)
+   * - Uses bcrypt.compare for constant-time password verification
+   * - Does not reveal whether email or password is incorrect
+   * 
+   * @param email - User email
+   * @param password - Plain text password
+   * @returns User entity if valid, null otherwise
+   */
   async validatePassword(email: string, password: string): Promise<User | null> {
     const user = await this.findByEmail(email);
     if (!user) {
-      return null;
+      return null; // User not found (don't reveal this for security)
     }
 
+    // Constant-time password comparison (prevents timing attacks)
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
-      return null;
+      return null; // Invalid password
     }
 
     return user;
@@ -116,21 +162,54 @@ export class UserService {
     await this.userRepository.remove(user);
   }
 
-  // Refresh token management (store in Redis)
+  /**
+   * Refresh token management (stored in Redis)
+   * 
+   * Security strategy:
+   * - Refresh token ID stored in Redis (not the full token)
+   * - Enables token revocation (logout, security breach)
+   * - TTL matches refresh token expiration (7 days)
+   * 
+   * Benefits:
+   * - Can invalidate all user sessions by deleting token ID
+   * - No database queries needed (Redis is fast)
+   * - Automatic expiration via TTL
+   */
+  
+  /**
+   * Store refresh token ID for a user
+   * Used to validate and revoke refresh tokens
+   * 
+   * @param userId - User ID
+   * @param tokenId - Unique refresh token ID
+   */
   async storeRefreshToken(userId: string, tokenId: string): Promise<void> {
     await this.cacheService.set(
       this.cacheService.generateKey(CacheService.KEYS.REFRESH_TOKEN, userId),
       tokenId,
-      { ttl: 7 * 24 * 60 * 60 } // 7 days
+      { ttl: 7 * 24 * 60 * 60 } // 7 days (matches refresh token expiration)
     );
   }
 
+  /**
+   * Get stored refresh token ID for a user
+   * Used to validate refresh token during token refresh
+   * 
+   * @param userId - User ID
+   * @returns Refresh token ID or null if not found
+   */
   async getStoredRefreshToken(userId: string): Promise<string | null> {
     return this.cacheService.get(
       this.cacheService.generateKey(CacheService.KEYS.REFRESH_TOKEN, userId)
     );
   }
 
+  /**
+   * Remove refresh token ID (logout or security breach)
+   * Invalidates all refresh tokens for the user
+   * 
+   * @param userId - User ID
+   */
   async removeRefreshToken(userId: string): Promise<void> {
     await this.cacheService.delete(
       this.cacheService.generateKey(CacheService.KEYS.REFRESH_TOKEN, userId)

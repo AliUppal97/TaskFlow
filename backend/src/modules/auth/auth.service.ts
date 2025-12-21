@@ -12,6 +12,20 @@ import { EventsService } from '../events/events.service';
 import { CacheService } from '../../common/cache/cache.service';
 import { EventType } from '../../entities/event-log.entity';
 
+/**
+ * Authentication service - handles user authentication and authorization
+ *
+ * Responsibilities:
+ * - User registration and login
+ * - JWT token generation (access + refresh tokens)
+ * - Token refresh and blacklisting
+ * - Audit logging of authentication events
+ *
+ * Security features:
+ * - Refresh tokens stored in Redis with expiration
+ * - Access token blacklisting for logout
+ * - Event logging for security audit trail
+ */
 @Injectable()
 export class AuthService {
   constructor(
@@ -22,10 +36,16 @@ export class AuthService {
     private eventsService: EventsService,
   ) {}
 
+  /**
+   * Register a new user
+   * - Creates user account with hashed password
+   * - Logs registration event for audit trail
+   * - Returns user entity (password hash excluded via @Exclude decorator)
+   */
   async register(registerDto: RegisterDto): Promise<User> {
     const user = await this.userService.create(registerDto);
 
-    // Log registration event
+    // Log registration event for security audit and compliance
     await this.eventsService.logEvent({
       type: EventType.USER_REGISTERED,
       actorId: user.id,
@@ -40,18 +60,35 @@ export class AuthService {
     return user;
   }
 
+  /**
+   * Authenticate user and generate JWT tokens
+   *
+   * Token strategy:
+   * - Access token: Short-lived (15min), stored in localStorage, used for API requests
+   * - Refresh token: Long-lived (7 days), stored in HttpOnly cookie, used to refresh access token
+   * - Refresh token ID: Stored in Redis to enable token revocation
+   *
+   * Security:
+   * - Password validation using bcrypt comparison
+   * - Refresh token ID stored in Redis for revocation capability
+   * - Login events logged for security monitoring
+   */
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
     const { email, password } = loginDto;
 
+    // Validate credentials - throws UnauthorizedException if invalid
     const user = await this.userService.validatePassword(email, password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     const tokens = await this.generateTokens(user);
-    
-    // Extract refreshTokenId from the generated refresh token payload
-    // We need to decode it or store it during generation
+
+    /**
+     * Generate refresh token with unique ID for revocation tracking
+     * The refreshTokenId is embedded in the token payload and stored in Redis
+     * This allows us to invalidate tokens on logout or security breach
+     */
     const refreshTokenId = randomUUID();
     const refreshPayload: JwtRefreshPayload = {
       sub: user.id,
@@ -65,10 +102,10 @@ export class AuthService {
     });
     tokens.refreshToken = newRefreshToken;
 
-    // Store refresh token ID
+    // Store refresh token ID in Redis for revocation capability
     await this.userService.storeRefreshToken(user.id, refreshTokenId);
 
-    // Log login event
+    // Log login event for security audit (userAgent and ipAddress set by interceptor)
     await this.eventsService.logEvent({
       type: EventType.USER_LOGIN,
       actorId: user.id,
@@ -76,8 +113,8 @@ export class AuthService {
       entityType: 'user',
       payload: {
         email: user.email,
-        userAgent: '', // Will be set by interceptor
-        ipAddress: '', // Will be set by interceptor
+        userAgent: '', // Populated by RequestLoggingInterceptor
+        ipAddress: '', // Populated by RequestLoggingInterceptor
       },
     });
 
@@ -119,13 +156,27 @@ export class AuthService {
     });
   }
 
+  /**
+   * Generate access and refresh token pair
+   *
+   * Token structure:
+   * - Access token: Contains user ID, email, role (minimal payload for performance)
+   * - Refresh token: Contains same data + unique refreshTokenId for revocation
+   *
+   * Performance: Tokens generated in parallel using Promise.all for efficiency
+   *
+   * @param user - User entity to generate tokens for
+   * @returns Token pair with expiration metadata
+   */
   private async generateTokens(user: User): Promise<AuthResponseDto> {
+    // Access token payload - minimal data for performance
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
       role: user.role,
     };
 
+    // Refresh token payload - includes unique ID for revocation tracking
     const refreshTokenId = randomUUID();
     const refreshPayload: JwtRefreshPayload = {
       sub: user.id,
@@ -134,6 +185,7 @@ export class AuthService {
       refreshTokenId,
     };
 
+    // Generate both tokens in parallel for better performance
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
         secret: this.configService.get('jwt.accessTokenSecret'),
@@ -149,7 +201,7 @@ export class AuthService {
       accessToken,
       refreshToken,
       tokenType: 'Bearer',
-      expiresIn: 15 * 60, // 15 minutes in seconds
+      expiresIn: 15 * 60, // 15 minutes in seconds (access token lifetime)
     };
   }
 
@@ -157,15 +209,35 @@ export class AuthService {
     return this.userService.findById(userId);
   }
 
-  // Blacklist access tokens (for logout from all devices)
+  /**
+   * Blacklist an access token (for logout or security breach)
+   *
+   * Stores token in Redis cache with TTL matching token expiration
+   * This enables immediate token invalidation without waiting for natural expiration
+   *
+   * Use cases:
+   * - User logout (invalidate current session)
+   * - Security breach (invalidate all user tokens)
+   * - Password change (invalidate all sessions)
+   *
+   * @param token - JWT access token to blacklist
+   * @param expiresIn - Token expiration time in seconds (used as cache TTL)
+   */
   async blacklistToken(token: string, expiresIn: number): Promise<void> {
     await this.cacheService.set(
       this.cacheService.generateKey(CacheService.KEYS.BLACKLIST, token),
       true,
-      { ttl: expiresIn }
+      { ttl: expiresIn },
     );
   }
 
+  /**
+   * Check if an access token is blacklisted
+   * Used by JWT guards to reject blacklisted tokens
+   * 
+   * @param token - JWT access token to check
+   * @returns true if token is blacklisted, false otherwise
+   */
   async isTokenBlacklisted(token: string): Promise<boolean> {
     const isBlacklisted = await this.cacheService.get(
       this.cacheService.generateKey(CacheService.KEYS.BLACKLIST, token)
