@@ -1,0 +1,413 @@
+# ============================================
+# Dependencies
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.pnp.*
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn-integrity
+
+# ============================================
+# Build Outputs
+# ============================================
+# Next.js
+.next/
+out/
+.next/cache/
+.vercel
+# Note: next-env.d.ts should be committed (it's needed for TypeScript)
+# So we don't ignore it here
+
+# NestJS
+dist/
+build/
+
+# TypeScript
+*.tsbuildinfo
+*.d.ts.map
+tsconfig.tsbuildinfo
+
+# Compiled JavaScript
+*.js.map
+*.jsx.map
+
+# ============================================
+# Environment Variables
+# ============================================
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+# Keep example/template files
+!.env.example
+!**/env.example
+!**/env.template
+!**/*.env.example
+!**/*.env.template
+
+# ============================================
+# Testing & Coverage
+# ============================================
+# Jest
+coverage/
+.nyc_output/
+*.lcov
+jest-coverage/
+
+# Playwright
+test-results/
+playwright-report/
+playwright/.cache/
+playwright/.auth/
+playwright/.trace/
+*.trace.zip
+
+# Test results
+TestResults/
+[Tt]est[Rr]esult*/
+*.trx
+
+# ============================================
+# Logs
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log.*
+
+# ============================================
+# Cache Directories
+# ============================================
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+.prettiercache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+.swc/
+
+# ============================================
+# Database Files
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# MongoDB
+data/db/
+mongodb-data/
+
+# Redis
+dump.rdb
+*.rdb
+
+# PostgreSQL
+*.sql.backup
+
+# ============================================
+# Docker
+# ============================================
+docker-volumes/
+# Note: .dockerignore should be committed, so we don't ignore it
+
+# ============================================
+# IDE & Editor Files
+# ============================================
+# VS Code
+.vscode/
+*.code-workspace
+.vscode-test/
+
+# JetBrains IDEs (IntelliJ, WebStorm, etc.)
+.idea/
+*.iml
+*.iws
+*.ipr
+.idea_modules/
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# Vim
+*.swp
+*.swo
+*~
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Eclipse
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.settings/
+.loadpath
+.recommenders
+
+# NetBeans
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.moved-aside
+*.xccheckout
+*.xcscmblueprint
+
+# ============================================
+# OS Files
+# ============================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.AppleDouble
+.LSOverride
+Icon
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.directory
+.Trash-*
+.nfs*
+
+# ============================================
+# Temporary Files
+# ============================================
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.backup
+*.orig
+*.rej
+*.swp
+*.swo
+
+# ============================================
+# Runtime & Process Files
+# ============================================
+pids/
+*.pid
+*.seed
+*.pid.lock
+*.sock
+
+# ============================================
+# Package Manager Files
+# ============================================
+# npm
+.npm
+package-lock.json.backup
+
+# Yarn
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.pnp.*
+
+# pnpm
+.pnpm-store/
+
+# ============================================
+# Security & Secrets
+# ============================================
+# Certificates & Keys
+*.pem
+*.key
+*.crt
+*.cert
+*.p12
+*.pfx
+*.jks
+
+# Secrets
+secrets/
+.secrets
+*.secret
+
+# ============================================
+# Deployment & CI/CD
+# ============================================
+# Vercel
+.vercel
+
+# Netlify
+.netlify/
+.netlify
+
+# AWS
+.aws-sam/
+samconfig.toml
+
+# Serverless
+.serverless/
+
+# ============================================
+# Storybook
+# ============================================
+storybook-static/
+.out
+.storybook-out
+
+# ============================================
+# Miscellaneous
+# ============================================
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity
+
+# Sentry
+.sentryclirc
+
+# Turborepo
+.turbo
+
+# Debug files
+*.log
+debug.log
+*.debug
+
+# Lock file backups
+package-lock.json.bak
+yarn.lock.bak
+pnpm-lock.yaml.bak
+
+# Local configuration overrides
+.local
+local.json
+local.yml
+local.yaml
+
+# Backup directories
+backup/
+backups/
+*.backup
+
+# Archive files
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Generated documentation
+docs/build/
+docs/dist/
+site/
+
+# Local development scripts
+scripts/local/
+scripts/dev/
+*.local.sh
+*.local.bat
+*.local.ps1
+
+# ============================================
+# Documentation Files
+# ============================================
+# Markdown documentation files (excluded as per project requirements)
+*.md
+# Uncomment the line below if you want to keep README.md
+# !README.md
+
+# ============================================
+# Project Specific
+# ============================================
+# Keep these files (they should be committed)
+# !public/
+# !docs/
+# !next-env.d.ts (Next.js TypeScript declarations - should be committed)
+# !**/env.example
+# !**/env.template
+# !**/.dockerignore
+# !**/.prettierrc
+# !**/.eslintrc*
+# !**/tsconfig*.json
+
+# ============================================
+# Legacy & Unused (kept for reference)
+# ============================================
+# These are kept but unlikely to be used in this project
+# Remove if you want a cleaner file
+
+# Bower (deprecated)
+bower_components
+
+# Grunt
+.grunt
+
+# TypeScript incremental build info (already covered above)
+# *.tsbuildinfo

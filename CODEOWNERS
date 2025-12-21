@@ -1,0 +1,55 @@
+# Code Owners
+# This file defines ownership of different parts of the codebase.
+# When a pull request is opened, the owners will be automatically requested for review.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Global owners - these users will be requested for review on all PRs
+* @your-username
+
+# Backend
+/backend/ @backend-team
+
+# Frontend
+/frontend/ @frontend-team
+
+# Infrastructure & DevOps
+/docker/ @devops-team
+docker-compose*.yml @devops-team
+Dockerfile @devops-team
+
+# Documentation
+/docs/ @docs-team
+*.md @docs-team
+
+# CI/CD
+/.github/ @devops-team
+
+# Configuration files
+/.github/ @devops-team
+/.gitignore @devops-team
+/LICENSE @devops-team
+/SECURITY.md @devops-team
+/CHANGELOG.md @devops-team
+
+# Database schemas and migrations
+/backend/src/entities/ @backend-team
+/backend/src/config/database.config.ts @backend-team
+
+# Security-related files
+/backend/src/guards/ @backend-team @security-team
+/backend/src/decorators/permissions.decorator.ts @backend-team @security-team
+/backend/src/decorators/roles.decorator.ts @backend-team @security-team
+
+# API endpoints
+/backend/src/modules/ @backend-team
+/frontend/src/app/api/ @frontend-team
+
+# Authentication & Authorization
+/backend/src/modules/auth/ @backend-team @security-team
+/frontend/src/features/auth/ @frontend-team
+
+# WebSocket implementation
+/backend/src/modules/tasks/task.gateway.ts @backend-team
+/frontend/src/providers/websocket-provider.tsx @frontend-team
+
+
