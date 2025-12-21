@@ -60,20 +60,20 @@ This document explains the port configuration for TaskFlow to ensure frontend an
 
 ## Docker Development
 
-When using Docker Compose, ports are mapped differently:
+When using Docker Compose, ports are mapped to match local development:
 
-- **Backend**: Container port 3000 → Host port 3000
-- **Frontend**: Container port 3000 → Host port 3001
+- **Backend**: Container port 3000 → Host port 3001
+- **Frontend**: Container port 3000 → Host port 3000
 
 This is configured in `docker-compose.yml`:
 ```yaml
 backend:
   ports:
-    - "3000:3000"  # Host:Container
+    - "3001:3000"  # Host:Container (backend runs on 3000 inside, exposed as 3001)
 
 frontend:
   ports:
-    - "3001:3000"  # Host:Container (frontend runs on 3000 inside, exposed as 3001)
+    - "3000:3000"  # Host:Container (frontend runs on 3000 inside, exposed as 3000)
 ```
 
 ## Troubleshooting
