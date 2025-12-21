@@ -1,0 +1,33 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="iconGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Main T shape with flow lines -->
+  <g transform="translate(32, 32)">
+    <!-- Vertical bar of T -->
+    <rect x="-2.5" y="-15" width="5" height="25" rx="2.5" fill="url(#iconGradient)"/>
+    
+    <!-- Horizontal bar of T -->
+    <rect x="-15" y="-2.5" width="30" height="5" rx="2.5" fill="url(#iconGradient)"/>
+    
+    <!-- Flow indicator - elegant curved arrow on the right -->
+    <path d="M 12.5 0 Q 16.5 -2 19 -4.5 Q 21.5 -7 22 -9" 
+          stroke="url(#iconGradientLight)" 
+          stroke-width="2.2" 
+          fill="none" 
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+    <path d="M 22 -9 L 24.5 -6.5 L 22 -4 Z" 
+          fill="url(#iconGradientLight)"/>
+  </g>
+</svg>
+

@@ -1,0 +1,49 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="logoGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#818cf8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle with gradient -->
+  <circle cx="256" cy="256" r="240" fill="url(#logoGradient)" opacity="0.08"/>
+  
+  <!-- Main T shape with flow lines -->
+  <g transform="translate(256, 256)" filter="url(#glow)">
+    <!-- Vertical bar of T with subtle shadow -->
+    <rect x="-22" y="-122" width="44" height="204" rx="22" fill="url(#logoGradient)" opacity="0.3"/>
+    <rect x="-20" y="-120" width="40" height="200" rx="20" fill="url(#logoGradient)"/>
+    
+    <!-- Horizontal bar of T with subtle shadow -->
+    <rect x="-122" y="-22" width="244" height="44" rx="22" fill="url(#logoGradient)" opacity="0.3"/>
+    <rect x="-120" y="-20" width="240" height="40" rx="20" fill="url(#logoGradient)"/>
+    
+    <!-- Flow indicator - elegant curved arrow on the right -->
+    <path d="M 100 0 Q 135 -18 155 -35 Q 175 -52 180 -70" 
+          stroke="url(#logoGradientLight)" 
+          stroke-width="18" 
+          fill="none" 
+          stroke-linecap="round"
+          stroke-linejoin="round"/>
+    <path d="M 180 -70 L 200 -50 L 180 -30 Z" 
+          fill="url(#logoGradientLight)"/>
+    
+    <!-- Subtle accent dots representing workflow progression -->
+    <circle cx="135" cy="-55" r="7" fill="url(#logoGradientLight)" opacity="0.9"/>
+    <circle cx="155" cy="-90" r="5" fill="url(#logoGradientLight)" opacity="0.7"/>
+  </g>
+</svg>
+
