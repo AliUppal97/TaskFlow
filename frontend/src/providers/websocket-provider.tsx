@@ -46,7 +46,7 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     const token = localStorage.getItem('accessToken');
     if (!token) return;
 
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/tasks`, {
+    const socket = io(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/tasks`, {
       auth: {
         token,
       },

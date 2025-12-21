@@ -32,11 +32,12 @@ class ApiClient {
   private client: AxiosInstance;
   private baseURL: string;
 
-  constructor(baseURL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000') {
+  constructor(baseURL: string = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001') {
     this.baseURL = baseURL;
     this.client = axios.create({
       baseURL: `${baseURL}/api/v1`, // API versioning
       timeout: 10000, // 10 second timeout
+      withCredentials: true, // Required for HttpOnly cookie (refresh token) to be sent
       headers: {
         'Content-Type': 'application/json',
       },
@@ -196,14 +197,15 @@ class ApiClient {
 
   // Auth methods
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response = await this.client.post<ApiResponse<AuthResponse>>('/auth/login', credentials);
-    const { data } = response.data;
+    const response = await this.client.post<AuthResponse>('/auth/login', credentials);
+    const authData = response.data;
     
-    if (data?.accessToken) {
-      this.setAccessToken(data.accessToken);
+    // Backend returns AuthResponse directly (not wrapped in ApiResponse)
+    if (authData?.accessToken) {
+      this.setAccessToken(authData.accessToken);
     }
 
-    return data || response.data as unknown as AuthResponse;
+    return authData;
   }
 
   async register(userData: RegisterRequest): Promise<ApiResponse<User>> {
