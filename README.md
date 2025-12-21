@@ -144,9 +144,9 @@ src/
    ```
 
 4. **Access the Application**
-   - **Frontend**: http://localhost:3001
-   - **Backend API**: http://localhost:3000
-   - **API Documentation**: http://localhost:3000/api/docs
+   - **Frontend**: http://localhost:3000
+   - **Backend API**: http://localhost:3001
+   - **API Documentation**: http://localhost:3001/api/docs
 
 ### Manual Setup (without Docker)
 
@@ -196,7 +196,7 @@ GET    /api/v1/tasks/stats  # Get task statistics
 
 ```javascript
 // Connect to WebSocket
-const socket = io('http://localhost:3000/tasks', {
+const socket = io('http://localhost:3001/tasks', {
   auth: { token: 'your-jwt-token' }
 });
 
@@ -216,8 +216,8 @@ socket.on('task-event', (event) => {
 ```bash
 # Application
 NODE_ENV=development
-PORT=3000
-CORS_ORIGIN=http://localhost:3001
+PORT=3001
+CORS_ORIGIN=http://localhost:3000
 
 # Database (PostgreSQL)
 DATABASE_HOST=localhost
@@ -242,7 +242,7 @@ JWT_REFRESH_SECRET=your-super-secret-refresh-key-here-at-least-32-chars
 JWT_REFRESH_EXPIRES_IN=7d
 
 # Next.js
-NEXT_PUBLIC_API_URL=http://localhost:3000
+NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
 ## 🧪 Testing
