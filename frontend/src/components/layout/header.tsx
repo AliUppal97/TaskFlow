@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Logo } from '@/components/logo';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -59,16 +60,8 @@ export function Header() {
         <div className="flex justify-between items-center h-16">
           {/* Logo and Navigation */}
           <div className="flex items-center">
-            <Link href="/dashboard" className="flex items-center group">
-              <div className="flex items-center space-x-2">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg blur opacity-75 group-hover:opacity-100 transition"></div>
-                  <CheckSquare className="h-8 w-8 text-white relative z-10" />
-                </div>
-                <span className="text-xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-                  TaskFlow
-                </span>
-              </div>
+            <Link href="/dashboard">
+              <Logo size="md" />
             </Link>
 
             {/* Desktop Navigation */}

@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Clock
 } from 'lucide-react';
+import { Logo } from '@/components/logo';
 
 export default function HomePage() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -55,15 +56,7 @@ export default function HomePage() {
       <nav className="relative z-50 bg-white/5 backdrop-blur-md border-b border-white/10">
         <div className="container mx-auto px-6 py-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3 group cursor-pointer" onClick={() => router.push('/')}>
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg blur opacity-75 group-hover:opacity-100 transition"></div>
-                <CheckSquare className="h-8 w-8 text-white relative z-10" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-                TaskFlow
-              </span>
-            </div>
+            <Logo size="lg" />
             <div className="flex items-center space-x-4">
               <Button 
                 variant="ghost" 

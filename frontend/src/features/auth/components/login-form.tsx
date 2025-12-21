@@ -5,13 +5,14 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Eye, EyeOff, Loader2, CheckSquare, ArrowRight, Sparkles, Lock } from 'lucide-react';
+import { Eye, EyeOff, Loader2, ArrowRight, Sparkles, Lock } from 'lucide-react';
 
 import { useAuth } from '@/providers/auth-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getErrorMessage } from '@/types';
+import { Logo } from '@/components/logo';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -61,15 +62,7 @@ export function LoginForm() {
 
       {/* Logo/Brand Section */}
       <div className="absolute top-6 left-6 z-50">
-        <div className="flex items-center space-x-3 group cursor-pointer" onClick={() => router.push('/')}>
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg blur opacity-75 group-hover:opacity-100 transition"></div>
-            <CheckSquare className="h-8 w-8 text-white relative z-10" />
-          </div>
-          <span className="text-2xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
-            TaskFlow
-          </span>
-        </div>
+        <Logo size="lg" />
       </div>
 
       {/* Login Card */}
@@ -185,7 +178,7 @@ export function LoginForm() {
 
             <div className="mt-6 pt-6 border-t border-white/10">
               <p className="text-center text-sm text-white/70">
-                Don't have an account?{' '}
+                Don&apos;t have an account?{' '}
                 <button
                   onClick={() => router.push('/register')}
                   className="font-semibold text-purple-300 hover:text-purple-200 transition-colors inline-flex items-center gap-1"
