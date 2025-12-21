@@ -4,11 +4,15 @@ import type { NextRequest } from 'next/server';
 /**
  * Protected routes that require authentication
  * These routes will redirect to /login if user is not authenticated
+ * 
+ * Note: Role-based protection (e.g., admin routes) is handled by
+ * the RoleProtectedRoute component on the client side, as we cannot
+ * access user role information in middleware without server-side session.
  */
 const protectedRoutes = [
   '/dashboard',
   '/tasks',
-  '/admin',
+  '/admin', // Admin-only route (protected by RoleProtectedRoute component)
   '/profile',
   '/settings',
   '/notifications',
