@@ -46,19 +46,24 @@ const isMockAuthEnabled = () => {
 /**
  * Create a mock user for development/testing
  * Used when mock auth is enabled
+ * Uses static dates to prevent hydration mismatches
  */
-const createMockUser = (): User => ({
-  id: 'mock-user-id',
-  email: 'dev@taskflow.com',
-  role: UserRole.USER,
-  profile: {
-    firstName: 'Dev',
-    lastName: 'User',
-    avatar: undefined,
-  },
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
+const createMockUser = (): User => {
+  // Use a static date to prevent hydration mismatches between server and client
+  const staticDate = new Date('2024-01-01T00:00:00.000Z');
+  return {
+    id: 'mock-user-id',
+    email: 'dev@taskflow.com',
+    role: UserRole.USER,
+    profile: {
+      firstName: 'Dev',
+      lastName: 'User',
+      avatar: undefined,
+    },
+    createdAt: staticDate,
+    updatedAt: staticDate,
+  };
+};
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
