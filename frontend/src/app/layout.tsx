@@ -21,6 +21,15 @@ export const metadata: Metadata = {
   title: "TaskFlow - Real-time Collaborative Task Management",
   description: "A production-ready, enterprise-grade task management system with real-time collaboration features.",
   keywords: "task management, collaboration, real-time, productivity, enterprise",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    apple: [
+      { url: '/logo-icon.svg', sizes: '180x180', type: 'image/svg+xml' },
+    ],
+  },
 };
 
 export default function RootLayout({
@@ -32,6 +41,7 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <ErrorBoundary>
           <QueryProvider>
