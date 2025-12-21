@@ -3,8 +3,33 @@ import { User, UserRole } from '../../entities/user.entity';
 import { Task } from '../../entities/task.entity';
 import { PolicyContext, ResourceOwnerPolicy } from '../interfaces/policy.interface';
 
+/**
+ * Task Policy - Resource-level authorization rules
+ * 
+ * Implements fine-grained access control for task operations
+ * 
+ * Authorization rules:
+ * - Create: Any authenticated user
+ * - Read: Creator, assignee, or admin
+ * - Update: Creator, assignee, or admin
+ * - Delete: Creator or admin (assignees cannot delete)
+ * - Assign: Creator, assignee, or admin
+ * 
+ * Rationale:
+ * - Assignees can update tasks they're working on (collaboration)
+ * - Only creators can delete (prevents accidental deletion by assignees)
+ * - Admins have full access (system administration)
+ * 
+ * Usage: Applied via @UsePolicy(TaskPolicy) decorator
+ */
 @Injectable()
 export class TaskPolicy implements ResourceOwnerPolicy {
+  /**
+   * Route authorization requests to appropriate permission check
+   * 
+   * @param context - Contains user, resource (task), and action
+   * @returns true if action is allowed, false otherwise
+   */
   async handle(context: PolicyContext): Promise<boolean> {
     const { user, resource: task, action } = context;
 
@@ -25,17 +50,23 @@ export class TaskPolicy implements ResourceOwnerPolicy {
         return this.canAssign(user, task);
 
       default:
-        return false;
+        return false; // Unknown action = deny
     }
   }
 
+  /**
+   * Create permission: Any authenticated user can create tasks
+   * No restrictions on task creation (encourages collaboration)
+   */
   canCreate(user: User): boolean {
-    // Any authenticated user can create tasks
     return !!user;
   }
 
+  /**
+   * Read permission: Users can see tasks they created or are assigned to
+   * Admins can see all tasks (for management purposes)
+   */
   canRead(user: User, task: Task): boolean {
-    // Users can read tasks they created, are assigned to, or if they're admin
     if (user.role === UserRole.ADMIN) {
       return true;
     }
@@ -43,8 +74,11 @@ export class TaskPolicy implements ResourceOwnerPolicy {
     return task.creatorId === user.id || task.assigneeId === user.id;
   }
 
+  /**
+   * Update permission: Creators and assignees can update tasks
+   * Allows collaboration - assignees can update tasks they're working on
+   */
   canUpdate(user: User, task: Task): boolean {
-    // Users can update tasks they created or are assigned to, or if they're admin
     if (user.role === UserRole.ADMIN) {
       return true;
     }
@@ -52,8 +86,12 @@ export class TaskPolicy implements ResourceOwnerPolicy {
     return task.creatorId === user.id || task.assigneeId === user.id;
   }
 
+  /**
+   * Delete permission: Only creators can delete (not assignees)
+   * Prevents accidental deletion by assignees
+   * Admins can delete any task (system administration)
+   */
   canDelete(user: User, task: Task): boolean {
-    // Only task creators or admins can delete tasks
     if (user.role === UserRole.ADMIN) {
       return true;
     }
@@ -61,8 +99,11 @@ export class TaskPolicy implements ResourceOwnerPolicy {
     return task.creatorId === user.id;
   }
 
+  /**
+   * Assign permission: Creators, assignees, and admins can assign tasks
+   * Allows reassignment by current assignee (workflow flexibility)
+   */
   canAssign(user: User, task: Task): boolean {
-    // Task creators, assignees, or admins can assign tasks
     if (user.role === UserRole.ADMIN) {
       return true;
     }
@@ -70,6 +111,10 @@ export class TaskPolicy implements ResourceOwnerPolicy {
     return task.creatorId === user.id || task.assigneeId === user.id;
   }
 
+  /**
+   * Check if user is the task creator (owner)
+   * Used for ownership-based UI features
+   */
   isOwner(user: User, task: Task): boolean {
     return task.creatorId === user.id;
   }
