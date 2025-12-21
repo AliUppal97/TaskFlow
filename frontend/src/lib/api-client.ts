@@ -246,8 +246,27 @@ class ApiClient {
 
   // Task methods
   async getTasks(params?: TaskQueryParams): Promise<PaginatedResponse<Task>> {
-    const response = await this.client.get<ApiResponse<PaginatedResponse<Task>>>('/tasks', { params });
-    return response.data.data || response.data as unknown as PaginatedResponse<Task>;
+    const response = await this.client.get<ApiResponse<PaginatedResponse<Task>> | PaginatedResponse<Task>>('/tasks', { params });
+    
+    // Handle both wrapped (ApiResponse) and direct (PaginatedResponse) formats
+    const responseData = response.data;
+    
+    // Check if it's wrapped in ApiResponse
+    if (responseData && typeof responseData === 'object' && 'data' in responseData && 'success' in responseData) {
+      // Wrapped format: { success: true, data: { data: [...], pagination: {...} } }
+      const apiResponse = responseData as ApiResponse<PaginatedResponse<Task>>;
+      if (apiResponse.data) {
+        return apiResponse.data;
+      }
+    }
+    
+    // Direct format: { data: [...], pagination: {...} }
+    if (responseData && typeof responseData === 'object' && 'data' in responseData && 'pagination' in responseData) {
+      return responseData as PaginatedResponse<Task>;
+    }
+    
+    // Fallback
+    return responseData as unknown as PaginatedResponse<Task>;
   }
 
   async getTask(id: string): Promise<Task> {
