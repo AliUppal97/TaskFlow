@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
   Users,
@@ -13,12 +12,10 @@ import {
   Database,
   AlertTriangle,
   CheckCircle,
-  Clock,
   TrendingUp
 } from 'lucide-react';
 
-import { ProtectedRoute } from '@/components/auth/protected-route';
-import { useAuth } from '@/providers/auth-provider';
+import { RoleProtectedRoute } from '@/components/auth/role-protected-route';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -76,15 +73,7 @@ const recentActivity = [
 ];
 
 function AdminPageContent() {
-  const { user } = useAuth();
-  const router = useRouter();
   const [selectedTab, setSelectedTab] = useState('overview');
-
-  // Check if user is admin
-  if (user?.role !== UserRole.ADMIN) {
-    router.push('/dashboard');
-    return null;
-  }
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -114,7 +103,7 @@ function AdminPageContent() {
   };
 
   return (
-    <ProtectedRoute>
+    <RoleProtectedRoute allowedRoles={[UserRole.ADMIN]}>
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
         <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
@@ -491,7 +480,7 @@ function AdminPageContent() {
           </Tabs>
         </div>
       </div>
-    </ProtectedRoute>
+    </RoleProtectedRoute>
   );
 }
 
