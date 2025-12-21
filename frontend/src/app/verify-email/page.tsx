@@ -18,8 +18,11 @@ function VerifyEmailContent() {
 
   useEffect(() => {
     if (!token) {
-      setStatus('error');
-      setMessage('Invalid verification link. Missing token.');
+      // Use setTimeout to avoid calling setState synchronously in effect
+      setTimeout(() => {
+        setStatus('error');
+        setMessage('Invalid verification link. Missing token.');
+      }, 0);
       return;
     }
 
@@ -41,7 +44,7 @@ function VerifyEmailContent() {
           setStatus('error');
           setMessage('The verification link is invalid or has expired. Please request a new one.');
         }
-      } catch (error) {
+      } catch {
         setStatus('error');
         setMessage('Failed to verify email. Please try again or contact support.');
       }
@@ -57,7 +60,7 @@ function VerifyEmailContent() {
       await new Promise(resolve => setTimeout(resolve, 1500));
       setStatus('success');
       setMessage('A new verification email has been sent to your email address.');
-    } catch (error) {
+    } catch {
       setStatus('error');
       setMessage('Failed to resend verification email. Please try again.');
     }
