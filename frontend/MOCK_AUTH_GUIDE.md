@@ -78,3 +78,4 @@ When mock authentication is enabled:
 - This is intended for frontend-only development and UI testing
 - Mock auth state is stored in localStorage and persists across page reloads
 
+
