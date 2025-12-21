@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { Plus, BarChart3, Users, AlertTriangle } from 'lucide-react';
+import { Plus, BarChart3, Users, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { useAuth } from '@/providers/auth-provider';
@@ -20,11 +19,10 @@ import { TaskList } from '@/features/tasks/components/task-list';
 import { TaskForm } from '@/features/tasks/components/task-form';
 import { UserSelector } from '@/features/tasks/components/user-selector';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Task, TaskStatus, TaskPriority, CreateTaskRequest, UpdateTaskRequest, TaskFilters } from '@/types';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Task, TaskStatus, CreateTaskRequest, UpdateTaskRequest, TaskFilters } from '@/types';
 
 export default function TasksPage() {
-  const router = useRouter();
   const { user } = useAuth();
 
   // State for forms and modals
@@ -46,7 +44,6 @@ export default function TasksPage() {
   const {
     data: tasksResponse,
     isLoading: tasksLoading,
-    refetch: refetchTasks,
   } = useTasks(filters);
 
   const { data: stats, isLoading: statsLoading } = useTaskStats();
@@ -58,6 +55,10 @@ export default function TasksPage() {
 
   // Get users for assignment
   const { data: usersData } = useUsers({ limit: 50 });
+  const users = useMemo(() => {
+    if (!usersData?.data) return [];
+    return Array.isArray(usersData.data) ? usersData.data : [];
+  }, [usersData]);
 
   // Real-time updates
   useTaskUpdates();
@@ -124,7 +125,7 @@ export default function TasksPage() {
                 Tasks
               </h1>
               <p className="text-white/70 text-lg">
-                Manage and track your team's tasks with real-time collaboration
+                Manage and track your team&apos;s tasks with real-time collaboration
               </p>
             </div>
             <Button 
@@ -216,7 +217,66 @@ export default function TasksPage() {
             filters={filters}
           />
 
-          {/* Pagination would go here if needed */}
+          {/* Pagination */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/10">
+              <div className="text-sm text-white/70">
+                Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} tasks
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFilters(prev => ({ ...prev, page: prev.page - 1 }))}
+                  disabled={pagination.page === 1 || tasksLoading}
+                  className="bg-white/5 border-white/10 text-white hover:bg-white/10 disabled:opacity-50"
+                >
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                    let pageNum: number;
+                    if (pagination.totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (pagination.page <= 3) {
+                      pageNum = i + 1;
+                    } else if (pagination.page >= pagination.totalPages - 2) {
+                      pageNum = pagination.totalPages - 4 + i;
+                    } else {
+                      pageNum = pagination.page - 2 + i;
+                    }
+                    return (
+                      <Button
+                        key={pageNum}
+                        variant={pagination.page === pageNum ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setFilters(prev => ({ ...prev, page: pageNum }))}
+                        disabled={tasksLoading}
+                        className={
+                          pagination.page === pageNum
+                            ? "bg-indigo-500 text-white hover:bg-indigo-600"
+                            : "bg-white/5 border-white/10 text-white hover:bg-white/10 disabled:opacity-50"
+                        }
+                      >
+                        {pageNum}
+                      </Button>
+                    );
+                  })}
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setFilters(prev => ({ ...prev, page: prev.page + 1 }))}
+                  disabled={pagination.page === pagination.totalPages || tasksLoading}
+                  className="bg-white/5 border-white/10 text-white hover:bg-white/10 disabled:opacity-50"
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Create Task Form */}
           <TaskForm
@@ -244,7 +304,7 @@ export default function TasksPage() {
               <div className="bg-slate-800/95 backdrop-blur-md border border-white/10 rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
                 <h3 className="text-lg font-semibold mb-4 text-white">Assign Task</h3>
                 <p className="text-sm text-white/70 mb-6">
-                  Assign "{selectedTask.title}" to a team member
+                  Assign &quot;{selectedTask.title}&quot; to a team member
                 </p>
 
                 <div className="space-y-4">
@@ -253,7 +313,7 @@ export default function TasksPage() {
                       Select Assignee
                     </label>
                     <UserSelector
-                      users={usersData?.data || []}
+                      users={users}
                       value={selectedTask.assigneeId}
                       onValueChange={(userId) => {
                         // Update local state
