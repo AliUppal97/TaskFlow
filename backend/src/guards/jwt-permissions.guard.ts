@@ -1,20 +1,22 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Permission, PERMISSIONS_KEY, ROLE_PERMISSIONS } from '../decorators/permissions.decorator';
 import { UserRole } from '../entities/user.entity';
 import { JwtPayload } from '../modules/auth/jwt.strategy';
+import { UserService } from '../modules/auth/user.service';
 
 @Injectable()
-export class JwtPermissionsGuard {
+export class JwtPermissionsGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
     private reflector: Reflector,
+    private userService: UserService,
   ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
 
     // Extract and verify JWT token
@@ -28,8 +30,18 @@ export class JwtPermissionsGuard {
         secret: this.configService.get('jwt.accessTokenSecret'),
       });
 
-      request.user = payload;
+      // Load full User entity from database (not just JWT payload)
+      // This ensures req.user has all User properties including 'id'
+      const user = await this.userService.findById(payload.sub);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      request.user = user;
     } catch (error) {
+      if (error instanceof UnauthorizedException) {
+        throw error;
+      }
       throw new UnauthorizedException('Invalid token');
     }
 
