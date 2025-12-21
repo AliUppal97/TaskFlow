@@ -9,6 +9,7 @@ import {
   Response,
   Get,
   UseInterceptors,
+  NotFoundException,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -149,7 +150,7 @@ export class AuthController {
   async getProfile(@Request() req: RequestWithUser): Promise<UserProfileDto> {
     const user = await this.userService.findById(req.user.id);
     if (!user) {
-      throw new Error('User not found');
+      throw new NotFoundException('User not found');
     }
 
     const { passwordHash, ...userProfile } = user;
