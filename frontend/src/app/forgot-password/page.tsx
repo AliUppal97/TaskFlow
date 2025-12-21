@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { getErrorMessage } from '@/types';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -43,8 +44,8 @@ export default function ForgotPasswordPage() {
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       setIsSubmitted(true);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to send reset email. Please try again.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
     } finally {
       setIsLoading(false);
     }

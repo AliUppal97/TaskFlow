@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { UserRole } from '@/types/api';
+import { UserRole } from '@/types';
 
 const profileSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),

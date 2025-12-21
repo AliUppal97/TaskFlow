@@ -9,9 +9,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { UserSettings, SettingCategory, SettingValue, Theme, Language, ProfileVisibility } from '@/types';
 
 export default function SettingsPage() {
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState<UserSettings>({
     notifications: {
       email: true,
       push: false,
@@ -20,12 +21,12 @@ export default function SettingsPage() {
       taskCompleted: false,
     },
     appearance: {
-      theme: 'system',
-      language: 'en',
+      theme: Theme.SYSTEM,
+      language: Language.EN,
       timezone: 'UTC',
     },
     privacy: {
-      profileVisibility: 'team',
+      profileVisibility: ProfileVisibility.TEAM,
       activityStatus: true,
     },
   });
@@ -33,11 +34,11 @@ export default function SettingsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
-  const updateSetting = (category: string, key: string, value: any) => {
+  const updateSetting = (category: SettingCategory, key: string, value: SettingValue) => {
     setSettings(prev => ({
       ...prev,
       [category]: {
-        ...prev[category as keyof typeof prev],
+        ...prev[category],
         [key]: value,
       },
     }));
@@ -182,9 +183,9 @@ export default function SettingsPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="light">Light</SelectItem>
-                        <SelectItem value="dark">Dark</SelectItem>
-                        <SelectItem value="system">System</SelectItem>
+                        <SelectItem value={Theme.LIGHT}>Light</SelectItem>
+                        <SelectItem value={Theme.DARK}>Dark</SelectItem>
+                        <SelectItem value={Theme.SYSTEM}>System</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -199,10 +200,10 @@ export default function SettingsPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="es">Español</SelectItem>
-                        <SelectItem value="fr">Français</SelectItem>
-                        <SelectItem value="de">Deutsch</SelectItem>
+                        <SelectItem value={Language.EN}>English</SelectItem>
+                        <SelectItem value={Language.ES}>Español</SelectItem>
+                        <SelectItem value={Language.FR}>Français</SelectItem>
+                        <SelectItem value={Language.DE}>Deutsch</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -251,11 +252,11 @@ export default function SettingsPage() {
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="public">Public</SelectItem>
-                      <SelectItem value="team">Team Only</SelectItem>
-                      <SelectItem value="private">Private</SelectItem>
-                    </SelectContent>
+                      <SelectContent>
+                        <SelectItem value={ProfileVisibility.PUBLIC}>Public</SelectItem>
+                        <SelectItem value={ProfileVisibility.TEAM}>Team Only</SelectItem>
+                        <SelectItem value={ProfileVisibility.PRIVATE}>Private</SelectItem>
+                      </SelectContent>
                   </Select>
                   <p className="text-sm text-gray-600">
                     Control who can see your profile information

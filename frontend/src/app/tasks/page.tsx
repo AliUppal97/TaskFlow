@@ -21,7 +21,7 @@ import { TaskForm } from '@/features/tasks/components/task-form';
 import { UserSelector } from '@/features/tasks/components/user-selector';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Task, TaskStatus, CreateTaskRequest, UpdateTaskRequest } from '@/types/api';
+import { Task, TaskStatus, TaskPriority, CreateTaskRequest, UpdateTaskRequest, TaskFilters } from '@/types';
 
 export default function TasksPage() {
   const router = useRouter();
@@ -34,11 +34,11 @@ export default function TasksPage() {
   const [showAssignModal, setShowAssignModal] = useState(false);
 
   // Filters state
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<TaskFilters>({
     page: 1,
     limit: 12,
-    status: undefined as TaskStatus | undefined,
-    priority: undefined as any,
+    status: undefined,
+    priority: undefined,
     search: '',
   });
 
