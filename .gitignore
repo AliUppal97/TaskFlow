@@ -378,10 +378,23 @@ scripts/dev/
 # ============================================
 # Documentation Files
 # ============================================
-# Markdown documentation files (excluded as per project requirements)
-*.md
-# Uncomment the line below if you want to keep README.md
+# Allow all documentation files to be committed for better GitHub experience
+# All .md files are tracked except temporary/internal documentation
+# Uncomment the line below if you want to ignore all .md files
+# *.md
+
+# Ignore only temporary/internal documentation files (if any)
+# GIT_PUSH_STEPS.md  # Uncomment if this is temporary
+# MOCK_AUTH_GUIDE.md  # Uncomment if this is temporary/internal
+
+# Essential documentation files (explicitly allowed - all are committed by default)
 # !README.md
+# !CHANGELOG.md
+# !CONTRIBUTING.md
+# !SECURITY.md
+# !LICENSE
+# !docs/**/*.md
+# !**/README.md
 
 # ============================================
 # Project Specific
