@@ -44,6 +44,7 @@ export default function TasksPage() {
   const {
     data: tasksResponse,
     isLoading: tasksLoading,
+    error: tasksError,
   } = useTasks(filters);
 
   const { data: stats, isLoading: statsLoading } = useTaskStats();
@@ -64,8 +65,19 @@ export default function TasksPage() {
   useTaskUpdates();
 
   // Memoized data
-  const tasks = useMemo(() => tasksResponse?.data || [], [tasksResponse]);
-  const pagination = useMemo(() => tasksResponse?.pagination, [tasksResponse]);
+  const tasks = useMemo(() => {
+    if (!tasksResponse) return [];
+    // Handle both direct response and wrapped response
+    if (Array.isArray(tasksResponse)) {
+      return tasksResponse;
+    }
+    return tasksResponse.data || [];
+  }, [tasksResponse]);
+  
+  const pagination = useMemo(() => {
+    if (!tasksResponse || Array.isArray(tasksResponse)) return undefined;
+    return tasksResponse.pagination;
+  }, [tasksResponse]);
 
   // Event handlers
   const handleCreateTask = async (data: CreateTaskRequest | UpdateTaskRequest) => {
@@ -199,6 +211,15 @@ export default function TasksPage() {
               </CardContent>
             </Card>
           </div>
+
+          {/* Error Display */}
+          {tasksError && (
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+              <p className="text-red-400 text-sm">
+                Error loading tasks: {tasksError instanceof Error ? tasksError.message : 'Unknown error'}
+              </p>
+            </div>
+          )}
 
           {/* Task List */}
           <TaskList
