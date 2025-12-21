@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import userEvent from '@testing-library/user-event';
 import { AuthProvider, useAuth } from '@/providers/auth-provider';
 import { LoginForm } from './components/login-form';
+import { User, UserRole } from '@/types';
 
 // Mock the router
 const mockPush = jest.fn();
@@ -195,9 +196,18 @@ describe('Auth Flow Integration', () => {
       localStorage.setItem('accessToken', 'mock-token');
 
       const mockLogout = jest.fn().mockResolvedValue(undefined);
+      const mockUser: User = {
+        id: '1',
+        email: 'test@example.com',
+        role: UserRole.USER,
+        profile: {},
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      
       jest.spyOn(require('@/providers/auth-provider'), 'useAuth').mockReturnValue({
         login: jest.fn(),
-        user: { id: '1', email: 'test@example.com', role: 'user' as any, profile: {} },
+        user: mockUser,
         isLoading: false,
         isAuthenticated: true,
         register: jest.fn(),

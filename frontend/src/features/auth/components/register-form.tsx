@@ -11,6 +11,7 @@ import { useAuth } from '@/providers/auth-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getErrorMessage } from '@/types';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -51,8 +52,8 @@ export function RegisterForm() {
       await register(registerData);
 
       // Registration successful, redirect will be handled by the auth provider
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
     } finally {
       setIsLoading(false);
     }

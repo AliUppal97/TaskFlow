@@ -11,6 +11,7 @@ import { useAuth } from '@/providers/auth-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getErrorMessage } from '@/types';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -42,8 +43,8 @@ export function LoginForm() {
       setIsLoading(true);
       setError(null);
       await login(data.email, data.password);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
     } finally {
       setIsLoading(false);
     }

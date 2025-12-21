@@ -168,9 +168,10 @@ describe('LoginForm', () => {
 
   it('displays message from URL params', () => {
     const mockGet = jest.fn().mockReturnValue('Registration successful, please login');
-    jest.mocked(require('next/navigation').useSearchParams).mockReturnValue({
+    const useSearchParamsModule = require('next/navigation');
+    jest.mocked(useSearchParamsModule.useSearchParams).mockReturnValue({
       get: mockGet,
-    } as any);
+    } as ReturnType<typeof useSearchParamsModule.useSearchParams>);
 
     renderLoginForm();
 
