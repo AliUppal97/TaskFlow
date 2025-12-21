@@ -84,7 +84,11 @@ const notificationColors = {
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState(mockNotifications);
   const [selectedTab, setSelectedTab] = useState('all');
-  const oneWeekAgo = useMemo(() => new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), []);
+  // Calculate one week ago once when component mounts
+  const oneWeekAgo = useMemo(() => {
+    const now = new Date();
+    return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+  }, []);
 
   const markAsRead = (notificationId: string) => {
     setNotifications(prev =>
@@ -174,7 +178,7 @@ export default function NotificationsPage() {
               <CardContent>
                 <div className="text-2xl font-bold text-white">
                   {notifications.filter(n =>
-                    new Date(n.createdAt) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                    new Date(n.createdAt) > oneWeekAgo
                   ).length}
                 </div>
                 <p className="text-xs text-white/60">
