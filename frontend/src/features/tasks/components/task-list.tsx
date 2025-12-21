@@ -126,12 +126,12 @@ export function TaskList({
             </SelectContent>
           </Select>
 
-          <div className="flex border border-white/10 rounded-md bg-white/5 backdrop-blur-md">
+          <div className="inline-flex border border-white/10 rounded-md bg-white/5 backdrop-blur-md overflow-hidden m-0 p-0">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('grid')}
-              className={`rounded-r-none ${viewMode === 'grid' ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+              className={`rounded-r-none border-0 h-9 px-3 m-0 ${viewMode === 'grid' ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
@@ -139,7 +139,7 @@ export function TaskList({
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('list')}
-              className={`rounded-l-none ${viewMode === 'list' ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
+              className={`rounded-l-none border-0 h-9 px-3 m-0 ${viewMode === 'list' ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
             >
               <List className="h-4 w-4" />
             </Button>
