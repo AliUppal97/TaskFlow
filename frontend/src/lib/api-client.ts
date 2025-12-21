@@ -233,8 +233,15 @@ class ApiClient {
   }
 
   async getProfile(): Promise<User> {
-    const response = await this.client.get<ApiResponse<User>>('/auth/profile');
-    return response.data.data || response.data as unknown as User;
+    const response = await this.client.get<ApiResponse<User> | User>('/auth/profile');
+    // Backend may return user directly or wrapped in ApiResponse
+    const data = response.data;
+    if (data && typeof data === 'object' && 'data' in data) {
+      // Wrapped in ApiResponse format
+      return (data as ApiResponse<User>).data as User;
+    }
+    // Direct user object
+    return data as User;
   }
 
   // Task methods
