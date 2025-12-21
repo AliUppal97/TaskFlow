@@ -8,7 +8,7 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should load login page', async ({ page }) => {
-    await page.goto('http://localhost:3001/login');
+    await page.goto('/login');
 
     await expect(page).toHaveTitle(/Login - TaskFlow/);
     await expect(page.locator('h1')).toContainText('Sign in to TaskFlow');
@@ -17,7 +17,7 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should show validation errors for empty form', async ({ page }) => {
-    await page.goto('http://localhost:3001/login');
+    await page.goto('/login');
 
     await page.click('button[type="submit"]');
 
@@ -26,7 +26,7 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should show validation errors for invalid email', async ({ page }) => {
-    await page.goto('http://localhost:3001/login');
+    await page.goto('/login');
 
     await page.fill('input[type="email"]', 'invalid-email');
     await page.fill('input[type="password"]', 'password123');
@@ -36,7 +36,7 @@ test.describe('Authentication Flow', () => {
   });
 
   test('should navigate to register page', async ({ page }) => {
-    await page.goto('http://localhost:3001/login');
+    await page.goto('/login');
 
     await page.click('text=Sign up');
     await expect(page).toHaveURL(/\/register/);
@@ -50,7 +50,7 @@ test.describe('Authentication Flow', () => {
       `,
     });
 
-    await page.goto('http://localhost:3001/login');
+    await page.goto('/login');
 
     // Should redirect to dashboard
     await page.waitForURL('**/dashboard');
@@ -60,7 +60,7 @@ test.describe('Authentication Flow', () => {
 
 test.describe('Landing Page', () => {
   test('should load landing page for unauthenticated users', async ({ page }) => {
-    await page.goto('http://localhost:3001/');
+    await page.goto('/');
 
     await expect(page).toHaveTitle(/TaskFlow/);
     await expect(page.locator('h1')).toContainText('TaskFlow');
@@ -76,7 +76,7 @@ test.describe('Landing Page', () => {
       `,
     });
 
-    await page.goto('http://localhost:3001/');
+    await page.goto('/');
 
     // Should redirect to dashboard
     await page.waitForURL('**/dashboard');
@@ -95,7 +95,7 @@ test.describe('Dashboard', () => {
   });
 
   test('should load dashboard for authenticated users', async ({ page }) => {
-    await page.goto('http://localhost:3001/dashboard');
+    await page.goto('/dashboard');
 
     await expect(page).toHaveTitle(/Dashboard - TaskFlow/);
     await expect(page.locator('h1')).toContainText('TaskFlow Dashboard');
@@ -105,7 +105,7 @@ test.describe('Dashboard', () => {
     // Clear authentication
     await page.evaluate(() => localStorage.clear());
 
-    await page.goto('http://localhost:3001/dashboard');
+    await page.goto('/dashboard');
 
     // Should redirect to login
     await page.waitForURL('**/login');

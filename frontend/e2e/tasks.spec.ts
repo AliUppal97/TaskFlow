@@ -10,7 +10,7 @@ test.describe('Task Management', () => {
     });
 
     // Navigate to tasks page
-    await page.goto('http://localhost:3001/tasks');
+    await page.goto('/tasks');
     await page.waitForLoadState('networkidle');
   });
 
@@ -178,7 +178,7 @@ test.describe('Responsive Design', () => {
   test('should work on mobile viewport', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 }); // iPhone size
 
-    await page.goto('http://localhost:3001/tasks');
+    await page.goto('/tasks');
 
     // Mobile-specific tests
     await expect(page.locator('text=New Task')).toBeVisible();
@@ -190,7 +190,7 @@ test.describe('Responsive Design', () => {
   test('should work on tablet viewport', async ({ page }) => {
     await page.setViewportSize({ width: 768, height: 1024 }); // iPad size
 
-    await page.goto('http://localhost:3001/tasks');
+    await page.goto('/tasks');
 
     // Tablet-specific tests
     await expect(page.locator('text=New Task')).toBeVisible();
