@@ -206,10 +206,14 @@ export class TaskController {
         email: task.assignee.email,
         profile: task.assignee.profile,
       } : undefined,
-      creator: {
+      creator: task.creator ? {
         id: task.creator.id,
         email: task.creator.email,
         profile: task.creator.profile,
+      } : {
+        id: task.creatorId,
+        email: '',
+        profile: {},
       },
       isOverdue: task.isOverdue,
       daysUntilDue: task.daysUntilDue,
