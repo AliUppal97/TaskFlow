@@ -63,7 +63,7 @@ export function TaskList({
       <div className="space-y-4">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="animate-pulse">
-            <div className="bg-gray-200 h-48 rounded-lg"></div>
+            <div className="bg-white/5 backdrop-blur-md border border-white/10 h-48 rounded-xl"></div>
           </div>
         ))}
       </div>
@@ -75,10 +75,13 @@ export function TaskList({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Tasks</h2>
-          <p className="text-gray-600">{tasks.length} tasks found</p>
+          <h2 className="text-2xl font-bold text-white mb-1">Task List</h2>
+          <p className="text-white/70">{tasks.length} {tasks.length === 1 ? 'task' : 'tasks'} found</p>
         </div>
-        <Button onClick={onCreateTask} className="flex items-center gap-2">
+        <Button 
+          onClick={onCreateTask} 
+          className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-purple-500/50"
+        >
           <Plus className="h-4 w-4" />
           New Task
         </Button>
@@ -87,48 +90,48 @@ export function TaskList({
       {/* Filters and Search */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 h-4 w-4" />
           <Input
             placeholder="Search tasks..."
             value={searchTerm}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-10"
+            className="pl-10 bg-white/5 backdrop-blur-md border-white/10 text-white placeholder:text-white/50 focus:border-indigo-500 focus:ring-indigo-500"
           />
         </div>
 
         <div className="flex gap-2">
           <Select value={filters.status || 'all'} onValueChange={handleStatusFilter}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-36 bg-white/5 backdrop-blur-md border-white/10 text-white">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value={TaskStatus.TODO}>To Do</SelectItem>
-              <SelectItem value={TaskStatus.IN_PROGRESS}>In Progress</SelectItem>
-              <SelectItem value={TaskStatus.REVIEW}>Review</SelectItem>
-              <SelectItem value={TaskStatus.DONE}>Done</SelectItem>
+            <SelectContent className="bg-slate-800 border-white/10">
+              <SelectItem value="all" className="text-white">All Status</SelectItem>
+              <SelectItem value={TaskStatus.TODO} className="text-white">To Do</SelectItem>
+              <SelectItem value={TaskStatus.IN_PROGRESS} className="text-white">In Progress</SelectItem>
+              <SelectItem value={TaskStatus.REVIEW} className="text-white">Review</SelectItem>
+              <SelectItem value={TaskStatus.DONE} className="text-white">Done</SelectItem>
             </SelectContent>
           </Select>
 
           <Select value={filters.priority || 'all'} onValueChange={handlePriorityFilter}>
-            <SelectTrigger className="w-32">
+            <SelectTrigger className="w-36 bg-white/5 backdrop-blur-md border-white/10 text-white">
               <SelectValue placeholder="Priority" />
             </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Priority</SelectItem>
-              <SelectItem value={TaskPriority.LOW}>Low</SelectItem>
-              <SelectItem value={TaskPriority.MEDIUM}>Medium</SelectItem>
-              <SelectItem value={TaskPriority.HIGH}>High</SelectItem>
-              <SelectItem value={TaskPriority.URGENT}>Urgent</SelectItem>
+            <SelectContent className="bg-slate-800 border-white/10">
+              <SelectItem value="all" className="text-white">All Priority</SelectItem>
+              <SelectItem value={TaskPriority.LOW} className="text-white">Low</SelectItem>
+              <SelectItem value={TaskPriority.MEDIUM} className="text-white">Medium</SelectItem>
+              <SelectItem value={TaskPriority.HIGH} className="text-white">High</SelectItem>
+              <SelectItem value={TaskPriority.URGENT} className="text-white">Urgent</SelectItem>
             </SelectContent>
           </Select>
 
-          <div className="flex border rounded-md">
+          <div className="flex border border-white/10 rounded-md bg-white/5 backdrop-blur-md">
             <Button
               variant={viewMode === 'grid' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('grid')}
-              className="rounded-r-none"
+              className={`rounded-r-none ${viewMode === 'grid' ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
             >
               <Grid3X3 className="h-4 w-4" />
             </Button>
@@ -136,7 +139,7 @@ export function TaskList({
               variant={viewMode === 'list' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setViewMode('list')}
-              className="rounded-l-none"
+              className={`rounded-l-none ${viewMode === 'list' ? 'bg-indigo-500 text-white hover:bg-indigo-600' : 'text-white/70 hover:text-white hover:bg-white/10'}`}
             >
               <List className="h-4 w-4" />
             </Button>
@@ -146,19 +149,22 @@ export function TaskList({
 
       {/* Tasks Grid/List */}
       {tasks.length === 0 ? (
-        <div className="text-center py-12">
-          <div className="text-gray-400 mb-4">
-            <Filter className="h-12 w-12 mx-auto" />
+        <div className="text-center py-16">
+          <div className="text-white/30 mb-4">
+            <Filter className="h-16 w-16 mx-auto" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No tasks found</h3>
-          <p className="text-gray-600 mb-4">
+          <h3 className="text-xl font-semibold text-white mb-2">No tasks found</h3>
+          <p className="text-white/70 mb-6 max-w-md mx-auto">
             {searchTerm || filters.status || filters.priority
-              ? 'Try adjusting your filters or search terms.'
-              : 'Get started by creating your first task.'}
+              ? 'Try adjusting your filters or search terms to find what you\'re looking for.'
+              : 'Get started by creating your first task and begin organizing your work.'}
           </p>
-          <Button onClick={onCreateTask}>
+          <Button 
+            onClick={onCreateTask}
+            className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-purple-500/50"
+          >
             <Plus className="h-4 w-4 mr-2" />
-            Create Task
+            Create Your First Task
           </Button>
         </div>
       ) : (
