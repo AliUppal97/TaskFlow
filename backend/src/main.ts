@@ -61,7 +61,7 @@ async function bootstrap() {
    */
   app.useGlobalInterceptors(
     new RequestLoggingInterceptor(),
-    new TimeoutInterceptor()
+    new TimeoutInterceptor(),
   );
 
   /**
@@ -71,7 +71,7 @@ async function bootstrap() {
    * - methods: Explicitly defines allowed HTTP methods (security best practice)
    */
   app.enableCors({
-    origin: configService.get('app.corsOrigin'),
+    origin: configService.get<string>('app.corsOrigin'),
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
@@ -81,6 +81,7 @@ async function bootstrap() {
    * Cookie parser middleware - enables reading HttpOnly cookies
    * Required for refresh token authentication strategy (stored in HttpOnly cookies for security)
    */
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(cookieParser());
 
   /**
@@ -123,11 +124,35 @@ async function bootstrap() {
     },
   });
 
-  const port = configService.get<number>('app.port', 3000);
-  await app.listen(port);
+  const port = configService.get<number>('app.port', 3001);
 
-  console.log(`🚀 TaskFlow API is running on: http://localhost:${port}`);
-  console.log(`📚 Swagger documentation: http://localhost:${port}/api/docs`);
+  try {
+    await app.listen(port);
+    console.log(`🚀 TaskFlow API is running on: http://localhost:${port}`);
+    console.log(`📚 Swagger documentation: http://localhost:${port}/api/docs`);
+  } catch (error: unknown) {
+    if (
+      error &&
+      typeof error === 'object' &&
+      'code' in error &&
+      error.code === 'EADDRINUSE'
+    ) {
+      console.error(`\n❌ Error: Port ${port} is already in use.\n`);
+      console.error('💡 Solutions:');
+      console.error(`   1. Stop the process using port ${port}:`);
+      console.error(`      Windows: netstat -ano | findstr :${port}`);
+      console.error(`      Then: taskkill /PID <PID> /F`);
+      console.error(
+        `   2. Use a different port by setting PORT environment variable:`,
+      );
+      console.error(`      PORT=3001 npm run start:dev`);
+      console.error(
+        `   3. Check if another instance of this application is running\n`,
+      );
+      process.exit(1);
+    }
+    throw error;
+  }
 }
 
 void bootstrap();
