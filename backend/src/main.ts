@@ -112,7 +112,7 @@ async function bootstrap() {
         in: 'header',
       },
       'JWT-auth',
-    ),
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -123,7 +123,7 @@ async function bootstrap() {
     },
   });
 
-  const port = configService.get('app.port', 3000);
+  const port = configService.get<number>('app.port', 3000);
   await app.listen(port);
 
   console.log(`🚀 TaskFlow API is running on: http://localhost:${port}`);

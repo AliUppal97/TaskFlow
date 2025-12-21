@@ -11,6 +11,8 @@
  * NEXT_PUBLIC_MOCK_AUTH=true
  */
 
+import { MockAuthGlobal } from '@/types/common/window.types';
+
 /**
  * Enable mock authentication mode
  * This will allow you to access protected pages without the backend running
@@ -64,12 +66,14 @@ export function disableAutoMockAuth(): void {
 
 // Make functions available globally for easy access from browser console
 if (typeof window !== 'undefined') {
-  (window as any).mockAuth = {
+  const mockAuthGlobal: MockAuthGlobal = {
     enable: enableMockAuth,
     disable: disableMockAuth,
     isEnabled: isMockAuthEnabled,
     enableAuto: enableAutoMockAuth,
     disableAuto: disableAutoMockAuth,
   };
+  
+  window.mockAuth = mockAuthGlobal;
 }
 
