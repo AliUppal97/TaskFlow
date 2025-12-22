@@ -4,30 +4,6 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Build outputs
-.next
-out
-
-# Environment files
-.env*
-!.env.example
-
-# IDE
-.vscode
-.idea
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Git
-.git
-.gitignore
-
-# Logs
-logs
-*.log
-
 # Runtime data
 pids
 *.pid
@@ -36,6 +12,10 @@ pids
 
 # Coverage directory used by tools like istanbul
 coverage
+*.lcov
+
+# nyc test coverage
+.nyc_output
 
 # Dependency directories
 jspm_packages/
@@ -48,35 +28,95 @@ jspm_packages/
 
 # Output of 'npm pack'
 *.tgz
+*.tar.gz
 
 # Yarn Integrity file
 .yarn-integrity
 
 # dotenv environment variables file
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# IDE files
-.vscode/
-.idea/
+# parcel-bundler cache (https://parceljs.org/)
+.cache
+.parcel-cache
 
-# Testing
-__tests__/
-*.test.js
-*.test.ts
-*.spec.js
-*.spec.ts
+# Next.js build output
+.next
 
-# Documentation
-README.md
-docs/
+# Nuxt.js build / generate output
+.nuxt
+dist
+
+# Gatsby files
+.cache/
+public
+
+# Storybook build outputs
+.out
+.storybook-out
+
+# Temporary folders
+tmp/
+temp/
+
+# Logs
+logs
+*.log
+
+# Editor directories and files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git
+.gitignore
 
 # Docker
 Dockerfile*
 docker-compose*
+.dockerignore
 
+# Documentation
+README.md
+CHANGELOG.md
+docs/
 
+# Test files
+test/
+tests/
+*.test.js
+*.test.ts
+*.spec.js
+*.spec.ts
+coverage/
+.nyc_output/
+jest.config.js
+jest.setup.js
 
+# Playwright
+playwright.config.ts
+test-results/
+playwright-report/
+e2e/
 
-
-
-
+# Build artifacts
+build/
+.next/
+out/
+*.tsbuildinfo

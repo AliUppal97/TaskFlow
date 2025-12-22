@@ -1,11 +1,30 @@
-<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="faviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stopColor="#3b82f6"/>
-      <stop offset="50%" stopColor="#6366f1"/>
-      <stop offset="100%" stopColor="#8b5cf6"/>
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#3b82f6">
+        <animate attributeName="stop-color" values="#3b82f6;#8b5cf6;#06b6d4;#3b82f6" dur="4s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" stopColor="#6366f1">
+        <animate attributeName="stop-color" values="#6366f1;#a855f7;#0891b2;#6366f1" dur="4s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stopColor="#8b5cf6">
+        <animate attributeName="stop-color" values="#8b5cf6;#06b6d4;#3b82f6;#8b5cf6" dur="4s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
-    <filter id="faviconGlow">
+
+    <linearGradient id="iconFlowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stopColor="#60a5fa" stopOpacity="0">
+        <animate attributeName="stop-opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" stopColor="#a78bfa" stopOpacity="0.8">
+        <animate attributeName="stop-opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stopColor="#34d399" stopOpacity="0">
+        <animate attributeName="stop-opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+      </stop>
+    </linearGradient>
+
+    <filter id="iconGlow">
       <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
       <feMerge>
         <feMergeNode in="coloredBlur"/>
@@ -14,27 +33,82 @@
     </filter>
   </defs>
 
-  <!-- Background circle -->
-  <circle cx="16" cy="16" r="15" fill="url(#faviconGradient)" opacity="0.2"/>
+  <!-- Background circle with subtle animation -->
+  <circle
+    cx="32"
+    cy="32"
+    r="30"
+    fill="url(#iconGradient)"
+    opacity="0.1"
+  >
+    <animate
+      attributeName="r"
+      values="30;32;30"
+      dur="3s"
+      repeatCount="indefinite"
+    />
+  </circle>
 
-  <!-- Flowing data stream -->
-  <g transform="translate(16, 16)">
-    <!-- Main flow line -->
+  <!-- Flowing data streams representing workflow -->
+  <g transform="translate(32, 32)">
+    <!-- Main task flow line -->
     <path
-      d="M -8 0 Q -3 -5 0 0 T 8 0"
-      stroke="url(#faviconGradient)"
-      strokeWidth="2"
+      d="M -16 0 Q -6 -10 0 0 T 16 0"
+      stroke="url(#iconFlowGradient)"
+      strokeWidth="3"
       fill="none"
       strokeLinecap="round"
-      filter="url(#faviconGlow)"
-    />
+      filter="url(#iconGlow)"
+    >
+      <animate
+        attributeName="d"
+        values="M -16 0 Q -6 -10 0 0 T 16 0;M -16 0 Q -6 10 0 0 T 16 0;M -16 0 Q -6 -10 0 0 T 16 0"
+        dur="3s"
+        repeatCount="indefinite"
+      />
+    </path>
 
-    <!-- Task nodes -->
-    <circle cx="-8" cy="0" r="1.5" fill="url(#faviconGradient)"/>
-    <circle cx="0" cy="0" r="1.5" fill="url(#faviconGradient)"/>
-    <circle cx="8" cy="0" r="1.5" fill="url(#faviconGradient)"/>
+    <!-- Animated task nodes -->
+    <circle cx="-16" cy="0" r="3" fill="url(#iconGradient)" filter="url(#iconGlow)">
+      <animate
+        attributeName="r"
+        values="3;4.5;3"
+        dur="2s"
+        repeatCount="indefinite"
+      />
+    </circle>
 
-    <!-- Flow arrow -->
-    <path d="M 6 -1.5 L 8 0 L 6 1.5" fill="url(#faviconGradient)"/>
+    <circle cx="0" cy="0" r="3" fill="url(#iconGradient)" filter="url(#iconGlow)">
+      <animate
+        attributeName="r"
+        values="3;4.5;3"
+        dur="2.5s"
+        repeatCount="indefinite"
+      />
+    </circle>
+
+    <circle cx="16" cy="0" r="3" fill="url(#iconGradient)" filter="url(#iconGlow)">
+      <animate
+        attributeName="r"
+        values="3;4.5;3"
+        dur="3s"
+        repeatCount="indefinite"
+      />
+    </circle>
+
+    <!-- Flow arrows -->
+    <path
+      d="M 13 -2 L 16 0 L 13 2"
+      fill="url(#iconGradient)"
+      opacity="0.8"
+    >
+      <animateTransform
+        attributeName="transform"
+        type="translate"
+        values="0 0;3 0;0 0"
+        dur="2s"
+        repeatCount="indefinite"
+      />
+    </path>
   </g>
 </svg>

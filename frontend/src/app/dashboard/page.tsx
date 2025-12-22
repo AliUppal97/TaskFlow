@@ -5,11 +5,10 @@ import { ProtectedRoute } from '@/components/auth/protected-route';
 import { useAuth } from '@/providers/auth-provider';
 import { useTasks } from '@/hooks/use-api';
 import { useTaskUpdates } from '@/hooks/use-task-updates';
-import { TaskList } from '@/features/tasks/components/task-list';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckSquare, Users, User, ArrowRight } from 'lucide-react';
-import { Task, TaskStatus } from '@/types';
+import { TaskStatus, SortOrder } from '@/types';
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -23,7 +22,7 @@ export default function DashboardPage() {
     page: 1,
     limit: 5,
     sortBy: 'createdAt',
-    sortOrder: 'desc',
+    sortOrder: SortOrder.DESC,
   });
 
   // Real-time updates
@@ -42,7 +41,7 @@ export default function DashboardPage() {
                 Welcome back{user?.profile?.firstName ? `, ${user.profile.firstName}` : ''}!
               </h1>
               <p className="text-[#757575] dark:text-slate-400 text-lg">
-                Here's what's happening with your tasks today
+                Here&apos;s what&apos;s happening with your tasks today
               </p>
             </div>
 

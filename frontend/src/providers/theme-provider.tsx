@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useMemo, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useLayoutEffect, useState, useMemo, useRef, ReactNode } from 'react';
 import { Theme } from '@/types';
 
 interface ThemeContextType {
@@ -26,7 +26,7 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
     }
     return defaultTheme;
   });
-  const [mounted, setMounted] = useState(false);
+  const mountedRef = useRef(false);
 
   // Derive resolvedTheme from theme and system preference
   const resolvedTheme = useMemo(() => {
@@ -102,17 +102,17 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
           root.classList.remove('dark');
         }
       }, 100);
-      
-      setMounted(true);
-    } else {
-      // On server, set mounted immediately to provide context
-      setMounted(true);
     }
   }, [defaultTheme, theme]);
 
+  // Set mounted ref to track hydration
+  useLayoutEffect(() => {
+    mountedRef.current = true;
+  }, []);
+
   // Apply theme to DOM when resolvedTheme changes
   useEffect(() => {
-    if (!mounted) return;
+    if (!mountedRef.current) return;
 
     // Apply theme class to document IMMEDIATELY
     // Tailwind uses .dark class for dark mode, no class for light mode
@@ -160,11 +160,11 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
       clearTimeout(timeoutId1);
       clearTimeout(timeoutId2);
     };
-  }, [resolvedTheme, mounted]);
+  }, [resolvedTheme]);
 
   // Listen for system theme changes if using system theme
   useEffect(() => {
-    if (!mounted || theme !== Theme.SYSTEM) return;
+    if (!mountedRef.current || theme !== Theme.SYSTEM) return;
 
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = () => {
@@ -183,7 +183,7 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
 
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
-  }, [theme, mounted]);
+  }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
@@ -261,7 +261,7 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
   // Watch for any external changes to the dark class and sync state
   // CRITICAL: Only enforce theme when user has explicitly selected light/dark (not system)
   useEffect(() => {
-    if (!mounted) return;
+    if (!mountedRef.current) return;
     
     // Only enforce theme changes if user has explicitly selected light or dark
     // For system theme, let the system preference listener handle it
@@ -313,7 +313,7 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
       observer.disconnect();
       clearInterval(intervalId);
     };
-  }, [mounted, resolvedTheme, theme]);
+  }, [resolvedTheme, theme]);
 
   // Always provide context, even before mounting to prevent errors
   // The context value will be updated once mounted and theme is resolved
