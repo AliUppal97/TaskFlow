@@ -151,6 +151,140 @@ Authorization: Bearer <access_token>
 }
 ```
 
+### Update Profile
+
+Update current user profile information.
+
+```http
+PATCH /api/v1/auth/profile
+Authorization: Bearer <access_token>
+Content-Type: application/json
+
+{
+  "firstName": "John",
+  "lastName": "Smith",
+  "avatar": "https://example.com/new-avatar.jpg"
+}
+```
+
+**Request Body (all fields optional):**
+- `firstName` (string): User's first name
+- `lastName` (string): User's last name
+- `avatar` (string): URL to user's avatar image
+
+**Response (200 OK):**
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "email": "user@example.com",
+  "role": "user",
+  "profile": {
+    "firstName": "John",
+    "lastName": "Smith",
+    "avatar": "https://example.com/new-avatar.jpg"
+  },
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "updatedAt": "2024-01-01T12:00:00.000Z"
+}
+```
+
+**Error Responses:**
+- `400 Bad Request` - Invalid input data
+- `401 Unauthorized` - Missing or invalid authentication
+- `404 Not Found` - User not found
+
+---
+
+## User Management (Admin Only)
+
+Admin endpoints for managing users. These endpoints require admin role and appropriate permissions.
+
+### List Users
+
+Get all users with pagination and filtering (Admin only).
+
+```http
+GET /api/v1/users?page=1&limit=10&role=user
+Authorization: Bearer <admin_access_token>
+```
+
+**Required Permissions:** `user:read`
+
+**Query Parameters:**
+- `page` (number): Page number (default: 1)
+- `limit` (number): Items per page (default: 10, max: 100)
+- `role` (UserRole): Filter by user role
+
+**Response (200 OK):**
+```json
+{
+  "data": [
+    {
+      "id": "550e8400-e29b-41d4-a716-446655440000",
+      "email": "user@example.com",
+      "role": "user",
+      "profile": {
+        "firstName": "John",
+        "lastName": "Doe"
+      },
+      "createdAt": "2024-01-01T00:00:00.000Z",
+      "updatedAt": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "totalPages": 3
+  }
+}
+```
+
+### Update User Role
+
+Update a user's role (Admin only).
+
+```http
+PATCH /api/v1/users/550e8400-e29b-41d4-a716-446655440000/role
+Authorization: Bearer <admin_access_token>
+Content-Type: application/json
+
+{
+  "role": "admin"
+}
+```
+
+**Required Permissions:** `user:manage_roles`
+
+**Response (200 OK):** Updated user profile object.
+
+**Error Responses:**
+- `400 Bad Request` - Invalid role or cannot change own role
+- `403 Forbidden` - Insufficient permissions
+- `404 Not Found` - User not found
+
+### Update User Status
+
+Activate or deactivate a user account (Admin only).
+
+```http
+PATCH /api/v1/users/550e8400-e29b-41d4-a716-446655440000/status
+Authorization: Bearer <admin_access_token>
+Content-Type: application/json
+
+{
+  "isActive": false
+}
+```
+
+**Required Permissions:** `user:update`
+
+**Response (200 OK):** Updated user profile object.
+
+**Notes:**
+- Admins cannot deactivate their own accounts
+- Deactivated users cannot log in
+
 ---
 
 ## Tasks
@@ -610,7 +744,7 @@ For API support and questions:
 
 ---
 
-*Last updated: December 2025*
+*Last updated: December 23, 2025*
 
 
 
