@@ -1,19 +1,14 @@
 import { Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
-
-export interface CacheOptions {
-  ttl?: number;
-  keyPrefix?: string;
-  condition?: (result: any) => boolean;
-}
+import { CacheOptions } from './cache.types';
 
 export function CacheResult(options: CacheOptions = {}) {
-  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  return function (target: object, propertyName: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
     const logger = new Logger(`${target.constructor.name}.${propertyName}`);
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args: unknown[]) {
       const cacheManager = (this as any).cacheManager;
       if (!cacheManager) {
         logger.warn('Cache manager not found, executing method without caching');
@@ -54,11 +49,11 @@ export function CacheResult(options: CacheOptions = {}) {
 }
 
 export function InvalidateCache(pattern: string) {
-  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  return function (target: object, propertyName: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
     const logger = new Logger(`${target.constructor.name}.${propertyName}`);
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args: unknown[]) {
       const cacheManager = (this as any).cacheManager;
       let result;
 
@@ -87,11 +82,11 @@ export function InvalidateCache(pattern: string) {
 }
 
 export function CacheKey(key: string) {
-  return function (target: any, propertyName: string, descriptor: PropertyDescriptor) {
+  return function (target: object, propertyName: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value;
     const logger = new Logger(`${target.constructor.name}.${propertyName}`);
 
-    descriptor.value = async function (...args: any[]) {
+    descriptor.value = async function (...args: unknown[]) {
       const cacheManager = (this as any).cacheManager;
       if (!cacheManager) {
         logger.warn('Cache manager not found, executing method without caching');

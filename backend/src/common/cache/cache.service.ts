@@ -1,6 +1,7 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
+import type { CacheWithStore } from './cache.types';
 
 export interface CacheOptions {
   ttl?: number; // Time to live in seconds
@@ -9,13 +10,13 @@ export interface CacheOptions {
 
 /**
  * Cache Service - Abstraction layer for Redis caching
- * 
+ *
  * Responsibilities:
  * - Get/set/delete cache entries
  * - Pattern-based cache invalidation
  * - Cache key generation with prefixes
  * - Error handling (cache failures don't break application)
- * 
+ *
  * Design decisions:
  * - Errors are logged but don't throw (graceful degradation)
  * - Pattern deletion uses Redis-specific features (fallback if unavailable)
@@ -27,12 +28,12 @@ export class CacheService {
 
   constructor(
     @Inject(CACHE_MANAGER)
-    private cacheManager: Cache,
+    private cacheManager: CacheWithStore,
   ) {}
 
   /**
    * Get value from cache
-   * 
+   *
    * @param key - Cache key
    * @returns Cached value or null if not found/error
    */
@@ -54,7 +55,7 @@ export class CacheService {
 
   /**
    * Set value in cache with optional TTL
-   * 
+   *
    * @param key - Cache key
    * @param value - Value to cache
    * @param options - TTL and other options
@@ -62,7 +63,9 @@ export class CacheService {
   async set<T>(key: string, value: T, options?: CacheOptions): Promise<void> {
     try {
       await this.cacheManager.set(key, value, options?.ttl);
-      this.logger.debug(`Cache set for key: ${key}, TTL: ${options?.ttl || 'default'}`);
+      this.logger.debug(
+        `Cache set for key: ${key}, TTL: ${options?.ttl || 'default'}`,
+      );
     } catch (error) {
       // Cache errors don't break the application
       this.logger.error(`Error setting cache key ${key}:`, error);
@@ -71,7 +74,7 @@ export class CacheService {
 
   /**
    * Delete a single cache entry
-   * 
+   *
    * @param key - Cache key to delete
    */
   async delete(key: string): Promise<void> {
@@ -97,7 +100,7 @@ export class CacheService {
     try {
       // Access Redis store directly for pattern matching (cache-manager limitation)
       // Note: Pattern deletion may not be available in all cache stores
-      const store = (this.cacheManager as any).store;
+      const store = this.cacheManager.store;
       if (store && typeof store.keys === 'function') {
         const keys = await store.keys(pattern);
         if (keys && keys.length > 0) {
@@ -116,8 +119,8 @@ export class CacheService {
   async clear(): Promise<void> {
     try {
       // cache-manager v7 uses reset() method
-      if (typeof (this.cacheManager as any).reset === 'function') {
-        await (this.cacheManager as any).reset();
+      if (this.cacheManager.store && typeof this.cacheManager.store.reset === 'function') {
+        await this.cacheManager.store.reset();
       } else {
         // Fallback: try to clear all keys if reset is not available
         this.logger.warn('Cache reset not available, skipping');
