@@ -1,0 +1,66 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to rollback'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - staging
+        - production
+      target_version:
+        description: 'Target version to rollback to (leave empty for previous)'
+        required: false
+        type: string
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Get previous deployment
+      id: previous
+      run: |
+        if [ -z "${{ inputs.target_version }}" ]; then
+          # Get previous successful deployment
+          PREVIOUS_SHA=$(gh run list --workflow=ci.yml --branch=main --status=success --limit=2 --json headSha --jq '.[1].headSha')
+          echo "sha=$PREVIOUS_SHA" >> $GITHUB_OUTPUT
+        else
+          echo "sha=${{ inputs.target_version }}" >> $GITHUB_OUTPUT
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Configure kubectl
+      uses: azure/k8s-set-context@v3
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+    - name: Rollback deployment
+      run: |
+        # Update images to previous version
+        kubectl set image deployment/taskflow-backend taskflow-backend=taskflow/backend:${{ steps.previous.outputs.sha }}
+        kubectl set image deployment/taskflow-frontend taskflow-frontend=taskflow/frontend:${{ steps.previous.outputs.sha }}
+
+        # Wait for rollout
+        kubectl rollout status deployment/taskflow-backend --timeout=600s
+        kubectl rollout status deployment/taskflow-frontend --timeout=600s
+
+    - name: Health check
+      run: |
+        ./scripts/health-check.sh ${{ inputs.environment }}
+
+    - name: Notify rollback
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        text: "Deployment rolled back to version ${{ steps.previous.outputs.sha }} in ${{ inputs.environment }}"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
