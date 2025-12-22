@@ -16,9 +16,7 @@ import { getDatabaseConfig } from './config/database.config';
 import { getMongoConfig } from './config/mongodb.config';
 import { getRedisConfig } from './config/redis.config';
 
-// Entities
-import { User } from './entities/user.entity';
-import { Task } from './entities/task.entity';
+// Entities - removed unused imports
 
 // Modules
 import { AuthModule } from './modules/auth/auth.module';
@@ -90,10 +88,10 @@ import { CacheService } from './common/cache/cache.service';
      */
     CacheModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => {
+      useFactory: (configService: ConfigService) => {
         const redisConfig = getRedisConfig(configService);
         return {
-          store: redisStore as any,
+          store: redisStore as unknown,
           host: redisConfig.host,
           port: redisConfig.port,
           password: redisConfig.password,
@@ -112,7 +110,7 @@ import { CacheService } from './common/cache/cache.service';
      */
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.get('jwt.accessTokenSecret'),
         signOptions: {
           expiresIn: configService.get('jwt.accessTokenExpiresIn'),
