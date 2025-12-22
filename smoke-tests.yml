@@ -1,0 +1,81 @@
+config:
+  target: 'https://staging.taskflow.example.com'
+  phases:
+    - duration: 60
+      arrivalRate: 2
+      name: "Smoke test phase"
+  defaults:
+    headers:
+      User-Agent: 'TaskFlow-SmokeTest/1.0'
+
+scenarios:
+  - name: "Basic health checks"
+    weight: 30
+    flow:
+      - get:
+          url: "/api/health"
+          expect:
+            - statusCode: 200
+          capture:
+            json: "$.status"
+            as: "api_status"
+
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+
+      - get:
+          url: "/api/docs"
+          expect:
+            - statusCode: 200
+
+  - name: "API endpoint validation"
+    weight: 40
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "smoke-test@example.com"
+            password: "smoke-test-password"
+          expect:
+            - statusCode: 401  # Expected to fail with test credentials
+
+      - get:
+          url: "/api/tasks"
+          expect:
+            - statusCode: 401  # Should require authentication
+
+  - name: "Static asset checks"
+    weight: 20
+    flow:
+      - get:
+          url: "/favicon.ico"
+          expect:
+            - statusCode: 200
+            - hasHeader: 'content-type'
+            - headerValue: 'content-type'
+              contains: 'image'
+
+      - get:
+          url: "/manifest.json"
+          expect:
+            - statusCode: 200
+            - hasHeader: 'content-type'
+            - headerValue: 'content-type'
+              contains: 'application/json'
+
+  - name: "Error handling"
+    weight: 10
+    flow:
+      - get:
+          url: "/nonexistent-page"
+          expect:
+            - statusCode: 404
+
+      - post:
+          url: "/api/invalid-endpoint"
+          json:
+            invalid: "data"
+          expect:
+            - statusCode: 404
