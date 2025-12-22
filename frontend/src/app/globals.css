@@ -140,10 +140,13 @@
 /* Force light theme when dark class is not present */
 html:not(.dark) {
   color-scheme: light !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
 }
 
 html:not(.dark) body {
   background: #ffffff !important;
+  background-color: #ffffff !important;
   color: var(--on-surface) !important;
 }
 
@@ -163,6 +166,7 @@ html.dark body {
 
 body {
   background: #ffffff;
+  background-color: #ffffff;
   color: var(--on-surface);
   font-family: var(--font-geist-sans), system-ui, -apple-system, 'Roboto', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -173,6 +177,325 @@ body {
 /* Additional enforcement: prevent dark theme from being applied incorrectly */
 html:not(.dark) {
   /* Force remove any dark theme styles */
+}
+
+/* Force light backgrounds in light theme */
+html:not(.dark) header,
+html:not(.dark) nav,
+html:not(.dark) main,
+html:not(.dark) section,
+html:not(.dark) article,
+html:not(.dark) aside {
+  background-color: #ffffff !important;
+}
+
+/* Force navbar to be solid white in light theme */
+html:not(.dark) nav {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+html:not(.dark) nav[class*="bg-white"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* Force main content area to have white background */
+html:not(.dark) main {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* Ensure page-level containers have white background in light theme */
+html:not(.dark) body > main,
+html:not(.dark) body > div[class*="min-h-screen"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* Force all page containers to have white background in light theme */
+html:not(.dark) [class*="min-h-screen"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* Ensure any div with min-h-screen uses white background in light theme */
+html:not(.dark) div[class*="min-h-screen"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* Force home page main container to be white */
+html:not(.dark) div[class*="min-h-screen"][class*="bg-white"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* Force all root page containers to be white in light theme */
+html:not(.dark) div[class*="min-h-screen"].relative {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+}
+
+/* Ensure gradient overlays are properly light colored in light theme */
+html:not(.dark) div.absolute.inset-0[class*="bg-gradient-to-br"][class*="pointer-events-none"] {
+  background: linear-gradient(to bottom right, #ffffff, #ffffff, rgba(239, 246, 255, 0.3)) !important;
+  background-image: linear-gradient(to bottom right, #ffffff, #ffffff, rgba(239, 246, 255, 0.3)) !important;
+}
+
+/* Ensure cards use white background in light theme */
+html:not(.dark) [class*="bg-card"]:not([class*="dark:"]),
+html:not(.dark) [class*="bg-popover"]:not([class*="dark:"]) {
+  background-color: #ffffff !important;
+}
+
+/* Ensure feature cards have solid backgrounds in light theme */
+html:not(.dark) [class*="Card"]:not([class*="dark:"]) {
+  background-color: #ffffff !important;
+}
+
+/* Ensure stats cards have visible gradients in light theme */
+html:not(.dark) .bg-gradient-to-br {
+  opacity: 1 !important;
+}
+
+/* Force stats cards to use light theme gradients */
+html:not(.dark) [class*="from-blue-50"][class*="to-indigo-50"],
+html:not(.dark) [class*="from-purple-50"][class*="to-pink-50"],
+html:not(.dark) [class*="from-amber-50"][class*="to-orange-50"] {
+  background: linear-gradient(to bottom right, rgba(239, 246, 255, 1), rgba(239, 246, 255, 0.8), rgba(238, 242, 255, 1)) !important;
+  background-image: linear-gradient(to bottom right, rgba(239, 246, 255, 1), rgba(239, 246, 255, 0.8), rgba(238, 242, 255, 1)) !important;
+}
+
+html:not(.dark) [class*="from-purple-50"][class*="to-pink-50"] {
+  background: linear-gradient(to bottom right, rgba(250, 245, 255, 1), rgba(250, 245, 255, 0.8), rgba(253, 244, 255, 1)) !important;
+  background-image: linear-gradient(to bottom right, rgba(250, 245, 255, 1), rgba(250, 245, 255, 0.8), rgba(253, 244, 255, 1)) !important;
+}
+
+html:not(.dark) [class*="from-amber-50"][class*="to-orange-50"] {
+  background: linear-gradient(to bottom right, rgba(255, 251, 235, 1), rgba(255, 251, 235, 0.8), rgba(255, 247, 237, 1)) !important;
+  background-image: linear-gradient(to bottom right, rgba(255, 251, 235, 1), rgba(255, 251, 235, 0.8), rgba(255, 247, 237, 1)) !important;
+}
+
+/* Ensure stats card text is visible in light theme */
+html:not(.dark) [class*="bg-gradient-to-r"][class*="from-primary"][class*="bg-clip-text"] {
+  background: linear-gradient(to right, #1976d2, #1565c0, #0d47a1) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+html:not(.dark) [class*="bg-gradient-to-r"][class*="from-purple-600"][class*="bg-clip-text"] {
+  background: linear-gradient(to right, #9333ea, #ec4899, #a855f7) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+html:not(.dark) [class*="bg-gradient-to-r"][class*="from-amber-600"][class*="bg-clip-text"] {
+  background: linear-gradient(to right, #d97706, #ea580c, #f59e0b) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+}
+
+/* Ensure stats card icons are visible */
+html:not(.dark) [class*="bg-primary/20"] {
+  background-color: rgba(25, 118, 210, 0.2) !important;
+}
+
+html:not(.dark) [class*="bg-purple-500/20"] {
+  background-color: rgba(168, 85, 247, 0.2) !important;
+}
+
+html:not(.dark) [class*="bg-amber-500/20"] {
+  background-color: rgba(245, 158, 11, 0.2) !important;
+}
+
+/* Ensure stats section grid container uses light theme */
+html:not(.dark) div[class*="grid"][class*="md:grid-cols-3"] {
+  background-color: transparent !important;
+}
+
+/* Ensure stats cards maintain their gradient backgrounds */
+html:not(.dark) div[class*="grid"][class*="md:grid-cols-3"] > [class*="Card"] {
+  background-image: inherit !important;
+}
+
+/* Force home page gradient overlay to be white/light in light theme */
+html:not(.dark) [class*="bg-gradient-to-br"][class*="from-slate"],
+html:not(.dark) [class*="bg-gradient-to-br"][class*="via-white"],
+html:not(.dark) [class*="bg-gradient-to-br"][class*="to-blue"] {
+  background: linear-gradient(to bottom right, #ffffff, #ffffff, rgba(239, 246, 255, 0.3)) !important;
+}
+
+/* Force absolute positioned gradient overlays to be light */
+html:not(.dark) .absolute[class*="bg-gradient"] {
+  background: linear-gradient(to bottom right, #ffffff, #ffffff, rgba(239, 246, 255, 0.3)) !important;
+}
+
+/* Specifically target the home page gradient overlay div */
+html:not(.dark) div.absolute.inset-0[class*="bg-gradient-to-br"] {
+  background: linear-gradient(to bottom right, #ffffff, #ffffff, rgba(239, 246, 255, 0.3)) !important;
+  background-image: linear-gradient(to bottom right, #ffffff, #ffffff, rgba(239, 246, 255, 0.3)) !important;
+}
+
+/* Ensure animated background blobs are light colored in light theme */
+html:not(.dark) [class*="bg-primary/"],
+html:not(.dark) [class*="bg-blue-500/"],
+html:not(.dark) [class*="bg-purple-500/"] {
+  background-color: rgba(239, 246, 255, 0.2) !important;
+}
+
+html:not(.dark) [class*="bg-blue-100/"],
+html:not(.dark) [class*="bg-indigo-100/"],
+html:not(.dark) [class*="bg-purple-100/"] {
+  opacity: 1 !important;
+}
+
+/* Override any dark background colors that might be applied incorrectly in light theme */
+html:not(.dark) [class*="bg-slate-900"],
+html:not(.dark) [class*="bg-slate-800"],
+html:not(.dark) [class*="bg-slate-950"],
+html:not(.dark) [class*="bg-gray-900"],
+html:not(.dark) [class*="bg-gray-800"],
+html:not(.dark) [class*="bg-zinc-900"],
+html:not(.dark) [class*="bg-zinc-800"] {
+  background-color: #ffffff !important;
+}
+
+/* Ensure dropdowns and popovers use white background */
+html:not(.dark) [role="menu"],
+html:not(.dark) [role="dialog"],
+html:not(.dark) [data-radix-popper-content-wrapper] {
+  background-color: #ffffff !important;
+}
+
+/* Force logo text to be dark in light theme */
+html:not(.dark) .logo-text {
+  color: #0f172a !important;
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  background-clip: unset !important;
+  -webkit-text-fill-color: #0f172a !important;
+}
+
+/* Ensure borders are visible in light theme */
+html:not(.dark) [class*="border-border"] {
+  border-color: rgba(224, 224, 224, 0.8) !important;
+}
+
+html:not(.dark) [class*="border-border/80"] {
+  border-color: rgba(224, 224, 224, 0.8) !important;
+}
+
+html:not(.dark) [class*="border-border/60"] {
+  border-color: rgba(224, 224, 224, 0.6) !important;
+}
+
+/* Ensure Card borders are visible */
+html:not(.dark) [class*="Card"][class*="border"] {
+  border-color: rgba(224, 224, 224, 0.8) !important;
+}
+
+/* Ensure text has proper contrast in light theme */
+html:not(.dark) [class*="text-foreground/70"],
+html:not(.dark) [class*="text-foreground/80"] {
+  color: rgba(33, 33, 33, 0.9) !important;
+}
+
+/* Force primary buttons to be visible in light theme */
+html:not(.dark) button[class*="bg-primary"],
+html:not(.dark) button[class*="Button"][class*="bg-primary"] {
+  background-color: #1976d2 !important;
+  color: #ffffff !important;
+}
+
+html:not(.dark) button[class*="bg-primary"]:hover {
+  background-color: #1565c0 !important;
+  color: #ffffff !important;
+}
+
+/* Ensure button text is white on primary buttons in light theme */
+html:not(.dark) button[class*="bg-primary"] *,
+html:not(.dark) button[class*="bg-primary"] svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* Force primary button text color */
+html:not(.dark) button[class*="text-primary-foreground"],
+html:not(.dark) button[class*="bg-primary"] {
+  color: #ffffff !important;
+}
+
+html:not(.dark) button[class*="bg-primary"] span,
+html:not(.dark) button[class*="bg-primary"] .text-primary-foreground {
+  color: #ffffff !important;
+}
+
+/* Ensure all buttons with primary variant are visible */
+html:not(.dark) button.bg-primary,
+html:not(.dark) [role="button"][class*="bg-primary"] {
+  background-color: #1976d2 !important;
+  color: #ffffff !important;
+  border-color: #1976d2 !important;
+}
+
+html:not(.dark) button.bg-primary:hover,
+html:not(.dark) [role="button"][class*="bg-primary"]:hover {
+  background-color: #1565c0 !important;
+  color: #ffffff !important;
+}
+
+/* Force white text on primary buttons - comprehensive */
+html:not(.dark) button[class*="bg-primary"],
+html:not(.dark) a[class*="bg-primary"],
+html:not(.dark) [class*="Button"][class*="bg-primary"] {
+  color: #ffffff !important;
+}
+
+html:not(.dark) button[class*="bg-primary"] *,
+html:not(.dark) button[class*="bg-primary"] svg,
+html:not(.dark) button[class*="bg-primary"] path,
+html:not(.dark) button[class*="bg-primary"] .lucide,
+html:not(.dark) button[class*="bg-primary"] [class*="lucide"] {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Force all child elements of primary buttons to be white */
+html:not(.dark) button.bg-primary *,
+html:not(.dark) button[class*="bg-primary"] > * {
+  color: #ffffff !important;
+}
+
+html:not(.dark) button.bg-primary svg,
+html:not(.dark) button[class*="bg-primary"] svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Prevent dark theme colors from appearing in light theme */
+html:not(.dark) [class*="bg-slate-900"],
+html:not(.dark) [class*="bg-slate-800"],
+html:not(.dark) [class*="bg-slate-950"] {
+  background-color: #ffffff !important;
+}
+
+html:not(.dark) [class*="text-slate-100"],
+html:not(.dark) [class*="text-slate-200"],
+html:not(.dark) [class*="text-slate-300"] {
+  color: #212121 !important;
+}
+
+/* Ensure all button elements with primary styling are visible */
+html:not(.dark) button:has([class*="bg-primary"]),
+html:not(.dark) [role="button"]:has([class*="bg-primary"]) {
+  background-color: #1976d2 !important;
+  color: #ffffff !important;
 }
 
 * {
@@ -287,4 +610,40 @@ html {
 
 .animation-delay-4000 {
   animation-delay: 4s;
+}
+
+/* Ensure feature card icons are visible on light theme */
+html:not(.dark) .icon-container svg,
+html:not(.dark) .icon-container .lucide,
+html:not(.dark) .icon-white {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+  stroke-width: 2.5 !important;
+}
+
+html:not(.dark) .icon-container svg path,
+html:not(.dark) .icon-container .lucide path,
+html:not(.dark) .icon-white path {
+  stroke: #ffffff !important;
+  stroke-width: 2.5 !important;
+}
+
+html:not(.dark) .icon-container svg circle,
+html:not(.dark) .icon-container .lucide circle,
+html:not(.dark) .icon-white circle {
+  stroke: #ffffff !important;
+  stroke-width: 2.5 !important;
+}
+
+html:not(.dark) .icon-container svg line,
+html:not(.dark) .icon-container .lucide line,
+html:not(.dark) .icon-white line {
+  stroke: #ffffff !important;
+  stroke-width: 2.5 !important;
+}
+
+/* Ensure gradient backgrounds for feature icons are dark enough */
+html:not(.dark) [class*="from-blue-700"][class*="to-blue-800"] {
+  background: linear-gradient(to bottom right, #1e40af, #1e3a8a) !important;
+  background-image: linear-gradient(to bottom right, #1e40af, #1e3a8a) !important;
 }

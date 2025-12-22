@@ -33,7 +33,7 @@ export function ThemeToggle() {
         <Button
           variant="ghost"
           size="sm"
-          className="h-9 w-9 px-0 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
+          className="h-9 w-9 px-0 text-foreground hover:text-foreground hover:bg-accent"
           aria-label="Toggle theme"
         >
           {getIcon()}
