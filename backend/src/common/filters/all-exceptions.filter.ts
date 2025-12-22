@@ -43,10 +43,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
       if (typeof exceptionResponse === 'string') {
         message = exceptionResponse;
       } else if (typeof exceptionResponse === 'object' && exceptionResponse !== null) {
-        const responseObj = exceptionResponse as any;
-        message = responseObj.message || responseObj.error || message;
-        code = responseObj.code || this.getHttpStatusCode(status);
-        details = responseObj.details;
+        const responseObj = exceptionResponse as Record<string, unknown>;
+        message = (typeof responseObj.message === 'string' ? responseObj.message : typeof responseObj.error === 'string' ? responseObj.error : message);
+        code = (typeof responseObj.code === 'string' ? responseObj.code : this.getHttpStatusCode(status));
+        details = typeof responseObj.details === 'object' && responseObj.details !== null ? responseObj.details as Record<string, unknown> : undefined;
       }
     } else if (exception instanceof QueryFailedError) {
       // TypeORM query errors
@@ -102,7 +102,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     // Log the error
-    const logLevel = status >= 500 ? 'error' : 'warn';
+    const logLevel: 'error' | 'warn' = status >= 500 ? 'error' : 'warn';
     this.logger[logLevel](
       `${request.method} ${request.url} - ${status} ${code}: ${message}`,
       exception instanceof Error ? exception.stack : String(exception)
