@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { randomUUID } from 'crypto';
 
 import { EventLog, EventType } from '../../entities/event-log.entity';
+import { EventQuery } from '../../common/types';
 
 export interface EventLogData {
   type: EventType;
@@ -60,7 +61,7 @@ export class EventsService {
   ): Promise<EventLog[]> {
     const { limit = 50, offset = 0, type } = options;
 
-    const query: any = {
+    const query: Partial<EventQuery> = {
       entityId,
       entityType,
     };
@@ -87,7 +88,7 @@ export class EventsService {
   ): Promise<EventLog[]> {
     const { limit = 50, offset = 0, type } = options;
 
-    const query: any = {
+    const query: Partial<EventQuery> = {
       actorId,
     };
 

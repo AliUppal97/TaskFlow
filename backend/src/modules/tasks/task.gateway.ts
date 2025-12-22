@@ -18,6 +18,7 @@ import type { Cache } from 'cache-manager';
 import { UserService } from '../auth/user.service';
 import { EventsService } from '../events/events.service';
 import { User } from '../../entities/user.entity';
+import { AuthenticatedSocket } from '../../common/types';
 import { JwtPayload } from '../auth/jwt.strategy';
 
 interface AuthenticatedSocket extends Socket {
@@ -104,7 +105,7 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
    * 
    * @param client - Socket.IO client connection
    */
-  async handleConnection(client: AuthenticatedSocket, ...args: any[]) {
+  async handleConnection(client: AuthenticatedSocket) {
     try {
       // Extract JWT token from handshake (supports multiple methods for flexibility)
       const token = this.extractTokenFromSocket(client);
