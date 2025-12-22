@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useRef, useState, useMemo, useCallback, ReactNode } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from './auth-provider';
 import { TaskEvent, WebSocketNotification } from '@/types';
@@ -23,47 +23,69 @@ interface WebSocketProviderProps {
 export function WebSocketProvider({ children }: WebSocketProviderProps) {
   const { user, isAuthenticated } = useAuth();
   const [isConnected, setIsConnected] = useState(false);
+  const [socket, setSocket] = useState<Socket | null>(null);
   const socketRef = useRef<Socket | null>(null);
   const taskEventCallbacks = useRef<Set<(event: TaskEvent) => void>>(new Set());
   const notificationCallbacks = useRef<Set<(notification: WebSocketNotification) => void>>(new Set());
 
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      connectSocket();
-    } else {
-      disconnectSocket();
+  const disconnectSocket = useCallback(() => {
+    if (socketRef.current) {
+      // Remove all event listeners before disconnecting to prevent errors
+      socketRef.current.removeAllListeners();
+      socketRef.current.disconnect();
+      socketRef.current = null;
+      // Defer state updates to avoid synchronous setState in effects
+      setTimeout(() => {
+        setSocket(null);
+        setIsConnected(false);
+      }, 0);
+      taskEventCallbacks.current.clear();
+      notificationCallbacks.current.clear();
     }
+  }, []);
 
-    return () => {
-      disconnectSocket();
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, user]);
-
-  const connectSocket = () => {
+  const connectSocket = useCallback(() => {
     if (socketRef.current?.connected) return;
 
     const token = localStorage.getItem('accessToken');
-    if (!token) return;
+    if (!token) {
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('WebSocket: No access token found, skipping connection');
+      }
+      return;
+    }
 
-    const socket = io(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/tasks`, {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const wsUrl = `${apiUrl}/tasks`;
+
+    if (process.env.NODE_ENV === 'development') {
+      console.log('WebSocket: Attempting to connect to', wsUrl);
+    }
+
+    const socket = io(wsUrl, {
       auth: {
         token,
       },
       transports: ['websocket', 'polling'],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
     });
 
     socket.on('connect', () => {
       setIsConnected(true);
+      setSocket(socket);
       if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
         console.log('Connected to WebSocket');
       }
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', (reason) => {
       setIsConnected(false);
-      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
-        console.log('Disconnected from WebSocket');
+      if (process.env.NODE_ENV === 'development') {
+        console.log('WebSocket disconnected:', reason);
       }
     });
 
@@ -102,15 +124,31 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     // Handle connection errors
     socket.on('connect_error', (error) => {
       setIsConnected(false);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorDetails = error instanceof Error ? {
+        message: error.message,
+        type: error.name,
+        stack: error.stack,
+      } : error;
+      
       if (process.env.NODE_ENV === 'development') {
-        console.error('WebSocket connection error:', error.message);
+        console.error('WebSocket connection error:', errorMessage);
+        console.error('Error details:', errorDetails);
       }
     });
 
     // Handle general socket errors
     socket.on('error', (error) => {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorDetails = error instanceof Error ? {
+        message: error.message,
+        type: error.name,
+        stack: error.stack,
+      } : error;
+      
       if (process.env.NODE_ENV === 'development') {
-        console.error('WebSocket error:', error);
+        console.error('WebSocket error:', errorMessage);
+        console.error('Error details:', errorDetails);
       }
     });
 
@@ -127,54 +165,56 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
     });
 
     socketRef.current = socket;
-  };
+  }, []);
 
-  const disconnectSocket = () => {
-    if (socketRef.current) {
-      // Remove all event listeners before disconnecting to prevent errors
-      socketRef.current.removeAllListeners();
-      socketRef.current.disconnect();
-      socketRef.current = null;
-      setIsConnected(false);
-      taskEventCallbacks.current.clear();
-      notificationCallbacks.current.clear();
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      connectSocket();
+    } else {
+      disconnectSocket();
     }
-  };
 
-  const subscribeToTask = (taskId: string) => {
+    return () => {
+      disconnectSocket();
+    };
+    // Note: connectSocket and disconnectSocket manage WebSocket lifecycle
+    // This is a valid use case for useEffect to handle side effects
+  }, [isAuthenticated, user, connectSocket, disconnectSocket]);
+
+  const subscribeToTask = useCallback((taskId: string) => {
     if (socketRef.current?.connected) {
       socketRef.current.emit('subscribe-to-task', { taskId });
     }
-  };
+  }, []);
 
-  const unsubscribeFromTask = (taskId: string) => {
+  const unsubscribeFromTask = useCallback((taskId: string) => {
     if (socketRef.current?.connected) {
       socketRef.current.emit('unsubscribe-from-task', { taskId });
     }
-  };
+  }, []);
 
-  const onTaskEvent = (callback: (event: TaskEvent) => void) => {
+  const onTaskEvent = useCallback((callback: (event: TaskEvent) => void) => {
     taskEventCallbacks.current.add(callback);
     return () => {
       taskEventCallbacks.current.delete(callback);
     };
-  };
+  }, []);
 
-  const onNotification = (callback: (notification: WebSocketNotification) => void) => {
+  const onNotification = useCallback((callback: (notification: WebSocketNotification) => void) => {
     notificationCallbacks.current.add(callback);
     return () => {
       notificationCallbacks.current.delete(callback);
     };
-  };
+  }, []);
 
-  const value: WebSocketContextType = {
-    socket: socketRef.current,
+  const value: WebSocketContextType = useMemo(() => ({
+    socket,
     isConnected,
     subscribeToTask,
     unsubscribeFromTask,
     onTaskEvent,
     onNotification,
-  };
+  }), [socket, isConnected, subscribeToTask, unsubscribeFromTask, onTaskEvent, onNotification]);
 
   return (
     <WebSocketContext.Provider value={value}>
