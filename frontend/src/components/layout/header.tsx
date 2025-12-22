@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 
 import { useAuth } from '@/providers/auth-provider';
+import { useWebSocket } from '@/providers/websocket-provider';
 import { UserRole } from '@/types';
 import { Button } from '@/components/ui/button';
 import {
@@ -38,6 +39,7 @@ const navigation = [
 
 export function Header() {
   const { user, logout, isAuthenticated } = useAuth();
+  const { isConnected } = useWebSocket();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -146,6 +148,21 @@ export function Header() {
             {/* Theme Toggle */}
             <div className="hidden sm:block">
               <ThemeToggle />
+            </div>
+
+            {/* WebSocket Status */}
+            <div className="hidden sm:flex items-center gap-2">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  isConnected
+                    ? 'bg-green-500 shadow-sm shadow-green-500/50'
+                    : 'bg-red-500 shadow-sm shadow-red-500/50'
+                }`}
+                title={`Real-time updates: ${isConnected ? 'Connected' : 'Disconnected'}`}
+              />
+              <span className="text-xs text-foreground/60 font-medium">
+                {isConnected ? 'Live' : 'Offline'}
+              </span>
             </div>
 
             {/* Notifications */}

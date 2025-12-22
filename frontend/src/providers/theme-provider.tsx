@@ -16,7 +16,7 @@ interface ThemeProviderProps {
   defaultTheme?: Theme;
 }
 
-export function ThemeProvider({ children, defaultTheme = Theme.LIGHT }: ThemeProviderProps) {
+export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(Theme.LIGHT);
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
   const [mounted, setMounted] = useState(false);
@@ -25,8 +25,8 @@ export function ThemeProvider({ children, defaultTheme = Theme.LIGHT }: ThemePro
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('theme') as Theme | null;
-      // Use stored theme if valid, otherwise default to light
-      const initialTheme = (stored && Object.values(Theme).includes(stored)) ? stored : Theme.LIGHT;
+      // Use stored theme if valid, otherwise default to dark
+      const initialTheme = (stored && Object.values(Theme).includes(stored)) ? stored : Theme.DARK;
       setThemeState(initialTheme);
       
       // Sync with the theme already applied by the inline script in layout
@@ -43,8 +43,8 @@ export function ThemeProvider({ children, defaultTheme = Theme.LIGHT }: ThemePro
         if (initialTheme === Theme.SYSTEM) {
           return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
-        // Fallback to light
-        return 'light';
+        // Fallback to dark
+        return 'dark';
       };
       const resolved = resolveTheme();
       
@@ -111,8 +111,8 @@ export function ThemeProvider({ children, defaultTheme = Theme.LIGHT }: ThemePro
       if (theme === Theme.SYSTEM) {
         return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       }
-      // Fallback to light
-      return 'light';
+      // Fallback to dark
+      return 'dark';
     };
 
     const resolved = resolveTheme();
@@ -209,8 +209,8 @@ export function ThemeProvider({ children, defaultTheme = Theme.LIGHT }: ThemePro
         if (newTheme === Theme.SYSTEM) {
           return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
-        // Fallback to light
-        return 'light';
+        // Fallback to dark
+        return 'dark';
       };
       const resolved = resolveTheme();
       setResolvedTheme(resolved);

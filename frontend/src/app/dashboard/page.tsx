@@ -3,13 +3,33 @@
 import { useRouter } from 'next/navigation';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { useAuth } from '@/providers/auth-provider';
+import { useTasks } from '@/hooks/use-api';
+import { useTaskUpdates } from '@/hooks/use-task-updates';
+import { TaskList } from '@/features/tasks/components/task-list';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { CheckSquare, Users, User } from 'lucide-react';
+import { CheckSquare, Users, User, ArrowRight } from 'lucide-react';
+import { Task, TaskStatus } from '@/types';
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user } = useAuth();
+
+  // Fetch recent tasks for the dashboard
+  const {
+    data: tasksResponse,
+    isLoading: tasksLoading,
+  } = useTasks({
+    page: 1,
+    limit: 5,
+    sortBy: 'createdAt',
+    sortOrder: 'desc',
+  });
+
+  // Real-time updates
+  useTaskUpdates();
+
+  const recentTasks = tasksResponse?.data || [];
 
   return (
     <ProtectedRoute>
@@ -82,35 +102,92 @@ export default function DashboardPage() {
               </Card>
             </div>
 
-            {/* Recent Activity */}
+            {/* Recent Tasks */}
             <div className="mt-8">
               <Card className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 shadow-sm">
-                <CardHeader>
-                  <CardTitle className="text-[#212121] dark:text-slate-100">Recent Activity</CardTitle>
-                  <CardDescription className="text-[#757575] dark:text-slate-400">
-                    Your latest task management activity
-                  </CardDescription>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                  <div>
+                    <CardTitle className="text-[#212121] dark:text-slate-100">Recent Tasks</CardTitle>
+                    <CardDescription className="text-[#757575] dark:text-slate-400">
+                      Your latest task activity
+                    </CardDescription>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push('/tasks')}
+                    className="flex items-center gap-2 border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-700"
+                  >
+                    View All
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-4 p-3 rounded-lg bg-[#e3f2fd] dark:bg-blue-900/20 hover:bg-[#bbdefb] dark:hover:bg-blue-900/30 transition-colors border border-[#bbdefb] dark:border-blue-800">
-                      <div className="w-3 h-3 bg-[#1976d2] dark:bg-blue-400 rounded-full shadow-md"></div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-[#212121] dark:text-slate-100">Welcome to TaskFlow!</p>
-                        <p className="text-xs text-[#757575] dark:text-slate-400">Get started by creating your first task</p>
-                      </div>
-                      <span className="text-xs text-[#9e9e9e] dark:text-slate-500">Just now</span>
+                  {tasksLoading ? (
+                    <div className="space-y-4">
+                      {Array.from({ length: 3 }).map((_, i) => (
+                        <div key={i} className="animate-pulse">
+                          <div className="flex items-center space-x-4 p-4 rounded-lg bg-[#f5f5f5] dark:bg-slate-700/50">
+                            <div className="w-3 h-3 bg-[#e0e0e0] dark:bg-slate-600 rounded-full"></div>
+                            <div className="flex-1">
+                              <div className="h-4 bg-[#e0e0e0] dark:bg-slate-600 rounded w-3/4 mb-2"></div>
+                              <div className="h-3 bg-[#e0e0e0] dark:bg-slate-600 rounded w-1/2"></div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-
-                    <div className="flex items-center space-x-4 p-3 rounded-lg bg-[#e0f2f1] dark:bg-green-900/20 hover:bg-[#b2dfdb] dark:hover:bg-green-900/30 transition-colors border border-[#b2dfdb] dark:border-green-800">
-                      <div className="w-3 h-3 bg-[#00796b] dark:bg-green-400 rounded-full shadow-md"></div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-[#212121] dark:text-slate-100">Account Created</p>
-                        <p className="text-xs text-[#757575] dark:text-slate-400">Your TaskFlow account is now active</p>
-                      </div>
-                      <span className="text-xs text-[#9e9e9e] dark:text-slate-500">Today</span>
+                  ) : recentTasks.length > 0 ? (
+                    <div className="space-y-3">
+                      {recentTasks.slice(0, 5).map((task) => (
+                        <div
+                          key={task.id}
+                          className="flex items-center space-x-4 p-4 rounded-lg bg-[#f5f5f5] dark:bg-slate-700/50 hover:bg-[#e3f2fd] dark:hover:bg-blue-900/20 transition-colors border border-[#e0e0e0] dark:border-slate-600 cursor-pointer"
+                          onClick={() => router.push('/tasks')}
+                        >
+                          <div className={`w-3 h-3 rounded-full shadow-md ${
+                            task.status === TaskStatus.TODO ? 'bg-[#f5f5f5] dark:bg-slate-600 border border-[#e0e0e0] dark:border-slate-500' :
+                            task.status === TaskStatus.IN_PROGRESS ? 'bg-[#1976d2] dark:bg-blue-400' :
+                            task.status === TaskStatus.REVIEW ? 'bg-[#f57c00] dark:bg-yellow-400' :
+                            'bg-[#00796b] dark:bg-green-400'
+                          }`}></div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-[#212121] dark:text-slate-100 truncate">
+                              {task.title}
+                            </p>
+                            <p className="text-xs text-[#757575] dark:text-slate-400">
+                              {task.status.replace('_', ' ')} • {task.priority} priority
+                              {task.dueDate && (
+                                <>
+                                  {' • '}
+                                  Due {new Date(task.dueDate).toLocaleDateString()}
+                                  {task.isOverdue && (
+                                    <span className="text-[#d32f2f] dark:text-red-400 ml-1">(Overdue)</span>
+                                  )}
+                                </>
+                              )}
+                            </p>
+                          </div>
+                          {task.assignee && (
+                            <div className="text-xs text-[#757575] dark:text-slate-400">
+                              {task.assignee.profile?.firstName || task.assignee.email}
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
-                  </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <CheckSquare className="h-12 w-12 text-[#9e9e9e] dark:text-slate-500 mx-auto mb-4" />
+                      <p className="text-[#757575] dark:text-slate-400 mb-4">No tasks yet</p>
+                      <Button
+                        onClick={() => router.push('/tasks')}
+                        className="bg-[#1976d2] hover:bg-[#1565c0] text-white"
+                      >
+                        Create Your First Task
+                      </Button>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

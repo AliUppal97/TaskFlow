@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Plus, BarChart3, Users, AlertTriangle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, BarChart3, Users, AlertTriangle, ChevronLeft, ChevronRight, Wifi, WifiOff } from 'lucide-react';
 
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { useAuth } from '@/providers/auth-provider';
+import { useWebSocket } from '@/providers/websocket-provider';
 import { useTaskUpdates } from '@/hooks/use-task-updates';
 import {
   useTasks,
@@ -24,6 +25,7 @@ import { Task, TaskStatus, CreateTaskRequest, UpdateTaskRequest, TaskFilters } f
 
 export default function TasksPage() {
   const { user } = useAuth();
+  const { isConnected } = useWebSocket();
 
   // State for forms and modals
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
@@ -138,9 +140,23 @@ export default function TasksPage() {
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-4xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 mb-2">
-                Tasks
-              </h1>
+              <div className="flex items-center gap-3 mb-2">
+                <h1 className="text-4xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200">
+                  Tasks
+                </h1>
+                <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
+                  isConnected
+                    ? 'bg-[#e0f2f1] dark:bg-green-900/20 text-[#00796b] dark:text-green-300'
+                    : 'bg-[#ffebee] dark:bg-red-900/20 text-[#d32f2f] dark:text-red-300'
+                }`}>
+                  {isConnected ? (
+                    <Wifi className="h-4 w-4" />
+                  ) : (
+                    <WifiOff className="h-4 w-4" />
+                  )}
+                  <span>{isConnected ? 'Live Updates' : 'Offline'}</span>
+                </div>
+              </div>
               <p className="text-[#757575] dark:text-slate-400 text-lg">
                 Manage and track your team&apos;s tasks with real-time collaboration
               </p>
