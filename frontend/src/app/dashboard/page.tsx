@@ -37,7 +37,7 @@ export default function DashboardPage() {
           <main className="space-y-8">
             {/* Welcome Section */}
             <div className="mb-8">
-              <h1 className="text-4xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 mb-2">
+              <h1 className="text-4xl font-bold text-[#212121] dark:text-slate-100 mb-2">
                 Welcome back{user?.profile?.firstName ? `, ${user.profile.firstName}` : ''}!
               </h1>
               <p className="text-[#757575] dark:text-slate-400 text-lg">
@@ -59,7 +59,7 @@ export default function DashboardPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold text-[#1976d2] dark:from-blue-400 dark:to-cyan-400">View Tasks</p>
+                  <p className="text-2xl font-bold text-[#1976d2] dark:text-blue-400">View Tasks</p>
                   <p className="text-sm text-[#9e9e9e] dark:text-slate-500">Click to explore</p>
                 </CardContent>
               </Card>
@@ -77,7 +77,7 @@ export default function DashboardPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold text-[#00796b] dark:from-green-400 dark:to-emerald-400">Browse All</p>
+                  <p className="text-2xl font-bold text-[#00796b] dark:text-green-400">Browse All</p>
                   <p className="text-sm text-[#9e9e9e] dark:text-slate-500">Full task list</p>
                 </CardContent>
               </Card>
@@ -95,7 +95,7 @@ export default function DashboardPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold text-[#1976d2] dark:from-purple-400 dark:to-pink-400">Settings</p>
+                  <p className="text-2xl font-bold text-[#1976d2] dark:text-purple-400">Settings</p>
                   <p className="text-sm text-[#9e9e9e] dark:text-slate-500">Update profile</p>
                 </CardContent>
               </Card>
