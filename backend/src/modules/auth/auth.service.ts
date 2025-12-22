@@ -80,8 +80,10 @@ export class AuthService {
     const user = await this.userService.findByEmail(email);
     if (user) {
       // Check account lockout
-      if (user.lockoutUntil && user.lockoutUntil > new Date()) {
-        const remainingTime = Math.ceil((user.lockoutUntil.getTime() - Date.now()) / 60000); // minutes
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      const lockoutUntil = user.lockoutUntil;
+      if (lockoutUntil && lockoutUntil instanceof Date && lockoutUntil > new Date()) {
+        const remainingTime = Math.ceil((lockoutUntil.getTime() - Date.now()) / 60000); // minutes
         throw new UnauthorizedException(`Account locked due to too many failed login attempts. Try again in ${remainingTime} minutes.`);
       }
 
@@ -95,16 +97,18 @@ export class AuthService {
     const validUser = await this.userService.validatePassword(email, password);
     if (!validUser) {
       // Track failed login attempt
-      if (user) {
+      if (user && user.id) {
         await this.userService.recordFailedLoginAttempt(user.id);
       }
       throw new UnauthorizedException('Invalid credentials');
     }
 
     // Reset failed login attempts on successful login
-    await this.userService.resetFailedLoginAttempts(validUser.id);
+    if (validUser && validUser.id) {
+      await this.userService.resetFailedLoginAttempts(validUser.id);
+    }
 
-    const tokens = await this.generateTokens(user);
+    const tokens = await this.generateTokens(validUser);
 
     /**
      * Generate refresh token with unique ID for revocation tracking
@@ -113,9 +117,9 @@ export class AuthService {
      */
     const refreshTokenId = randomUUID();
     const refreshPayload: JwtRefreshPayload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
+      sub: validUser.id,
+      email: validUser.email,
+      role: validUser.role,
       refreshTokenId,
     };
     const newRefreshToken = await this.jwtService.signAsync(refreshPayload, {
@@ -125,16 +129,16 @@ export class AuthService {
     tokens.refreshToken = newRefreshToken;
 
     // Store refresh token ID in Redis for revocation capability
-    await this.userService.storeRefreshToken(user.id, refreshTokenId);
+    await this.userService.storeRefreshToken(validUser.id, refreshTokenId);
 
     // Log login event for security audit (userAgent and ipAddress set by interceptor)
     await this.eventsService.logEvent({
       type: EventType.USER_LOGIN,
-      actorId: user.id,
-      entityId: user.id,
+      actorId: validUser.id,
+      entityId: validUser.id,
       entityType: 'user',
       payload: {
-        email: user.email,
+        email: validUser.email,
         userAgent: '', // Populated by RequestLoggingInterceptor
         ipAddress: '', // Populated by RequestLoggingInterceptor
       },
