@@ -89,6 +89,47 @@ export class UserService {
     return user;
   }
 
+  /**
+   * Record a failed login attempt and implement account lockout
+   *
+   * Security policy:
+   * - 5 failed attempts = 30 minute lockout
+   * - Lockout prevents brute force attacks
+   * - Failed attempts reset on successful login
+   *
+   * @param userId - User ID to record failed attempt for
+   */
+  @InvalidateCache('user:*')
+  async recordFailedLoginAttempt(userId: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) return;
+
+    const newAttempts = user.failedLoginAttempts + 1;
+
+    // Lock account after 5 failed attempts for 30 minutes
+    const lockoutUntil = newAttempts >= 5
+      ? new Date(Date.now() + 30 * 60 * 1000) // 30 minutes
+      : null;
+
+    await this.userRepository.update(userId, {
+      failedLoginAttempts: newAttempts,
+      lockoutUntil,
+    });
+  }
+
+  /**
+   * Reset failed login attempts on successful login
+   *
+   * @param userId - User ID to reset attempts for
+   */
+  @InvalidateCache('user:*')
+  async resetFailedLoginAttempts(userId: string): Promise<void> {
+    await this.userRepository.update(userId, {
+      failedLoginAttempts: 0,
+      lockoutUntil: null,
+    });
+  }
+
   @CacheResult({ ttl: 3600, keyPrefix: 'user:email' })
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.userRepository.findOne({ where: { email } });
