@@ -65,6 +65,7 @@ export interface TaskEvent {
   cors: {
     origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
     credentials: true, // Required for cookie-based auth
+    methods: ['GET', 'POST'],
   },
   namespace: '/tasks', // Isolated namespace for task events
 })
