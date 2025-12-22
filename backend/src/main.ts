@@ -3,6 +3,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
 
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
@@ -76,6 +77,24 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   });
+
+  /**
+   * Security headers middleware (Helmet)
+   * Sets various HTTP security headers to protect against common attacks
+   * - Content Security Policy (CSP)
+   * - X-Frame-Options, X-Content-Type-Options, etc.
+   */
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles for UI libraries
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https:"], // Allow data URLs and HTTPS images
+      },
+    },
+    crossOriginEmbedderPolicy: false, // Allow cross-origin embedding for API
+  }));
 
   /**
    * Cookie parser middleware - enables reading HttpOnly cookies
