@@ -82,7 +82,7 @@ export default function ProfilePage() {
         <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 mb-2">
+            <h1 className="text-4xl font-bold text-[#212121] dark:text-slate-100 mb-2">
               Profile
             </h1>
             <p className="text-[#757575] dark:text-slate-400 text-lg">
@@ -241,19 +241,19 @@ export default function ProfilePage() {
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="text-center p-4 rounded-lg bg-[#e3f2fd] dark:bg-blue-900/20 border border-[#bbdefb] dark:border-blue-800">
-                      <div className="text-2xl font-bold text-[#1976d2] dark:from-blue-400 dark:to-cyan-400">{totalTasks}</div>
+                      <div className="text-2xl font-bold text-[#1976d2] dark:text-blue-400">{totalTasks}</div>
                       <div className="text-sm text-[#757575] dark:text-slate-400">Tasks Created</div>
                     </div>
                     <div className="text-center p-4 rounded-lg bg-[#e0f2f1] dark:bg-green-900/20 border border-[#b2dfdb] dark:border-green-800">
-                      <div className="text-2xl font-bold text-[#00796b] dark:from-green-400 dark:to-emerald-400">0</div>
+                      <div className="text-2xl font-bold text-[#00796b] dark:text-green-400">0</div>
                       <div className="text-sm text-[#757575] dark:text-slate-400">Tasks Completed</div>
                     </div>
                     <div className="text-center p-4 rounded-lg bg-[#fff3e0] dark:bg-yellow-900/20 border border-[#ffe0b2] dark:border-yellow-800">
-                      <div className="text-2xl font-bold text-[#f57c00] dark:from-yellow-400 dark:to-orange-400">0</div>
+                      <div className="text-2xl font-bold text-[#f57c00] dark:text-yellow-400">0</div>
                       <div className="text-sm text-[#757575] dark:text-slate-400">In Progress</div>
                     </div>
                     <div className="text-center p-4 rounded-lg bg-[#ffebee] dark:bg-red-900/20 border border-[#ffcdd2] dark:border-red-800">
-                      <div className="text-2xl font-bold text-[#d32f2f] dark:from-red-400 dark:to-pink-400">0</div>
+                      <div className="text-2xl font-bold text-[#d32f2f] dark:text-red-400">0</div>
                       <div className="text-sm text-[#757575] dark:text-slate-400">Overdue</div>
                     </div>
                   </div>
