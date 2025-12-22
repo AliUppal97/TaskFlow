@@ -76,11 +76,33 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<AuthResponseDto> {
     const { email, password } = loginDto;
 
+    // Check if account is locked out
+    const user = await this.userService.findByEmail(email);
+    if (user) {
+      // Check account lockout
+      if (user.lockoutUntil && user.lockoutUntil > new Date()) {
+        const remainingTime = Math.ceil((user.lockoutUntil.getTime() - Date.now()) / 60000); // minutes
+        throw new UnauthorizedException(`Account locked due to too many failed login attempts. Try again in ${remainingTime} minutes.`);
+      }
+
+      // Check if account is active
+      if (!user.isActive) {
+        throw new UnauthorizedException('Account is deactivated. Contact administrator.');
+      }
+    }
+
     // Validate credentials - throws UnauthorizedException if invalid
-    const user = await this.userService.validatePassword(email, password);
-    if (!user) {
+    const validUser = await this.userService.validatePassword(email, password);
+    if (!validUser) {
+      // Track failed login attempt
+      if (user) {
+        await this.userService.recordFailedLoginAttempt(user.id);
+      }
       throw new UnauthorizedException('Invalid credentials');
     }
+
+    // Reset failed login attempts on successful login
+    await this.userService.resetFailedLoginAttempts(validUser.id);
 
     const tokens = await this.generateTokens(user);
 

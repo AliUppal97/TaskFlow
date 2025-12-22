@@ -43,6 +43,19 @@ export class User {
   role: UserRole;
 
   /**
+   * Account lockout fields for security
+   * Prevents brute force attacks by locking accounts after failed login attempts
+   */
+  @Column({ type: 'int', default: 0 })
+  failedLoginAttempts: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lockoutUntil: Date | null;
+
+  @Column({ default: true })
+  isActive: boolean; // Allow admin to deactivate accounts
+
+  /**
    * User profile data (JSONB for flexibility)
    * Allows storing additional profile fields without schema changes
    * PostgreSQL JSONB provides indexing and querying capabilities
