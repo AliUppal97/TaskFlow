@@ -152,6 +152,23 @@ export class TaskQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiPropertyOptional({
+    description: 'Sort field',
+    example: 'createdAt',
+  })
+  @IsOptional()
+  @IsString()
+  sortBy?: string;
+
+  @ApiPropertyOptional({
+    description: 'Sort order',
+    example: 'DESC',
+    enum: ['ASC', 'DESC'],
+  })
+  @IsOptional()
+  @IsEnum(['ASC', 'DESC'])
+  sortOrder?: 'ASC' | 'DESC' = 'DESC';
 }
 
 export class TaskResponseDto {
@@ -247,6 +264,5 @@ export class TaskListResponseDto {
     totalPages: number;
   };
 }
-
 
 
