@@ -9,7 +9,7 @@ import {
   OnGatewayInit,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
-import { Logger, UseGuards, Inject } from '@nestjs/common';
+import { Logger, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
@@ -17,8 +17,8 @@ import type { Cache } from 'cache-manager';
 
 import { UserService } from '../auth/user.service';
 import { EventsService } from '../events/events.service';
-import { User } from '../../entities/user.entity';
-import { AuthenticatedSocket } from '../../common/types';
+import { User, UserRole } from '../../entities/user.entity';
+import { EventType } from '../../entities/event-log.entity';
 import { JwtPayload } from '../auth/jwt.strategy';
 
 interface AuthenticatedSocket extends Socket {
@@ -85,7 +85,8 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     private cacheManager: Cache,
   ) {}
 
-  afterInit(server: Server) {
+  afterInit(_server: Server) {
+    void _server; // Explicitly ignore unused parameter
     this.logger.log('Task WebSocket Gateway initialized');
   }
 
@@ -115,9 +116,9 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       }
 
       // Verify token signature and expiration
-      const payload = this.jwtService.verify(token, {
+      const payload = this.jwtService.verify<JwtPayload>(token, {
         secret: this.configService.get('jwt.accessTokenSecret'),
-      }) as JwtPayload;
+      });
 
       // Load user to ensure they still exist and get latest role/permissions
       const user = await this.userService.findById(payload.sub);
@@ -131,11 +132,11 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.connectedClients.set(client.id, client);
 
       // Join user-specific room for personalized notifications (assignments, etc.)
-      client.join(`user:${user.id}`);
+      await client.join(`user:${user.id}`);
 
       // Admins get access to admin-only room for system-wide events
-      if (user.role === 'admin') {
-        client.join('admin');
+      if (user.role === UserRole.ADMIN) {
+        await client.join('admin');
       }
 
       this.logger.log(`Client connected: ${client.id} (User: ${user.email})`);
@@ -178,14 +179,14 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
    * @returns Confirmation message
    */
   @SubscribeMessage('subscribe-to-task')
-  handleSubscribeToTask(
+  async handleSubscribeToTask(
     @ConnectedSocket() client: AuthenticatedSocket,
     @MessageBody() data: { taskId: string },
   ) {
     if (!client.user) return; // Unauthenticated clients ignored
 
     const { taskId } = data;
-    client.join(`task:${taskId}`); // Join task-specific room
+    await client.join(`task:${taskId}`); // Join task-specific room
 
     this.logger.log(`User ${client.user.email} subscribed to task ${taskId}`);
 
@@ -193,14 +194,14 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('unsubscribe-from-task')
-  handleUnsubscribeFromTask(
+  async handleUnsubscribeFromTask(
     @ConnectedSocket() client: AuthenticatedSocket,
     @MessageBody() data: { taskId: string },
   ) {
     if (!client.user) return;
 
     const { taskId } = data;
-    client.leave(`task:${taskId}`);
+    await client.leave(`task:${taskId}`);
 
     this.logger.log(`User ${client.user.email} unsubscribed from task ${taskId}`);
 
@@ -208,7 +209,8 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   @SubscribeMessage('ping')
-  handlePing(@ConnectedSocket() client: AuthenticatedSocket) {
+  handlePing(@ConnectedSocket() _client: AuthenticatedSocket) {
+    void _client; // Explicitly ignore unused parameter
     return { event: 'pong', timestamp: new Date() };
   }
 
@@ -255,7 +257,7 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     // Log event to MongoDB for audit trail and compliance
     await this.eventsService.logEvent({
-      type: type as any,
+      type: type as unknown as EventType,
       actorId,
       entityId: taskId,
       entityType: 'task',
@@ -307,7 +309,7 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     this.logger.log(`Task ${taskId} assignment notification sent`);
   }
 
-  async notifyTaskDueSoon(taskId: string, userId: string, daysUntilDue: number): Promise<void> {
+  notifyTaskDueSoon(taskId: string, userId: string, daysUntilDue: number): void {
     const notification = {
       type: 'task-due-soon',
       taskId,
@@ -325,18 +327,25 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     return {
       totalConnections: this.connectedClients.size,
       adminConnections: Array.from(this.connectedClients.values())
-        .filter(client => client.user?.role === 'admin').length,
+        .filter(client => client.user?.role === UserRole.ADMIN).length,
       userConnections: Array.from(this.connectedClients.values())
-        .filter(client => client.user?.role === 'user').length,
+        .filter(client => client.user?.role === UserRole.USER).length,
     };
   }
 
   private extractTokenFromSocket(client: AuthenticatedSocket): string | null {
-    const token = client.handshake.auth?.token ||
-                  client.handshake.headers?.authorization?.replace('Bearer ', '') ||
-                  client.handshake.query?.token;
+    // Extract token from various possible locations with proper type checking
+    let token: string | null = null;
 
-    return token as string || null;
+    if (client.handshake.auth?.token && typeof client.handshake.auth.token === 'string') {
+      token = client.handshake.auth.token;
+    } else if (client.handshake.headers?.authorization && typeof client.handshake.headers.authorization === 'string') {
+      token = client.handshake.headers.authorization.replace('Bearer ', '');
+    } else if (client.handshake.query?.token && typeof client.handshake.query.token === 'string') {
+      token = client.handshake.query.token;
+    }
+
+    return token && token.length > 0 ? token : null;
   }
 }
 

@@ -85,7 +85,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         status = HttpStatus.BAD_REQUEST;
         code = 'VALIDATION_ERROR';
         message = 'Validation failed';
-        details = exception.message;
+        details = { message: exception.message };
       } else if (exception.name === 'UnauthorizedError') {
         status = HttpStatus.UNAUTHORIZED;
         code = 'UNAUTHORIZED';

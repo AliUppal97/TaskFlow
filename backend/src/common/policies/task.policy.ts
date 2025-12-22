@@ -23,14 +23,14 @@ import { PolicyContext, ResourceOwnerPolicy } from '../interfaces/policy.interfa
  * Usage: Applied via @UsePolicy(TaskPolicy) decorator
  */
 @Injectable()
-export class TaskPolicy implements ResourceOwnerPolicy {
+export class TaskPolicy implements ResourceOwnerPolicy<Task> {
   /**
    * Route authorization requests to appropriate permission check
    * 
    * @param context - Contains user, resource (task), and action
    * @returns true if action is allowed, false otherwise
    */
-  async handle(context: PolicyContext): Promise<boolean> {
+  async handle(context: PolicyContext<Task>): Promise<boolean> {
     const { user, resource: task, action } = context;
 
     switch (action) {
@@ -38,16 +38,16 @@ export class TaskPolicy implements ResourceOwnerPolicy {
         return this.canCreate(user);
 
       case 'read':
-        return this.canRead(user, task);
+        return this.canRead(user, task as Task);
 
       case 'update':
-        return this.canUpdate(user, task);
+        return this.canUpdate(user, task as Task);
 
       case 'delete':
-        return this.canDelete(user, task);
+        return this.canDelete(user, task as Task);
 
       case 'assign':
-        return this.canAssign(user, task);
+        return this.canAssign(user, task as Task);
 
       default:
         return false; // Unknown action = deny

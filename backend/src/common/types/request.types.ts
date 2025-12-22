@@ -1,5 +1,6 @@
 import { Request } from 'express';
 import { User } from '../../entities/user.entity';
+import * as multer from 'multer';
 
 /**
  * Extended Express Request interface with user property
@@ -13,8 +14,8 @@ export interface AuthenticatedRequest extends Request {
  * Extended Express Request interface for file uploads
  */
 export interface FileUploadRequest extends Request {
-  file?: Express.Multer.File;
-  files?: Express.Multer.File[];
+  file?: multer.File;
+  files?: multer.File[];
 }
 
 /**

@@ -99,7 +99,7 @@ export class TaskController {
     policyName: 'task',
     action: 'read',
     resourceType: 'task',
-    getResource: (req) => ({ id: req.params.id }),
+    getResource: (req) => ({ id: req.params!.id }),
   })
   @ApiOperation({ summary: 'Get a task by ID' })
   @ApiParam({ name: 'id', description: 'Task ID' })
@@ -122,7 +122,7 @@ export class TaskController {
     policyName: 'task',
     action: 'update',
     resourceType: 'task',
-    getResource: (req) => ({ id: req.params.id }),
+    getResource: (req) => ({ id: req.params!.id }),
   })
   @RequirePermissions(Permission.TASK_UPDATE)
   @ApiOperation({ summary: 'Update a task' })
@@ -148,7 +148,7 @@ export class TaskController {
     policyName: 'task',
     action: 'assign',
     resourceType: 'task',
-    getResource: (req) => ({ id: req.params.id }),
+    getResource: (req) => ({ id: req.params!.id }),
   })
   @RequirePermissions(Permission.TASK_ASSIGN)
   @ApiOperation({ summary: 'Assign a task to a user' })
@@ -172,7 +172,7 @@ export class TaskController {
     policyName: 'task',
     action: 'delete',
     resourceType: 'task',
-    getResource: (req) => ({ id: req.params.id }),
+    getResource: (req) => ({ id: req.params!.id }),
   })
   @RequirePermissions(Permission.TASK_DELETE)
   @HttpCode(HttpStatus.NO_CONTENT)
