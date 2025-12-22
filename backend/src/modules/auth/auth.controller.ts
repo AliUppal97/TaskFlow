@@ -139,7 +139,7 @@ export class AuthController {
     const token = this.extractTokenFromHeader(req);
     if (token) {
       // Calculate token expiration time for blacklisting
-      const tokenPayload = this.jwtService.decode(token) as any;
+      const tokenPayload = this.jwtService.decode(token);
       if (tokenPayload && tokenPayload.exp) {
         // Blacklist the token for its remaining lifetime
         const expiresIn = tokenPayload.exp - Math.floor(Date.now() / 1000);
@@ -204,7 +204,7 @@ export class AuthController {
    * @returns Token string or undefined if not found
    */
   private extractTokenFromHeader(request: RequestWithUser): string | undefined {
-    const authHeader = request.headers['authorization'] as string | undefined;
+    const authHeader = request.headers['authorization'];
     const [type, token] = authHeader?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
