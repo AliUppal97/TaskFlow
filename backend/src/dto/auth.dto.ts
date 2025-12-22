@@ -175,5 +175,15 @@ export class UserListResponseDto {
   };
 }
 
+export class UpdateUserRoleDto {
+  @ApiProperty({
+    description: 'New role for the user',
+    enum: UserRole,
+    example: UserRole.ADMIN,
+  })
+  @IsEnum(UserRole)
+  role: UserRole;
+}
+
 
 

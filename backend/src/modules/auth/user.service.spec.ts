@@ -293,7 +293,175 @@ describe('UserService', () => {
       expect(mockQueryBuilder.where).toHaveBeenCalledWith('user.role = :role', { role: UserRole.ADMIN });
     });
   });
+
+  describe('refresh token management', () => {
+    it('should store refresh token successfully', async () => {
+      const userId = 'user-123';
+      const tokenId = 'refresh-token-id-123';
+
+      mockCacheService.generateKey.mockReturnValue(`refresh_token:${userId}`);
+      mockCacheService.set.mockResolvedValue(undefined);
+
+      await service.storeRefreshToken(userId, tokenId);
+
+      expect(mockCacheService.set).toHaveBeenCalledWith(
+        `refresh_token:${userId}`,
+        tokenId,
+        { ttl: 7 * 24 * 60 * 60 } // 7 days
+      );
+    });
+
+    it('should retrieve stored refresh token', async () => {
+      const userId = 'user-123';
+      const tokenId = 'refresh-token-id-123';
+
+      mockCacheService.generateKey.mockReturnValue(`refresh_token:${userId}`);
+      mockCacheService.get.mockResolvedValue(tokenId);
+
+      const result = await service.getStoredRefreshToken(userId);
+
+      expect(mockCacheService.get).toHaveBeenCalledWith(`refresh_token:${userId}`);
+      expect(result).toBe(tokenId);
+    });
+
+    it('should return null if refresh token not found', async () => {
+      const userId = 'user-123';
+
+      mockCacheService.generateKey.mockReturnValue(`refresh_token:${userId}`);
+      mockCacheService.get.mockResolvedValue(null);
+
+      const result = await service.getStoredRefreshToken(userId);
+
+      expect(result).toBeNull();
+    });
+
+    it('should remove refresh token successfully', async () => {
+      const userId = 'user-123';
+
+      mockCacheService.generateKey.mockReturnValue(`refresh_token:${userId}`);
+      mockCacheService.delete.mockResolvedValue(undefined);
+
+      await service.removeRefreshToken(userId);
+
+      expect(mockCacheService.delete).toHaveBeenCalledWith(`refresh_token:${userId}`);
+    });
+
+    it('should handle cache failure during token storage', async () => {
+      const userId = 'user-123';
+      const tokenId = 'refresh-token-id-123';
+
+      mockCacheService.generateKey.mockReturnValue(`refresh_token:${userId}`);
+      mockCacheService.set.mockRejectedValue(new Error('Redis unavailable'));
+
+      await expect(service.storeRefreshToken(userId, tokenId)).rejects.toThrow('Redis unavailable');
+    });
+
+    it('should handle cache failure during token retrieval', async () => {
+      const userId = 'user-123';
+
+      mockCacheService.generateKey.mockReturnValue(`refresh_token:${userId}`);
+      mockCacheService.get.mockRejectedValue(new Error('Redis unavailable'));
+
+      await expect(service.getStoredRefreshToken(userId)).rejects.toThrow('Redis unavailable');
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should handle updateProfile with empty profile object', async () => {
+      const updatedUser = { ...mockUser, profile: {} };
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockRepository.save.mockResolvedValue(updatedUser);
+      mockCacheService.get.mockResolvedValue(mockUser);
+
+      const result = await service.updateProfile(mockUser.id, {});
+
+      expect(result.profile).toEqual({});
+    });
+
+    it('should handle updateProfile with partial profile updates', async () => {
+      const updatedUser = {
+        ...mockUser,
+        profile: { ...mockUser.profile, firstName: 'Updated' },
+      };
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockRepository.save.mockResolvedValue(updatedUser);
+      mockCacheService.get.mockResolvedValue(mockUser);
+
+      const result = await service.updateProfile(mockUser.id, { firstName: 'Updated' });
+
+      expect(result.profile.firstName).toBe('Updated');
+      expect(result.profile.lastName).toBe(mockUser.profile.lastName); // Preserved
+    });
+
+    it('should handle updateRole with same role', async () => {
+      const updatedUser = { ...mockUser, role: UserRole.USER };
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockRepository.save.mockResolvedValue(updatedUser);
+      mockCacheService.get.mockResolvedValue(mockUser);
+
+      const result = await service.updateRole(mockUser.id, UserRole.USER);
+
+      expect(result.role).toBe(UserRole.USER);
+    });
+
+    it('should handle password validation with very long password', async () => {
+      const longPassword = 'a'.repeat(1000);
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockCacheService.get.mockResolvedValue(mockUser);
+
+      const bcrypt = require('bcryptjs');
+      jest.spyOn(bcrypt, 'compare').mockResolvedValue(false);
+
+      const result = await service.validatePassword(mockUser.email, longPassword);
+
+      expect(result).toBeNull();
+    });
+
+    it('should handle password validation with special characters', async () => {
+      const specialPassword = '!@#$%^&*()_+-=[]{}|;:,.<>?';
+      mockRepository.findOne.mockResolvedValue(mockUser);
+      mockCacheService.get.mockResolvedValue(mockUser);
+
+      const bcrypt = require('bcryptjs');
+      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+
+      const result = await service.validatePassword(mockUser.email, specialPassword);
+
+      expect(result).toEqual(mockUser);
+    });
+
+    it('should handle database errors during user creation', async () => {
+      const registerDto: RegisterDto = {
+        email: 'newuser@example.com',
+        password: 'password123',
+      };
+
+      mockRepository.findOne.mockResolvedValue(null);
+      mockRepository.create.mockReturnValue(mockUser);
+      mockRepository.save.mockRejectedValue(new Error('Database connection failed'));
+
+      await expect(service.create(registerDto)).rejects.toThrow('Database connection failed');
+    });
+
+    it('should handle cache errors during user creation', async () => {
+      const registerDto: RegisterDto = {
+        email: 'newuser@example.com',
+        password: 'password123',
+      };
+
+      mockRepository.findOne.mockResolvedValue(null);
+      mockRepository.create.mockReturnValue(mockUser);
+      mockRepository.save.mockResolvedValue(mockUser);
+      mockCacheService.set.mockRejectedValue(new Error('Cache unavailable'));
+
+      // User creation should still succeed even if cache fails
+      await expect(service.create(registerDto)).rejects.toThrow('Cache unavailable');
+    });
+  });
 });
+
+
+
 
 
 

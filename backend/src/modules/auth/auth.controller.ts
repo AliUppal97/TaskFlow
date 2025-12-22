@@ -19,6 +19,7 @@ import {
   ApiBody,
   ApiExtraModels,
 } from '@nestjs/swagger';
+import { JwtService } from '@nestjs/jwt';
 import type { Response as ExpressResponse } from 'express';
 
 import { AuthService } from './auth.service';
@@ -44,6 +45,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly jwtService: JwtService,
   ) {}
 
   @Post('register')
@@ -130,6 +132,21 @@ export class AuthController {
     @Response({ passthrough: true }) response: ExpressResponse,
   ): Promise<{ message: string }> {
     const userId = req.user.id;
+
+    // Extract the access token from the request to blacklist it
+    const token = this.extractTokenFromHeader(req);
+    if (token) {
+      // Calculate token expiration time for blacklisting
+      const tokenPayload = this.jwtService.decode(token) as any;
+      if (tokenPayload && tokenPayload.exp) {
+        // Blacklist the token for its remaining lifetime
+        const expiresIn = tokenPayload.exp - Math.floor(Date.now() / 1000);
+        if (expiresIn > 0) {
+          await this.authService.blacklistToken(token, expiresIn);
+        }
+      }
+    }
+
     await this.authService.logout(userId);
 
     // Clear refresh token cookie
@@ -155,5 +172,17 @@ export class AuthController {
 
     const { passwordHash, ...userProfile } = user;
     return userProfile as UserProfileDto;
+  }
+
+  /**
+   * Extract Bearer token from Authorization header
+   * Format: "Bearer <token>"
+   *
+   * @param request - HTTP request object
+   * @returns Token string or undefined if not found
+   */
+  private extractTokenFromHeader(request: any): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
   }
 }

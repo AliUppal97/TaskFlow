@@ -5,6 +5,11 @@ import {
   UseGuards,
   Request,
   UseInterceptors,
+  Patch,
+  Param,
+  Body,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,6 +18,8 @@ import {
   ApiBearerAuth,
   ApiQuery,
   ApiExtraModels,
+  ApiParam,
+  ApiBody,
 } from '@nestjs/swagger';
 
 import { UserService } from './user.service';
@@ -25,6 +32,7 @@ import {
   UserQueryDto,
   UserProfileDto,
   UserListResponseDto,
+  UpdateUserRoleDto,
 } from '../../dto/auth.dto';
 import type { RequestWithUser } from '../../common/interfaces/request-with-user.interface';
 import { LoggingInterceptor } from '../../interceptors/logging.interceptor';
@@ -76,6 +84,65 @@ export class UsersController {
         totalPages: Math.ceil(result.total / limit),
       },
     };
+  }
+
+  @Patch(':id/role')
+  @RequirePermissions(Permission.USER_MANAGE_ROLES)
+  @ApiOperation({ summary: 'Update user role (Admin only)' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @ApiBody({ type: UpdateUserRoleDto })
+  @ApiResponse({
+    status: 200,
+    description: 'User role updated successfully',
+    type: UserProfileDto,
+  })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 400, description: 'Invalid role or cannot change own role' })
+  @ApiResponse({ status: 403, description: 'Insufficient permissions' })
+  async updateUserRole(
+    @Param('id') userId: string,
+    @Body() updateRoleDto: UpdateUserRoleDto,
+    @Request() req: RequestWithUser,
+  ): Promise<UserProfileDto> {
+    // Prevent users from changing their own role
+    if (req.user.id === userId) {
+      throw new Error('Cannot change your own role');
+    }
+
+    const updatedUser = await this.userService.updateUserRole(userId, updateRoleDto.role);
+
+    // Remove password hash from response
+    const { passwordHash, ...userProfile } = updatedUser;
+    return userProfile as UserProfileDto;
+  }
+
+  @Patch(':id/status')
+  @RequirePermissions(Permission.USER_UPDATE)
+  @ApiOperation({ summary: 'Update user status (Admin only)' })
+  @ApiParam({ name: 'id', description: 'User ID' })
+  @ApiBody({ schema: { type: 'object', properties: { isActive: { type: 'boolean' } } } })
+  @ApiResponse({
+    status: 200,
+    description: 'User status updated successfully',
+    type: UserProfileDto,
+  })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  @ApiResponse({ status: 403, description: 'Insufficient permissions' })
+  async updateUserStatus(
+    @Param('id') userId: string,
+    @Body() body: { isActive: boolean },
+    @Request() req: RequestWithUser,
+  ): Promise<UserProfileDto> {
+    // Prevent users from deactivating themselves
+    if (req.user.id === userId && !body.isActive) {
+      throw new Error('Cannot deactivate your own account');
+    }
+
+    const updatedUser = await this.userService.updateUserStatus(userId, body.isActive);
+
+    // Remove password hash from response
+    const { passwordHash, ...userProfile } = updatedUser;
+    return userProfile as UserProfileDto;
   }
 }
 

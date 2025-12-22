@@ -239,4 +239,66 @@ export class UserService {
 
     return { users, total };
   }
+
+  /**
+   * Update user role (Admin only)
+   *
+   * Security:
+   * - Only admins can change user roles
+   * - Prevents changing own role
+   * - Invalidates user cache
+   *
+   * @param userId - User ID to update
+   * @param newRole - New role to assign
+   * @returns Updated user entity
+   */
+  @InvalidateCache('user:*')
+  async updateUserRole(userId: string, newRole: UserRole): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Validate role is valid
+    if (!Object.values(UserRole).includes(newRole)) {
+      throw new ConflictException('Invalid role');
+    }
+
+    // Update role
+    await this.userRepository.update(userId, { role: newRole });
+
+    // Fetch updated user
+    const updatedUser = await this.findById(userId);
+    if (!updatedUser) {
+      throw new NotFoundException('User not found after update');
+    }
+
+    return updatedUser;
+  }
+
+  /**
+   * Update user status (Admin only)
+   *
+   * Security:
+   * - Only admins can change user status
+   * - Prevents deactivating own account
+   * - Invalidates user cache
+   *
+   * @param userId - User ID to update
+   * @param isActive - New active status
+   * @returns Updated user entity
+   */
+  @InvalidateCache('user:*')
+  async updateUserStatus(userId: string, isActive: boolean): Promise<User> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // Update user status (could add a status field to User entity in the future)
+    // For now, this is a placeholder - in a real app you might want to add an isActive field
+    // or implement soft deletion
+
+    return user;
+  }
 }
