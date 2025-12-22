@@ -133,16 +133,60 @@ export class CacheService {
 
   /**
    * Generate cache key with consistent prefix format
-   * 
+   *
    * Format: prefix:part1:part2:part3
    * Example: generateKey('user', '123') => 'user:123'
-   * 
+   *
    * @param prefix - Key prefix (e.g., 'user', 'task')
    * @param parts - Additional key parts
    * @returns Formatted cache key
    */
   generateKey(prefix: string, ...parts: (string | number)[]): string {
     return `${prefix}:${parts.join(':')}`;
+  }
+
+  /**
+   * Check if Redis is healthy and responding
+   *
+   * @returns Promise<boolean> - true if Redis is healthy
+   */
+  async isHealthy(): Promise<boolean> {
+    try {
+      // Try to set and get a test key
+      const testKey = this.generateKey('health', 'check');
+      const testValue = `health-check-${Date.now()}`;
+
+      await this.set(testKey, testValue, { ttl: 10 }); // 10 second TTL
+      const retrieved = await this.get(testKey);
+
+      return retrieved === testValue;
+    } catch (error) {
+      this.logger.error('Redis health check failed:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get cache statistics and health information
+   *
+   * @returns Basic cache health and connection status
+   */
+  async getStats(): Promise<{
+    connected: boolean;
+    storeType: string;
+  }> {
+    try {
+      const isHealthy = await this.isHealthy();
+      const storeType = this.cacheManager.store ? this.cacheManager.store.constructor.name : 'unknown';
+
+      return {
+        connected: isHealthy,
+        storeType,
+      };
+    } catch (error) {
+      this.logger.error('Error getting cache stats:', error);
+      return { connected: false, storeType: 'unknown' };
+    }
   }
 
   /**

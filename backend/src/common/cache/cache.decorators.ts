@@ -61,13 +61,11 @@ export function InvalidateCache(pattern: string) {
         // Execute method first
         result = await method.apply(this, args);
 
-        // Invalidate cache
-        if (cacheManager) {
-          const keys = await cacheManager.store.keys(pattern);
-          if (keys.length > 0) {
-            await Promise.all(keys.map(key => cacheManager.del(key)));
-            logger.debug(`Invalidated ${keys.length} cache keys matching pattern: ${pattern}`);
-          }
+        // Invalidate cache - use the cache service's deletePattern method for proper Redis support
+        if (cacheManager && typeof cacheManager.deletePattern === 'function') {
+          await cacheManager.deletePattern(pattern);
+        } else {
+          logger.warn('Cache invalidation not available - cache service may not be properly injected');
         }
 
         return result;

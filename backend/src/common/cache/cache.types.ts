@@ -17,6 +17,16 @@ export interface RedisStore {
    * Reset/clear the entire cache store
    */
   reset(): Promise<void>;
+
+  /**
+   * Redis client instance (ioredis)
+   */
+  client?: {
+    /**
+     * Get Redis server information
+     */
+    info(): Promise<string>;
+  };
 }
 
 /**
