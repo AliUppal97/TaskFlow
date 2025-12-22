@@ -1,26 +1,115 @@
 @import "tailwindcss";
 
 :root {
+  /* Google Material Design 3 Light Theme - Following Material You Guidelines */
+  /* Surface Colors */
   --background: #ffffff;
-  --foreground: #0f172a;
+  --surface: #ffffff;
+  --surface-variant: #f5f5f5;
+  
+  /* Text Colors - Material Design uses dark gray, not pure black */
+  --foreground: #212121;
+  --on-surface: #212121;
+  --on-surface-variant: #757575;
+  
+  /* Card Colors */
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #212121;
+  
+  /* Popover Colors */
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #6366f1;
+  --popover-foreground: #212121;
+  
+  /* Primary Colors - Material Blue 500 */
+  --primary: #1976d2;
   --primary-foreground: #ffffff;
-  --secondary: #f1f5f9;
-  --secondary-foreground: #0f172a;
-  --muted: #f8fafc;
-  --muted-foreground: #64748b;
-  --accent: #f1f5f9;
-  --accent-foreground: #0f172a;
+  --on-primary: #ffffff;
+  
+  /* Secondary Colors - Material Teal 500 */
+  --secondary: #00796b;
+  --secondary-foreground: #ffffff;
+  --on-secondary: #ffffff;
+  
+  /* Muted/Disabled Colors */
+  --muted: #f5f5f5;
+  --muted-foreground: #9e9e9e;
+  
+  /* Accent Colors - Material Blue 50 */
+  --accent: #e3f2fd;
+  --accent-foreground: #1976d2;
+  --on-accent: #1976d2;
+  
+  /* Error/Destructive - Material Red */
+  --destructive: #d32f2f;
+  --destructive-foreground: #ffffff;
+  --on-error: #ffffff;
+  
+  /* Border and Input Colors - Material Gray 300 */
+  --border: #e0e0e0;
+  --input: #e0e0e0;
+  --outline: #bdbdbd;
+  --outline-variant: #e0e0e0;
+  
+  /* Focus Ring - Primary Color */
+  --ring: #1976d2;
+  
+  /* Border Radius - Material Design uses 4px, 8px, 12px, 16px */
+  --radius: 0.5rem;
+  
+  /* Material Design Gradients */
+  --gradient-primary: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+  --gradient-secondary: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  --gradient-accent: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
+  
+  /* Material Design Elevation Shadows (dp levels) */
+  /* dp1 - Subtle elevation */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+  /* dp2 - Cards, buttons */
+  --shadow-md: 0 3px 6px 0 rgba(0, 0, 0, 0.16), 0 3px 6px 0 rgba(0, 0, 0, 0.23);
+  /* dp4 - Floating action buttons */
+  --shadow-lg: 0 10px 20px 0 rgba(0, 0, 0, 0.19), 0 6px 6px 0 rgba(0, 0, 0, 0.23);
+  /* dp8 - Dialogs, modals */
+  --shadow-xl: 0 14px 28px 0 rgba(0, 0, 0, 0.25), 0 10px 10px 0 rgba(0, 0, 0, 0.22);
+  /* dp16 - Navigation drawer */
+  --shadow-2xl: 0 19px 38px 0 rgba(0, 0, 0, 0.30), 0 15px 12px 0 rgba(0, 0, 0, 0.22);
+  /* Colored shadow for primary elements */
+  --shadow-colored: 0 8px 16px 0 rgba(25, 118, 210, 0.24), 0 4px 8px 0 rgba(25, 118, 210, 0.16);
+}
+
+.dark {
+  /* Premium Dark Theme - Clean, Modern, Eye-catching */
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card: #1e293b;
+  --card-foreground: #f8fafc;
+  --popover: #1e293b;
+  --popover-foreground: #f8fafc;
+  --primary: #818cf8;
+  --primary-foreground: #0f172a;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #6366f1;
-  --radius: 0.5rem;
+  --border: #334155;
+  --input: #334155;
+  --ring: #818cf8;
+  
+  /* Premium gradient colors for dark */
+  --gradient-primary: linear-gradient(135deg, #818cf8 0%, #a78bfa 100%);
+  --gradient-secondary: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  --gradient-accent: linear-gradient(135deg, #475569 0%, #64748b 100%);
+  
+  /* Shadow variables for dark theme */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.4);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  --shadow-colored: 0 10px 30px -5px rgba(129, 140, 248, 0.4);
 }
 
 @theme inline {
@@ -47,38 +136,80 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0f172a;
-    --foreground: #f8fafc;
-    --card: #1e293b;
-    --card-foreground: #f8fafc;
-    --popover: #1e293b;
-    --popover-foreground: #f8fafc;
-    --primary: #818cf8;
-    --primary-foreground: #0f172a;
-    --secondary: #1e293b;
-    --secondary-foreground: #f8fafc;
-    --muted: #1e293b;
-    --muted-foreground: #94a3b8;
-    --accent: #1e293b;
-    --accent-foreground: #f8fafc;
-    --destructive: #ef4444;
-    --destructive-foreground: #ffffff;
-    --border: #334155;
-    --input: #334155;
-    --ring: #818cf8;
-  }
+/* CRITICAL: Ensure light theme is the default and enforced */
+/* Force light theme when dark class is not present */
+html:not(.dark) {
+  color-scheme: light !important;
+}
+
+html:not(.dark) body {
+  background: #ffffff !important;
+  color: var(--on-surface) !important;
+}
+
+/* Force all elements to use light theme when dark class is absent */
+html:not(.dark) * {
+  /* Ensure light theme variables are used */
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background: var(--background);
+  color: var(--foreground);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  background: #ffffff;
+  color: var(--on-surface);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Additional enforcement: prevent dark theme from being applied incorrectly */
+html:not(.dark) {
+  /* Force remove any dark theme styles */
 }
 
 * {
   border-color: var(--border);
+}
+
+/* Remove default input borders and prevent layout shifts */
+input,
+textarea,
+select,
+button {
+  outline: none;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus {
+  outline: none;
+}
+
+/* Prevent layout shifts on hover/click */
+* {
+  box-sizing: border-box;
+}
+
+/* Ensure consistent borders - prevent default browser styling */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="number"],
+textarea,
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 /* Smooth scroll behavior */

@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getErrorMessage } from '@/types';
 import { Logo } from '@/components/logo';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const registerSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -72,12 +73,12 @@ export function RegisterForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900 relative overflow-hidden flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-indigo-200/40 dark:bg-indigo-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-200/40 dark:bg-purple-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-200/40 dark:bg-blue-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Logo/Brand Section */}
@@ -85,20 +86,25 @@ export function RegisterForm() {
         <Logo size="lg" />
       </div>
 
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Register Card */}
       <div className="relative z-10 w-full max-w-md animate-fade-in-up">
-        <Card className="bg-white/5 backdrop-blur-md border-white/10 shadow-2xl">
+        <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-2xl">
           <CardHeader className="space-y-4 text-center pb-6">
             <div className="flex justify-center mb-2">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/50">
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/30">
                 <UserPlus className="h-8 w-8 text-white" />
               </div>
             </div>
             <div className="space-y-2">
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
+              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-slate-900 via-indigo-800 to-purple-800 dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 bg-clip-text text-transparent">
                 Create Account
               </CardTitle>
-              <CardDescription className="text-white/70 text-base">
+              <CardDescription className="text-slate-600 dark:text-slate-400 text-base">
                 Join TaskFlow and start managing your tasks efficiently
               </CardDescription>
             </div>
@@ -106,49 +112,49 @@ export function RegisterForm() {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               {error && (
-                <div className="p-4 text-sm text-red-300 bg-red-500/20 backdrop-blur-sm border border-red-400/30 rounded-lg">
+                <div className="p-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                   {error}
                 </div>
               )}
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <label htmlFor="firstName" className="text-sm font-medium text-white/90">
+                  <label htmlFor="firstName" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     First Name
                   </label>
                   <Input
                     id="firstName"
                     placeholder="John"
                     {...registerField('firstName')}
-                    className={`bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-purple-400/50 focus:ring-purple-400/20 ${
-                      errors.firstName ? 'border-red-400/50 focus:border-red-400 focus:ring-red-400/20' : ''
+                    className={`border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 ${
+                      errors.firstName ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400' : ''
                     }`}
                   />
                   {errors.firstName && (
-                    <p className="text-sm text-red-300">{errors.firstName.message}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.firstName.message}</p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <label htmlFor="lastName" className="text-sm font-medium text-white/90">
+                  <label htmlFor="lastName" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Last Name
                   </label>
                   <Input
                     id="lastName"
                     placeholder="Doe"
                     {...registerField('lastName')}
-                    className={`bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-purple-400/50 focus:ring-purple-400/20 ${
-                      errors.lastName ? 'border-red-400/50 focus:border-red-400 focus:ring-red-400/20' : ''
+                    className={`border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 ${
+                      errors.lastName ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400' : ''
                     }`}
                   />
                   {errors.lastName && (
-                    <p className="text-sm text-red-300">{errors.lastName.message}</p>
+                    <p className="text-sm text-red-600 dark:text-red-400">{errors.lastName.message}</p>
                   )}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-white/90">
+                <label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Email Address
                 </label>
                 <Input
@@ -156,17 +162,17 @@ export function RegisterForm() {
                   type="email"
                   placeholder="john@example.com"
                   {...registerField('email')}
-                  className={`bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-purple-400/50 focus:ring-purple-400/20 ${
-                    errors.email ? 'border-red-400/50 focus:border-red-400 focus:ring-red-400/20' : ''
+                  className={`border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 ${
+                    errors.email ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400' : ''
                   }`}
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-300">{errors.email.message}</p>
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-white/90">
+                <label htmlFor="password" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Password
                 </label>
                 <div className="relative">
@@ -175,8 +181,8 @@ export function RegisterForm() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Create a strong password"
                     {...registerField('password')}
-                    className={`bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-purple-400/50 focus:ring-purple-400/20 pr-10 ${
-                      errors.password ? 'border-red-400/50 focus:border-red-400 focus:ring-red-400/20' : ''
+                    className={`border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 pr-10 ${
+                      errors.password ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400' : ''
                     }`}
                   />
                   <button
@@ -185,20 +191,20 @@ export function RegisterForm() {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-white/60" />
+                      <EyeOff className="h-5 w-5 text-slate-500 dark:text-slate-400" />
                     ) : (
-                      <Eye className="h-5 w-5 text-white/60" />
+                      <Eye className="h-5 w-5 text-slate-500 dark:text-slate-400" />
                     )}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-300">{errors.password.message}</p>
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
                 )}
-                <p className="text-xs text-white/50">Must be at least 8 characters</p>
+                <p className="text-xs text-slate-500 dark:text-slate-500">Must be at least 8 characters</p>
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="confirmPassword" className="text-sm font-medium text-white/90">
+                <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -207,8 +213,8 @@ export function RegisterForm() {
                     type={showConfirmPassword ? 'text' : 'password'}
                     placeholder="Confirm your password"
                     {...registerField('confirmPassword')}
-                    className={`bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-purple-400/50 focus:ring-purple-400/20 pr-10 ${
-                      errors.confirmPassword ? 'border-red-400/50 focus:border-red-400 focus:ring-red-400/20' : ''
+                    className={`border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 pr-10 ${
+                      errors.confirmPassword ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400' : ''
                     }`}
                   />
                   <button
@@ -217,20 +223,20 @@ export function RegisterForm() {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   >
                     {showConfirmPassword ? (
-                      <EyeOff className="h-5 w-5 text-white/60" />
+                      <EyeOff className="h-5 w-5 text-slate-500 dark:text-slate-400" />
                     ) : (
-                      <Eye className="h-5 w-5 text-white/60" />
+                      <Eye className="h-5 w-5 text-slate-500 dark:text-slate-400" />
                     )}
                   </button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-sm text-red-300">{errors.confirmPassword.message}</p>
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.confirmPassword.message}</p>
                 )}
               </div>
 
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/60 transition-all h-11 text-base font-semibold" 
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all h-11 text-base font-semibold" 
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -247,12 +253,12 @@ export function RegisterForm() {
               </Button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-white/10">
-              <p className="text-center text-sm text-white/70">
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+              <p className="text-center text-sm text-slate-600 dark:text-slate-400">
                 Already have an account?{' '}
                 <button
                   onClick={() => router.push('/login')}
-                  className="font-semibold text-purple-300 hover:text-purple-200 transition-colors inline-flex items-center gap-1"
+                  className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors inline-flex items-center gap-1"
                 >
                   Sign in
                   <ArrowRight className="h-4 w-4" />
@@ -266,7 +272,7 @@ export function RegisterForm() {
         <div className="mt-6 text-center">
           <button
             onClick={() => router.push('/')}
-            className="text-sm text-white/60 hover:text-white/90 transition-colors inline-flex items-center gap-1"
+            className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors inline-flex items-center gap-1"
           >
             <ArrowRight className="h-4 w-4 rotate-180" />
             Back to home

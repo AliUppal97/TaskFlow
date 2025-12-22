@@ -142,21 +142,21 @@ export default function TasksPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen bg-white dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900">
         <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 mb-2">
                 Tasks
               </h1>
-              <p className="text-white/70 text-lg">
+              <p className="text-[#757575] dark:text-slate-400 text-lg">
                 Manage and track your team&apos;s tasks with real-time collaboration
               </p>
             </div>
             <Button 
               onClick={() => setShowCreateForm(true)} 
-              className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-purple-500/50"
+              className="flex items-center gap-2 bg-[#1976d2] hover:bg-[#1565c0] text-white shadow-md hover:shadow-lg"
             >
               <Plus className="h-4 w-4" />
               New Task
@@ -165,61 +165,61 @@ export default function TasksPage() {
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card className="bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 transition-all">
+            <Card className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 hover:border-[#1976d2] dark:hover:border-blue-600 transition-all shadow-sm hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/90">Total Tasks</CardTitle>
-                <BarChart3 className="h-4 w-4 text-blue-400" />
+                <CardTitle className="text-sm font-medium text-[#757575] dark:text-slate-300">Total Tasks</CardTitle>
+                <BarChart3 className="h-4 w-4 text-[#1976d2] dark:text-blue-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-2xl font-bold text-[#212121] dark:text-slate-100">
                   {statsLoading ? '...' : stats?.total || 0}
                 </div>
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-[#757575] dark:text-slate-400">
                   Across all statuses
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 transition-all">
+            <Card className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 hover:border-[#00796b] dark:hover:border-green-600 transition-all shadow-sm hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/90">In Progress</CardTitle>
-                <Users className="h-4 w-4 text-green-400" />
+                <CardTitle className="text-sm font-medium text-[#757575] dark:text-slate-300">In Progress</CardTitle>
+                <Users className="h-4 w-4 text-[#00796b] dark:text-green-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-2xl font-bold text-[#212121] dark:text-slate-100">
                   {statsLoading ? '...' : stats?.byStatus[TaskStatus.IN_PROGRESS] || 0}
                 </div>
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-[#757575] dark:text-slate-400">
                   Currently active
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 transition-all">
+            <Card className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 hover:border-[#f57c00] dark:hover:border-yellow-600 transition-all shadow-sm hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/90">High Priority</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-yellow-400" />
+                <CardTitle className="text-sm font-medium text-[#757575] dark:text-slate-300">High Priority</CardTitle>
+                <AlertTriangle className="h-4 w-4 text-[#f57c00] dark:text-yellow-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-2xl font-bold text-[#212121] dark:text-slate-100">
                   {statsLoading ? '...' : (stats?.byPriority.high || 0) + (stats?.byPriority.urgent || 0)}
                 </div>
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-[#757575] dark:text-slate-400">
                   Need attention
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 transition-all">
+            <Card className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 hover:border-[#d32f2f] dark:hover:border-red-600 transition-all shadow-sm hover:shadow-md">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/90">Overdue</CardTitle>
-                <AlertTriangle className="h-4 w-4 text-red-400" />
+                <CardTitle className="text-sm font-medium text-[#757575] dark:text-slate-300">Overdue</CardTitle>
+                <AlertTriangle className="h-4 w-4 text-[#d32f2f] dark:text-red-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-red-400">
+                <div className="text-2xl font-bold text-[#d32f2f] dark:text-red-400">
                   {statsLoading ? '...' : stats?.overdue || 0}
                 </div>
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-[#757575] dark:text-slate-400">
                   Past due date
                 </p>
               </CardContent>
@@ -228,8 +228,8 @@ export default function TasksPage() {
 
           {/* Error Display */}
           {tasksError && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-              <p className="text-red-400 text-sm">
+            <div className="mb-6 p-4 bg-[#ffebee] dark:bg-red-900/20 border border-[#ffcdd2] dark:border-red-800 rounded-lg">
+              <p className="text-[#d32f2f] dark:text-red-400 text-sm">
                 Error loading tasks: {tasksError instanceof Error ? tasksError.message : 'Unknown error'}
               </p>
             </div>
@@ -254,8 +254,8 @@ export default function TasksPage() {
 
           {/* Pagination */}
           {pagination && pagination.totalPages > 1 && (
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-white/10">
-              <div className="text-sm text-white/70">
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-[#e0e0e0] dark:border-slate-800">
+              <div className="text-sm text-[#757575] dark:text-slate-400">
                 Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} tasks
               </div>
               <div className="flex items-center gap-2">
@@ -264,7 +264,7 @@ export default function TasksPage() {
                   size="sm"
                   onClick={() => setFilters(prev => ({ ...prev, page: prev.page - 1 }))}
                   disabled={pagination.page === 1 || tasksLoading}
-                  className="bg-white/5 border-white/10 text-white hover:bg-white/10 disabled:opacity-50"
+                  className="border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-800 disabled:opacity-50"
                 >
                   <ChevronLeft className="h-4 w-4 mr-1" />
                   Previous
@@ -290,8 +290,8 @@ export default function TasksPage() {
                         disabled={tasksLoading}
                         className={
                           pagination.page === pageNum
-                            ? "bg-indigo-500 text-white hover:bg-indigo-600"
-                            : "bg-white/5 border-white/10 text-white hover:bg-white/10 disabled:opacity-50"
+                            ? "bg-[#1976d2] text-white hover:bg-[#1565c0]"
+                            : "border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-800 disabled:opacity-50"
                         }
                       >
                         {pageNum}
@@ -304,7 +304,7 @@ export default function TasksPage() {
                   size="sm"
                   onClick={() => setFilters(prev => ({ ...prev, page: prev.page + 1 }))}
                   disabled={pagination.page === pagination.totalPages || tasksLoading}
-                  className="bg-white/5 border-white/10 text-white hover:bg-white/10 disabled:opacity-50"
+                  className="border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-800 disabled:opacity-50"
                 >
                   Next
                   <ChevronRight className="h-4 w-4 ml-1" />
@@ -335,16 +335,16 @@ export default function TasksPage() {
 
           {/* Assign Task Modal */}
           {showAssignModal && selectedTask && (
-            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-              <div className="bg-slate-800/95 backdrop-blur-md border border-white/10 rounded-lg p-6 max-w-md w-full mx-4 shadow-2xl">
-                <h3 className="text-lg font-semibold mb-4 text-white">Assign Task</h3>
-                <p className="text-sm text-white/70 mb-6">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+              <div className="bg-white dark:bg-slate-800 border border-[#e0e0e0] dark:border-slate-700 rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+                <h3 className="text-lg font-semibold mb-4 text-[#212121] dark:text-slate-100">Assign Task</h3>
+                <p className="text-sm text-[#757575] dark:text-slate-400 mb-6">
                   Assign &quot;{selectedTask.title}&quot; to a team member
                 </p>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-white/90 mb-2 block">
+                    <label className="text-sm font-medium text-[#212121] dark:text-slate-300 mb-2 block">
                       Select Assignee
                     </label>
                     <UserSelector
@@ -366,12 +366,14 @@ export default function TasksPage() {
                         setShowAssignModal(false);
                         setSelectedTask(null);
                       }}
+                      className="border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-700"
                     >
                       Cancel
                     </Button>
                     <Button
                       onClick={() => handleAssignSubmit(selectedTask.assigneeId)}
                       disabled={assignTaskMutation.isPending}
+                      className="bg-[#1976d2] hover:bg-[#1565c0] text-white"
                     >
                       {assignTaskMutation.isPending ? 'Assigning...' : 'Assign Task'}
                     </Button>

@@ -48,30 +48,30 @@ export function TaskCard({
   const getStatusColor = (status: TaskStatus) => {
     switch (status) {
       case TaskStatus.TODO:
-        return 'bg-slate-700/50 text-slate-200 border border-slate-600/50';
+        return 'bg-[#f5f5f5] dark:bg-slate-700/50 text-[#757575] dark:text-slate-200 border border-[#e0e0e0] dark:border-slate-600/50';
       case TaskStatus.IN_PROGRESS:
-        return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
+        return 'bg-[#e3f2fd] dark:bg-blue-500/20 text-[#1976d2] dark:text-blue-300 border border-[#bbdefb] dark:border-blue-500/30';
       case TaskStatus.REVIEW:
-        return 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30';
+        return 'bg-[#fff3e0] dark:bg-yellow-500/20 text-[#f57c00] dark:text-yellow-300 border border-[#ffe0b2] dark:border-yellow-500/30';
       case TaskStatus.DONE:
-        return 'bg-green-500/20 text-green-300 border border-green-500/30';
+        return 'bg-[#e0f2f1] dark:bg-green-500/20 text-[#00796b] dark:text-green-300 border border-[#b2dfdb] dark:border-green-500/30';
       default:
-        return 'bg-slate-700/50 text-slate-200 border border-slate-600/50';
+        return 'bg-[#f5f5f5] dark:bg-slate-700/50 text-[#757575] dark:text-slate-200 border border-[#e0e0e0] dark:border-slate-600/50';
     }
   };
 
   const getPriorityColor = (priority: TaskPriority) => {
     switch (priority) {
       case TaskPriority.LOW:
-        return 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        return 'bg-[#e0f2f1] dark:bg-emerald-500/20 text-[#00796b] dark:text-emerald-300 border border-[#b2dfdb] dark:border-emerald-500/30';
       case TaskPriority.MEDIUM:
-        return 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30';
+        return 'bg-[#fff3e0] dark:bg-yellow-500/20 text-[#f57c00] dark:text-yellow-300 border border-[#ffe0b2] dark:border-yellow-500/30';
       case TaskPriority.HIGH:
-        return 'bg-orange-500/20 text-orange-300 border border-orange-500/30';
+        return 'bg-[#ffe0b2] dark:bg-orange-500/20 text-[#e65100] dark:text-orange-300 border border-[#ffcc80] dark:border-orange-500/30';
       case TaskPriority.URGENT:
-        return 'bg-red-500/20 text-red-300 border border-red-500/30';
+        return 'bg-[#ffebee] dark:bg-red-500/20 text-[#d32f2f] dark:text-red-300 border border-[#ffcdd2] dark:border-red-500/30';
       default:
-        return 'bg-slate-700/50 text-slate-200 border border-slate-600/50';
+        return 'bg-[#f5f5f5] dark:bg-slate-700/50 text-[#757575] dark:text-slate-200 border border-[#e0e0e0] dark:border-slate-600/50';
     }
   };
 
@@ -107,11 +107,11 @@ export function TaskCard({
   const canChangeStatus = canEdit;
 
   return (
-    <Card className={`transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/20 hover:scale-[1.02] bg-white/5 backdrop-blur-md border-white/10 ${task.isOverdue ? 'border-red-500/50 bg-red-500/10 ring-2 ring-red-500/30' : 'hover:border-indigo-500/50'}`}>
+    <Card className={`transition-all duration-300 hover:shadow-lg hover:shadow-[#1976d2]/10 dark:hover:shadow-purple-500/30 bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 ${task.isOverdue ? 'border-[#d32f2f] dark:border-red-500/50 bg-[#ffebee] dark:bg-red-500/10 ring-2 ring-[#ffcdd2] dark:ring-red-500/30' : ''}`}>
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-lg text-white truncate mb-2">
+            <h3 className="font-semibold text-lg text-[#212121] dark:text-slate-100 truncate mb-2">
               {task.title}
             </h3>
             <div className="flex items-center gap-2 flex-wrap">
@@ -127,30 +127,30 @@ export function TaskCard({
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-white/70 hover:text-white hover:bg-white/10">
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-[#757575] dark:text-slate-300 hover:text-[#212121] dark:hover:text-slate-100 hover:bg-[#f5f5f5] dark:hover:bg-slate-700">
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-slate-800 border-white/10">
+            <DropdownMenuContent align="end" className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700">
               {canEdit && (
-                <DropdownMenuItem onClick={() => onEdit?.(task)} className="text-white focus:bg-white/10">
+                <DropdownMenuItem onClick={() => onEdit?.(task)} className="text-[#212121] dark:text-slate-100 focus:bg-[#f5f5f5] dark:focus:bg-slate-700">
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
                 </DropdownMenuItem>
               )}
               {canAssign && (
-                <DropdownMenuItem onClick={() => onAssign?.(task.id)} className="text-white focus:bg-white/10">
+                <DropdownMenuItem onClick={() => onAssign?.(task.id)} className="text-[#212121] dark:text-slate-100 focus:bg-[#f5f5f5] dark:focus:bg-slate-700">
                   <UserCheck className="h-4 w-4 mr-2" />
                   Assign
                 </DropdownMenuItem>
               )}
               {canChangeStatus && (
                 <>
-                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuSeparator className="bg-[#e0e0e0] dark:bg-slate-700" />
                   <DropdownMenuItem
                     onClick={() => handleStatusChange(TaskStatus.TODO)}
                     disabled={task.status === TaskStatus.TODO || isUpdating}
-                    className="text-white focus:bg-white/10 disabled:opacity-50"
+                    className="text-[#212121] dark:text-slate-100 focus:bg-[#f5f5f5] dark:focus:bg-slate-700 disabled:opacity-50"
                   >
                     <Circle className="h-4 w-4 mr-2" />
                     Mark as To Do
@@ -158,7 +158,7 @@ export function TaskCard({
                   <DropdownMenuItem
                     onClick={() => handleStatusChange(TaskStatus.IN_PROGRESS)}
                     disabled={task.status === TaskStatus.IN_PROGRESS || isUpdating}
-                    className="text-white focus:bg-white/10 disabled:opacity-50"
+                    className="text-[#212121] dark:text-slate-100 focus:bg-[#f5f5f5] dark:focus:bg-slate-700 disabled:opacity-50"
                   >
                     <Clock className="h-4 w-4 mr-2" />
                     Mark as In Progress
@@ -166,7 +166,7 @@ export function TaskCard({
                   <DropdownMenuItem
                     onClick={() => handleStatusChange(TaskStatus.REVIEW)}
                     disabled={task.status === TaskStatus.REVIEW || isUpdating}
-                    className="text-white focus:bg-white/10 disabled:opacity-50"
+                    className="text-[#212121] dark:text-slate-100 focus:bg-[#f5f5f5] dark:focus:bg-slate-700 disabled:opacity-50"
                   >
                     <AlertTriangle className="h-4 w-4 mr-2" />
                     Mark as Review
@@ -174,7 +174,7 @@ export function TaskCard({
                   <DropdownMenuItem
                     onClick={() => handleStatusChange(TaskStatus.DONE)}
                     disabled={task.status === TaskStatus.DONE || isUpdating}
-                    className="text-white focus:bg-white/10 disabled:opacity-50"
+                    className="text-[#212121] dark:text-slate-100 focus:bg-[#f5f5f5] dark:focus:bg-slate-700 disabled:opacity-50"
                   >
                     <CheckCircle className="h-4 w-4 mr-2" />
                     Mark as Done
@@ -183,10 +183,10 @@ export function TaskCard({
               )}
               {canDelete && (
                 <>
-                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuSeparator className="bg-[#e0e0e0] dark:bg-slate-700" />
                   <DropdownMenuItem
                     onClick={() => onDelete?.(task.id)}
-                    className="text-red-400 focus:text-red-300 focus:bg-red-500/20"
+                    className="text-[#d32f2f] dark:text-red-400 focus:text-[#c62828] dark:focus:text-red-300 focus:bg-[#ffebee] dark:focus:bg-red-900/20"
                   >
                     <Trash2 className="h-4 w-4 mr-2" />
                     Delete
@@ -200,30 +200,30 @@ export function TaskCard({
 
       <CardContent className="pt-0">
         {task.description && (
-          <p className="text-white/70 text-sm mb-4 line-clamp-2 leading-relaxed">
+          <p className="text-[#757575] dark:text-slate-300 text-sm mb-4 line-clamp-2 leading-relaxed">
             {task.description}
           </p>
         )}
 
-        <div className="flex items-center justify-between text-sm pt-3 border-t border-white/10">
+        <div className="flex items-center justify-between text-sm pt-3 border-t border-[#e0e0e0] dark:border-slate-700">
           <div className="flex items-center gap-4 flex-wrap">
             {task.assignee && (
-              <div className="flex items-center gap-1.5 text-white/80">
-                <div className="p-1.5 rounded-full bg-indigo-500/20 border border-indigo-500/30">
-                  <User className="h-3.5 w-3.5 text-indigo-300" />
+              <div className="flex items-center gap-1.5 text-[#212121] dark:text-slate-300">
+                <div className="p-1.5 rounded-full bg-[#e3f2fd] dark:bg-indigo-500/20 border border-[#bbdefb] dark:border-indigo-500/30">
+                  <User className="h-3.5 w-3.5 text-[#1976d2] dark:text-indigo-400" />
                 </div>
                 <span className="text-xs font-medium">{task.assignee.profile?.firstName || task.assignee.email}</span>
               </div>
             )}
 
             {task.dueDate && (
-              <div className={`flex items-center gap-1.5 ${task.isOverdue ? 'text-red-400' : 'text-white/80'}`}>
-                <div className={`p-1.5 rounded-full ${task.isOverdue ? 'bg-red-500/20 border border-red-500/30' : 'bg-blue-500/20 border border-blue-500/30'}`}>
-                  <Calendar className={`h-3.5 w-3.5 ${task.isOverdue ? 'text-red-300' : 'text-blue-300'}`} />
+              <div className={`flex items-center gap-1.5 ${task.isOverdue ? 'text-[#d32f2f] dark:text-red-400' : 'text-[#212121] dark:text-slate-300'}`}>
+                <div className={`p-1.5 rounded-full ${task.isOverdue ? 'bg-[#ffebee] dark:bg-red-500/20 border border-[#ffcdd2] dark:border-red-500/30' : 'bg-[#e3f2fd] dark:bg-blue-500/20 border border-[#bbdefb] dark:border-blue-500/30'}`}>
+                  <Calendar className={`h-3.5 w-3.5 ${task.isOverdue ? 'text-[#d32f2f] dark:text-red-400' : 'text-[#1976d2] dark:text-blue-400'}`} />
                 </div>
                 <span className="text-xs font-medium">{format(new Date(task.dueDate), 'MMM dd, yyyy')}</span>
                 {task.daysUntilDue !== null && task.daysUntilDue <= 7 && (
-                  <span className={`text-xs font-semibold ml-1 ${task.daysUntilDue < 0 ? 'text-red-400' : task.daysUntilDue <= 2 ? 'text-orange-400' : 'text-yellow-400'}`}>
+                  <span className={`text-xs font-semibold ml-1 ${task.daysUntilDue < 0 ? 'text-[#d32f2f] dark:text-red-400' : task.daysUntilDue <= 2 ? 'text-[#e65100] dark:text-orange-400' : 'text-[#f57c00] dark:text-yellow-400'}`}>
                     ({task.daysUntilDue < 0 ? `${Math.abs(task.daysUntilDue)}d overdue` : `${task.daysUntilDue}d left`})
                   </span>
                 )}
@@ -231,7 +231,7 @@ export function TaskCard({
             )}
           </div>
 
-          <div className="text-xs text-white/50">
+          <div className="text-xs text-[#9e9e9e] dark:text-slate-500">
             {format(new Date(task.createdAt), 'MMM dd')}
           </div>
         </div>

@@ -13,102 +13,102 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen bg-white dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900">
         <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <main className="space-y-8">
             {/* Welcome Section */}
             <div className="mb-8">
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 mb-2">
                 Welcome back{user?.profile?.firstName ? `, ${user.profile.firstName}` : ''}!
               </h1>
-              <p className="text-white/70 text-lg">
+              <p className="text-[#757575] dark:text-slate-400 text-lg">
                 Here's what's happening with your tasks today
               </p>
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              <Card className="cursor-pointer bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-blue-500/20 group" onClick={() => router.push('/tasks')}>
+              <Card className="cursor-pointer bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 hover:border-[#1976d2] dark:hover:border-blue-600 transition-all duration-300 hover:shadow-lg hover:shadow-[#1976d2]/10 group" onClick={() => router.push('/tasks')}>
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-xl bg-[#1976d2] flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-md">
                     <CheckSquare className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="flex items-center text-white">
+                  <CardTitle className="flex items-center text-[#212121] dark:text-slate-100">
                     My Tasks
                   </CardTitle>
-                  <CardDescription className="text-white/70">
+                  <CardDescription className="text-[#757575] dark:text-slate-400">
                     View and manage your assigned tasks
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">View Tasks</p>
-                  <p className="text-sm text-white/50">Click to explore</p>
+                  <p className="text-2xl font-bold text-[#1976d2] dark:from-blue-400 dark:to-cyan-400">View Tasks</p>
+                  <p className="text-sm text-[#9e9e9e] dark:text-slate-500">Click to explore</p>
                 </CardContent>
               </Card>
 
-              <Card className="cursor-pointer bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-green-500/20 group" onClick={() => router.push('/tasks')}>
+              <Card className="cursor-pointer bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 hover:border-[#00796b] dark:hover:border-green-600 transition-all duration-300 hover:shadow-lg hover:shadow-[#00796b]/10 group" onClick={() => router.push('/tasks')}>
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-xl bg-[#00796b] flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-md">
                     <Users className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="flex items-center text-white">
+                  <CardTitle className="flex items-center text-[#212121] dark:text-slate-100">
                     Team Tasks
                   </CardTitle>
-                  <CardDescription className="text-white/70">
+                  <CardDescription className="text-[#757575] dark:text-slate-400">
                     See all tasks in your organization
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">Browse All</p>
-                  <p className="text-sm text-white/50">Full task list</p>
+                  <p className="text-2xl font-bold text-[#00796b] dark:from-green-400 dark:to-emerald-400">Browse All</p>
+                  <p className="text-sm text-[#9e9e9e] dark:text-slate-500">Full task list</p>
                 </CardContent>
               </Card>
 
-              <Card className="cursor-pointer bg-white/5 backdrop-blur-md border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/20 group" onClick={() => router.push('/profile')}>
+              <Card className="cursor-pointer bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 hover:border-[#1976d2] dark:hover:border-purple-600 transition-all duration-300 hover:shadow-lg hover:shadow-[#1976d2]/10 group" onClick={() => router.push('/profile')}>
                 <CardHeader>
-                  <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-xl bg-[#1976d2] flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-md">
                     <User className="h-6 w-6 text-white" />
                   </div>
-                  <CardTitle className="flex items-center text-white">
+                  <CardTitle className="flex items-center text-[#212121] dark:text-slate-100">
                     Profile
                   </CardTitle>
-                  <CardDescription className="text-white/70">
+                  <CardDescription className="text-[#757575] dark:text-slate-400">
                     Manage your account settings
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Settings</p>
-                  <p className="text-sm text-white/50">Update profile</p>
+                  <p className="text-2xl font-bold text-[#1976d2] dark:from-purple-400 dark:to-pink-400">Settings</p>
+                  <p className="text-sm text-[#9e9e9e] dark:text-slate-500">Update profile</p>
                 </CardContent>
               </Card>
             </div>
 
             {/* Recent Activity */}
             <div className="mt-8">
-              <Card className="bg-white/5 backdrop-blur-md border-white/10">
+              <Card className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-white">Recent Activity</CardTitle>
-                  <CardDescription className="text-white/70">
+                  <CardTitle className="text-[#212121] dark:text-slate-100">Recent Activity</CardTitle>
+                  <CardDescription className="text-[#757575] dark:text-slate-400">
                     Your latest task management activity
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-center space-x-4 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full shadow-lg shadow-blue-500/50"></div>
+                    <div className="flex items-center space-x-4 p-3 rounded-lg bg-[#e3f2fd] dark:bg-blue-900/20 hover:bg-[#bbdefb] dark:hover:bg-blue-900/30 transition-colors border border-[#bbdefb] dark:border-blue-800">
+                      <div className="w-3 h-3 bg-[#1976d2] dark:bg-blue-400 rounded-full shadow-md"></div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-white">Welcome to TaskFlow!</p>
-                        <p className="text-xs text-white/60">Get started by creating your first task</p>
+                        <p className="text-sm font-medium text-[#212121] dark:text-slate-100">Welcome to TaskFlow!</p>
+                        <p className="text-xs text-[#757575] dark:text-slate-400">Get started by creating your first task</p>
                       </div>
-                      <span className="text-xs text-white/40">Just now</span>
+                      <span className="text-xs text-[#9e9e9e] dark:text-slate-500">Just now</span>
                     </div>
 
-                    <div className="flex items-center space-x-4 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-                      <div className="w-3 h-3 bg-green-500 rounded-full shadow-lg shadow-green-500/50"></div>
+                    <div className="flex items-center space-x-4 p-3 rounded-lg bg-[#e0f2f1] dark:bg-green-900/20 hover:bg-[#b2dfdb] dark:hover:bg-green-900/30 transition-colors border border-[#b2dfdb] dark:border-green-800">
+                      <div className="w-3 h-3 bg-[#00796b] dark:bg-green-400 rounded-full shadow-md"></div>
                       <div className="flex-1">
-                        <p className="text-sm font-medium text-white">Account Created</p>
-                        <p className="text-xs text-white/60">Your TaskFlow account is now active</p>
+                        <p className="text-sm font-medium text-[#212121] dark:text-slate-100">Account Created</p>
+                        <p className="text-xs text-[#757575] dark:text-slate-400">Your TaskFlow account is now active</p>
                       </div>
-                      <span className="text-xs text-white/40">Today</span>
+                      <span className="text-xs text-[#9e9e9e] dark:text-slate-500">Today</span>
                     </div>
                   </div>
                 </CardContent>

@@ -91,17 +91,17 @@ export default function HelpPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30 dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900">
         <div className="max-w-6xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mb-4 shadow-lg shadow-purple-500/50">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full mb-4 shadow-lg shadow-indigo-500/30">
               <HelpCircle className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-indigo-800 to-purple-800 dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 bg-clip-text text-transparent mb-2">
               Help & Support
             </h1>
-            <p className="text-white/70 text-lg">
+            <p className="text-slate-600 dark:text-slate-400 text-lg">
               Find answers to common questions and get help with TaskFlow
             </p>
           </div>
@@ -109,12 +109,12 @@ export default function HelpPage() {
           {/* Search */}
           <div className="max-w-md mx-auto mb-8">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
               <Input
                 placeholder="Search help articles..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-10 border-slate-300 dark:border-slate-700"
               />
             </div>
           </div>
@@ -128,27 +128,27 @@ export default function HelpPage() {
             </TabsList>
 
             <TabsContent value="faqs" className="space-y-6">
-              <Card>
+              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                 <CardHeader>
-                  <CardTitle>Frequently Asked Questions</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-slate-900 dark:text-slate-100">Frequently Asked Questions</CardTitle>
+                  <CardDescription className="text-slate-600 dark:text-slate-400">
                     Quick answers to common questions about TaskFlow
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   {filteredFaqs.length === 0 ? (
                     <div className="text-center py-8">
-                      <Search className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                      <p className="text-gray-500">No results found for "{searchQuery}"</p>
+                      <Search className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-600 mb-4" />
+                      <p className="text-slate-600 dark:text-slate-400">No results found for "{searchQuery}"</p>
                     </div>
                   ) : (
                     <Accordion type="single" collapsible className="w-full">
                       {filteredFaqs.map((faq, index) => (
                         <AccordionItem key={index} value={`faq-${index}`}>
-                          <AccordionTrigger className="text-left">
+                          <AccordionTrigger className="text-left text-slate-900 dark:text-slate-100">
                             {faq.question}
                           </AccordionTrigger>
-                          <AccordionContent className="text-gray-600">
+                          <AccordionContent className="text-slate-600 dark:text-slate-400">
                             {faq.answer}
                           </AccordionContent>
                         </AccordionItem>
@@ -161,79 +161,79 @@ export default function HelpPage() {
 
             <TabsContent value="getting-started" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Book className="mr-2 h-5 w-5 text-blue-600" />
+                    <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
+                      <Book className="mr-2 h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                       Quick Start Guide
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-slate-600 dark:text-slate-400">
                       Get up and running with TaskFlow in minutes
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="space-y-3">
                       <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-blue-600">1</span>
+                        <div className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">1</span>
                         </div>
                         <div>
-                          <h4 className="font-medium">Sign up for an account</h4>
-                          <p className="text-sm text-gray-600">Create your TaskFlow account and verify your email</p>
+                          <h4 className="font-medium text-slate-900 dark:text-slate-100">Sign up for an account</h4>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">Create your TaskFlow account and verify your email</p>
                         </div>
                       </div>
 
                       <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-blue-600">2</span>
+                        <div className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">2</span>
                         </div>
                         <div>
-                          <h4 className="font-medium">Create your first task</h4>
-                          <p className="text-sm text-gray-600">Click "New Task" and fill in the details</p>
+                          <h4 className="font-medium text-slate-900 dark:text-slate-100">Create your first task</h4>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">Click "New Task" and fill in the details</p>
                         </div>
                       </div>
 
                       <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-blue-600">3</span>
+                        <div className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">3</span>
                         </div>
                         <div>
-                          <h4 className="font-medium">Invite your team</h4>
-                          <p className="text-sm text-gray-600">Add team members to start collaborating</p>
+                          <h4 className="font-medium text-slate-900 dark:text-slate-100">Invite your team</h4>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">Add team members to start collaborating</p>
                         </div>
                       </div>
 
                       <div className="flex items-start space-x-3">
-                        <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-xs font-medium text-blue-600">4</span>
+                        <div className="flex-shrink-0 w-6 h-6 bg-indigo-100 dark:bg-indigo-900/30 rounded-full flex items-center justify-center">
+                          <span className="text-xs font-medium text-indigo-600 dark:text-indigo-400">4</span>
                         </div>
                         <div>
-                          <h4 className="font-medium">Configure notifications</h4>
-                          <p className="text-sm text-gray-600">Set up how you want to be notified</p>
+                          <h4 className="font-medium text-slate-900 dark:text-slate-100">Configure notifications</h4>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">Set up how you want to be notified</p>
                         </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle>Quick Actions</CardTitle>
-                    <CardDescription>
+                    <CardTitle className="text-slate-900 dark:text-slate-100">Quick Actions</CardTitle>
+                    <CardDescription className="text-slate-600 dark:text-slate-400">
                       Common tasks you can do right away
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-1 gap-4">
                       {quickActions.map((action, index) => (
-                        <div key={index} className="flex items-center space-x-4 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
+                        <div key={index} className="flex items-center space-x-4 p-3 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
                           <div className="flex-shrink-0">
-                            <action.icon className="h-6 w-6 text-blue-600" />
+                            <action.icon className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
                           </div>
                           <div className="flex-1">
-                            <h4 className="font-medium">{action.title}</h4>
-                            <p className="text-sm text-gray-600">{action.description}</p>
-                            <p className="text-xs text-blue-600 mt-1">{action.action}</p>
+                            <h4 className="font-medium text-slate-900 dark:text-slate-100">{action.title}</h4>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">{action.description}</p>
+                            <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">{action.action}</p>
                           </div>
                         </div>
                       ))}
@@ -245,15 +245,15 @@ export default function HelpPage() {
 
             <TabsContent value="features" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <CheckSquare className="mr-2 h-5 w-5 text-green-600" />
+                    <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
+                      <CheckSquare className="mr-2 h-5 w-5 text-green-600 dark:text-green-400" />
                       Task Management
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-2 text-sm text-gray-600">
+                    <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
                       <li>• Create and edit tasks</li>
                       <li>• Assign to team members</li>
                       <li>• Set priorities and due dates</li>
@@ -263,15 +263,15 @@ export default function HelpPage() {
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Bell className="mr-2 h-5 w-5 text-orange-600" />
+                    <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
+                      <Bell className="mr-2 h-5 w-5 text-orange-600 dark:text-orange-400" />
                       Real-time Collaboration
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-2 text-sm text-gray-600">
+                    <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
                       <li>• Live task updates</li>
                       <li>• Instant notifications</li>
                       <li>• Team activity feed</li>
@@ -281,15 +281,15 @@ export default function HelpPage() {
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Settings className="mr-2 h-5 w-5 text-purple-600" />
+                    <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
+                      <Settings className="mr-2 h-5 w-5 text-purple-600 dark:text-purple-400" />
                       Customization
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ul className="space-y-2 text-sm text-gray-600">
+                    <ul className="space-y-2 text-sm text-slate-600 dark:text-slate-400">
                       <li>• Personal preferences</li>
                       <li>• Notification settings</li>
                       <li>• Theme customization</li>
@@ -303,83 +303,83 @@ export default function HelpPage() {
 
             <TabsContent value="contact" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <MessageCircle className="mr-2 h-5 w-5 text-blue-600" />
+                    <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
+                      <MessageCircle className="mr-2 h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                       Live Chat Support
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-slate-600 dark:text-slate-400">
                       Get instant help from our support team
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                       Our support team is available Monday through Friday, 9 AM - 6 PM EST.
                     </p>
-                    <Button className="w-full">
+                    <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
                       <MessageCircle className="mr-2 h-4 w-4" />
                       Start Chat
                     </Button>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Mail className="mr-2 h-5 w-5 text-green-600" />
+                    <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
+                      <Mail className="mr-2 h-5 w-5 text-green-600 dark:text-green-400" />
                       Email Support
                     </CardTitle>
-                    <CardDescription>
+                    <CardDescription className="text-slate-600 dark:text-slate-400">
                       Send us a detailed message about your issue
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-gray-600 mb-4">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
                       We'll respond within 24 hours. Please include screenshots if applicable.
                     </p>
                     <div className="space-y-2">
-                      <p className="text-sm">
+                      <p className="text-sm text-slate-900 dark:text-slate-100">
                         <strong>General Support:</strong><br />
-                        support@taskflow.com
+                        <span className="text-slate-600 dark:text-slate-400">support@taskflow.com</span>
                       </p>
-                      <p className="text-sm">
+                      <p className="text-sm text-slate-900 dark:text-slate-100">
                         <strong>Billing:</strong><br />
-                        billing@taskflow.com
+                        <span className="text-slate-600 dark:text-slate-400">billing@taskflow.com</span>
                       </p>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              <Card>
+              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                 <CardHeader>
-                  <CardTitle>Community Resources</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-slate-900 dark:text-slate-100">Community Resources</CardTitle>
+                  <CardDescription className="text-slate-600 dark:text-slate-400">
                     Learn from other TaskFlow users and experts
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="text-center p-4 border rounded-lg">
-                      <Book className="mx-auto h-8 w-8 text-blue-600 mb-2" />
-                      <h4 className="font-medium">Documentation</h4>
-                      <p className="text-sm text-gray-600">Comprehensive guides and tutorials</p>
-                      <Button variant="link" className="mt-2 p-0">View Docs</Button>
+                    <div className="text-center p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                      <Book className="mx-auto h-8 w-8 text-indigo-600 dark:text-indigo-400 mb-2" />
+                      <h4 className="font-medium text-slate-900 dark:text-slate-100">Documentation</h4>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Comprehensive guides and tutorials</p>
+                      <Button variant="link" className="mt-2 p-0 text-indigo-600 dark:text-indigo-400">View Docs</Button>
                     </div>
 
-                    <div className="text-center p-4 border rounded-lg">
-                      <Users className="mx-auto h-8 w-8 text-green-600 mb-2" />
-                      <h4 className="font-medium">Community Forum</h4>
-                      <p className="text-sm text-gray-600">Ask questions and share knowledge</p>
-                      <Button variant="link" className="mt-2 p-0">Join Forum</Button>
+                    <div className="text-center p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                      <Users className="mx-auto h-8 w-8 text-green-600 dark:text-green-400 mb-2" />
+                      <h4 className="font-medium text-slate-900 dark:text-slate-100">Community Forum</h4>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Ask questions and share knowledge</p>
+                      <Button variant="link" className="mt-2 p-0 text-indigo-600 dark:text-indigo-400">Join Forum</Button>
                     </div>
 
-                    <div className="text-center p-4 border rounded-lg">
-                      <HelpCircle className="mx-auto h-8 w-8 text-purple-600 mb-2" />
-                      <h4 className="font-medium">Video Tutorials</h4>
-                      <p className="text-sm text-gray-600">Step-by-step video guides</p>
-                      <Button variant="link" className="mt-2 p-0">Watch Videos</Button>
+                    <div className="text-center p-4 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                      <HelpCircle className="mx-auto h-8 w-8 text-purple-600 dark:text-purple-400 mb-2" />
+                      <h4 className="font-medium text-slate-900 dark:text-slate-100">Video Tutorials</h4>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">Step-by-step video guides</p>
+                      <Button variant="link" className="mt-2 p-0 text-indigo-600 dark:text-indigo-400">Watch Videos</Button>
                     </div>
                   </div>
                 </CardContent>

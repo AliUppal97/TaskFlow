@@ -87,32 +87,32 @@ function AdminPageContent() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'active': return 'bg-green-100 text-green-800';
-      case 'inactive': return 'bg-gray-100 text-gray-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'active': return 'bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-500/30';
+      case 'inactive': return 'bg-slate-100 dark:bg-slate-700/50 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-600/50';
+      case 'pending': return 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-500/30';
+      default: return 'bg-slate-100 dark:bg-slate-700/50 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-600/50';
     }
   };
 
   const getRoleColor = (role: UserRole) => {
     switch (role) {
-      case UserRole.ADMIN: return 'bg-red-100 text-red-800';
-      case UserRole.USER: return 'bg-blue-100 text-blue-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case UserRole.ADMIN: return 'bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-500/30';
+      case UserRole.USER: return 'bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30';
+      default: return 'bg-slate-100 dark:bg-slate-700/50 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-600/50';
     }
   };
 
   return (
     <RoleProtectedRoute allowedRoles={[UserRole.ADMIN]}>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30 dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900">
         <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-red-200 to-pink-200 bg-clip-text text-transparent flex items-center mb-2">
-              <Shield className="mr-3 h-8 w-8 text-red-400" />
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-indigo-800 to-purple-800 dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 bg-clip-text text-transparent flex items-center mb-2">
+              <Shield className="mr-3 h-8 w-8 text-indigo-600 dark:text-indigo-400" />
               Admin Dashboard
             </h1>
-            <p className="text-white/70 text-lg">
+            <p className="text-slate-600 dark:text-slate-400 text-lg">
               Manage users, monitor system health, and configure application settings
             </p>
           </div>
@@ -128,53 +128,53 @@ function AdminPageContent() {
             <TabsContent value="overview" className="space-y-6">
               {/* Stats Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Total Users</CardTitle>
+                    <Users className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{systemStats.totalUsers}</div>
-                    <p className="text-xs text-muted-foreground">
+                    <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{systemStats.totalUsers}</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
                       +12% from last month
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-                    <Activity className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Active Users</CardTitle>
+                    <Activity className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{systemStats.activeUsers}</div>
-                    <p className="text-xs text-muted-foreground">
+                    <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{systemStats.activeUsers}</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
                       {Math.round((systemStats.activeUsers / systemStats.totalUsers) * 100)}% of total
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">Total Tasks</CardTitle>
-                    <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                    <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Total Tasks</CardTitle>
+                    <BarChart3 className="h-4 w-4 text-slate-500 dark:text-slate-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold">{systemStats.totalTasks.toLocaleString()}</div>
-                    <p className="text-xs text-muted-foreground">
+                    <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{systemStats.totalTasks.toLocaleString()}</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
                       {systemStats.completedTasks} completed
                     </p>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">System Health</CardTitle>
-                    <CheckCircle className="h-4 w-4 text-green-600" />
+                    <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">System Health</CardTitle>
+                    <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-green-600">{systemStats.systemHealth}</div>
-                    <p className="text-xs text-muted-foreground">
+                    <div className="text-2xl font-bold text-green-600 dark:text-green-400">{systemStats.systemHealth}</div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
                       {systemStats.uptime} uptime
                     </p>
                   </CardContent>
@@ -183,21 +183,21 @@ function AdminPageContent() {
 
               {/* Recent Activity & Quick Actions */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle>Recent Activity</CardTitle>
-                    <CardDescription>Latest system events and user actions</CardDescription>
+                    <CardTitle className="text-slate-900 dark:text-slate-100">Recent Activity</CardTitle>
+                    <CardDescription className="text-slate-600 dark:text-slate-400">Latest system events and user actions</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {recentActivity.map((activity) => (
                         <div key={activity.id} className="flex items-center space-x-4">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                          <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full"></div>
                           <div className="flex-1">
-                            <p className="text-sm font-medium">{activity.action}</p>
-                            <p className="text-xs text-gray-500">{activity.user}</p>
+                            <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{activity.action}</p>
+                            <p className="text-xs text-slate-600 dark:text-slate-400">{activity.user}</p>
                           </div>
-                          <span className="text-xs text-gray-400">
+                          <span className="text-xs text-slate-500 dark:text-slate-500">
                             {formatDate(activity.timestamp)}
                           </span>
                         </div>
@@ -206,25 +206,25 @@ function AdminPageContent() {
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle>Quick Actions</CardTitle>
-                    <CardDescription>Common administrative tasks</CardDescription>
+                    <CardTitle className="text-slate-900 dark:text-slate-100">Quick Actions</CardTitle>
+                    <CardDescription className="text-slate-600 dark:text-slate-400">Common administrative tasks</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-3">
-                    <Button className="w-full justify-start" variant="outline">
+                    <Button className="w-full justify-start border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800" variant="outline">
                       <UserPlus className="mr-2 h-4 w-4" />
                       Invite New User
                     </Button>
-                    <Button className="w-full justify-start" variant="outline">
+                    <Button className="w-full justify-start border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800" variant="outline">
                       <Database className="mr-2 h-4 w-4" />
                       View System Logs
                     </Button>
-                    <Button className="w-full justify-start" variant="outline">
+                    <Button className="w-full justify-start border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800" variant="outline">
                       <Settings className="mr-2 h-4 w-4" />
                       System Configuration
                     </Button>
-                    <Button className="w-full justify-start" variant="outline">
+                    <Button className="w-full justify-start border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800" variant="outline">
                       <BarChart3 className="mr-2 h-4 w-4" />
                       Generate Reports
                     </Button>
@@ -233,30 +233,30 @@ function AdminPageContent() {
               </div>
 
               {/* System Performance */}
-              <Card>
+              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                 <CardHeader>
-                  <CardTitle>System Performance</CardTitle>
-                  <CardDescription>Real-time system metrics and health indicators</CardDescription>
+                  <CardTitle className="text-slate-900 dark:text-slate-100">System Performance</CardTitle>
+                  <CardDescription className="text-slate-600 dark:text-slate-400">Real-time system metrics and health indicators</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-green-600">{systemStats.uptime}</div>
-                      <div className="text-sm text-gray-600">Uptime</div>
+                      <div className="text-2xl font-bold text-green-600 dark:text-green-400">{systemStats.uptime}</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Uptime</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-blue-600">{systemStats.responseTime}</div>
-                      <div className="text-sm text-gray-600">Avg Response Time</div>
+                      <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{systemStats.responseTime}</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Avg Response Time</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-red-600">{systemStats.errorRate}</div>
-                      <div className="text-sm text-gray-600">Error Rate</div>
+                      <div className="text-2xl font-bold text-red-600 dark:text-red-400">{systemStats.errorRate}</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Error Rate</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-purple-600">
+                      <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
                         {Math.round((systemStats.completedTasks / systemStats.totalTasks) * 100)}%
                       </div>
-                      <div className="text-sm text-gray-600">Task Completion Rate</div>
+                      <div className="text-sm text-slate-600 dark:text-slate-400">Task Completion Rate</div>
                     </div>
                   </div>
                 </CardContent>
@@ -264,14 +264,14 @@ function AdminPageContent() {
             </TabsContent>
 
             <TabsContent value="users" className="space-y-6">
-              <Card>
+              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle>User Management</CardTitle>
-                      <CardDescription>Manage user accounts, roles, and permissions</CardDescription>
+                      <CardTitle className="text-slate-900 dark:text-slate-100">User Management</CardTitle>
+                      <CardDescription className="text-slate-600 dark:text-slate-400">Manage user accounts, roles, and permissions</CardDescription>
                     </div>
-                    <Button>
+                    <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">
                       <UserPlus className="mr-2 h-4 w-4" />
                       Add User
                     </Button>
@@ -281,12 +281,12 @@ function AdminPageContent() {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>User</TableHead>
-                        <TableHead>Role</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Last Login</TableHead>
-                        <TableHead>Created</TableHead>
-                        <TableHead>Actions</TableHead>
+                        <TableHead className="text-slate-700 dark:text-slate-300">User</TableHead>
+                        <TableHead className="text-slate-700 dark:text-slate-300">Role</TableHead>
+                        <TableHead className="text-slate-700 dark:text-slate-300">Status</TableHead>
+                        <TableHead className="text-slate-700 dark:text-slate-300">Last Login</TableHead>
+                        <TableHead className="text-slate-700 dark:text-slate-300">Created</TableHead>
+                        <TableHead className="text-slate-700 dark:text-slate-300">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -294,10 +294,10 @@ function AdminPageContent() {
                         <TableRow key={user.id}>
                           <TableCell>
                             <div>
-                              <div className="font-medium">
+                              <div className="font-medium text-slate-900 dark:text-slate-100">
                                 {user.profile?.firstName} {user.profile?.lastName}
                               </div>
-                              <div className="text-sm text-gray-500">{user.email}</div>
+                              <div className="text-sm text-slate-600 dark:text-slate-400">{user.email}</div>
                             </div>
                           </TableCell>
                           <TableCell>
@@ -310,16 +310,16 @@ function AdminPageContent() {
                               {user.status}
                             </Badge>
                           </TableCell>
-                          <TableCell className="text-sm">
+                          <TableCell className="text-sm text-slate-600 dark:text-slate-400">
                             {formatDate(user.lastLogin)}
                           </TableCell>
-                          <TableCell className="text-sm">
+                          <TableCell className="text-sm text-slate-600 dark:text-slate-400">
                             {formatDate(user.createdAt)}
                           </TableCell>
                           <TableCell>
                             <div className="flex space-x-2">
-                              <Button size="sm" variant="outline">Edit</Button>
-                              <Button size="sm" variant="outline">Reset Password</Button>
+                              <Button size="sm" variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">Edit</Button>
+                              <Button size="sm" variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">Reset Password</Button>
                             </div>
                           </TableCell>
                         </TableRow>
@@ -332,90 +332,90 @@ function AdminPageContent() {
 
             <TabsContent value="system" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <Activity className="mr-2 h-5 w-5 text-green-600" />
+                    <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
+                      <Activity className="mr-2 h-5 w-5 text-green-600 dark:text-green-400" />
                       System Status
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span>Database</span>
-                      <Badge className="bg-green-100 text-green-800">Healthy</Badge>
+                      <span className="text-slate-700 dark:text-slate-300">Database</span>
+                      <Badge className="bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-500/30">Healthy</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>API Server</span>
-                      <Badge className="bg-green-100 text-green-800">Healthy</Badge>
+                      <span className="text-slate-700 dark:text-slate-300">API Server</span>
+                      <Badge className="bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-500/30">Healthy</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>WebSocket</span>
-                      <Badge className="bg-green-100 text-green-800">Healthy</Badge>
+                      <span className="text-slate-700 dark:text-slate-300">WebSocket</span>
+                      <Badge className="bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-500/30">Healthy</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Redis Cache</span>
-                      <Badge className="bg-yellow-100 text-yellow-800">Warning</Badge>
+                      <span className="text-slate-700 dark:text-slate-300">Redis Cache</span>
+                      <Badge className="bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-500/30">Warning</Badge>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Email Service</span>
-                      <Badge className="bg-green-100 text-green-800">Healthy</Badge>
+                      <span className="text-slate-700 dark:text-slate-300">Email Service</span>
+                      <Badge className="bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-500/30">Healthy</Badge>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card>
+                <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                   <CardHeader>
-                    <CardTitle className="flex items-center">
-                      <TrendingUp className="mr-2 h-5 w-5 text-blue-600" />
+                    <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
+                      <TrendingUp className="mr-2 h-5 w-5 text-blue-600 dark:text-blue-400" />
                       Performance Metrics
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span>CPU Usage</span>
-                      <span className="font-medium">23%</span>
+                      <span className="text-slate-700 dark:text-slate-300">CPU Usage</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">23%</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Memory Usage</span>
-                      <span className="font-medium">67%</span>
+                      <span className="text-slate-700 dark:text-slate-300">Memory Usage</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">67%</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Disk Usage</span>
-                      <span className="font-medium">45%</span>
+                      <span className="text-slate-700 dark:text-slate-300">Disk Usage</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">45%</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span>Network I/O</span>
-                      <span className="font-medium">12 MB/s</span>
+                      <span className="text-slate-700 dark:text-slate-300">Network I/O</span>
+                      <span className="font-medium text-slate-900 dark:text-slate-100">12 MB/s</span>
                     </div>
                   </CardContent>
                 </Card>
               </div>
 
-              <Card>
+              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center">
-                    <AlertTriangle className="mr-2 h-5 w-5 text-orange-600" />
+                  <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
+                    <AlertTriangle className="mr-2 h-5 w-5 text-orange-600 dark:text-orange-400" />
                     System Alerts
                   </CardTitle>
-                  <CardDescription>Recent system alerts and notifications</CardDescription>
+                  <CardDescription className="text-slate-600 dark:text-slate-400">Recent system alerts and notifications</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    <div className="flex items-start space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                      <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5" />
+                    <div className="flex items-start space-x-3 p-3 bg-yellow-50 dark:bg-yellow-500/20 border border-yellow-200 dark:border-yellow-500/30 rounded-lg">
+                      <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 mt-0.5" />
                       <div>
-                        <p className="font-medium text-yellow-800">High Memory Usage</p>
-                        <p className="text-sm text-yellow-700">Memory usage is at 85%. Consider scaling resources.</p>
-                        <p className="text-xs text-yellow-600 mt-1">2 hours ago</p>
+                        <p className="font-medium text-yellow-800 dark:text-yellow-300">High Memory Usage</p>
+                        <p className="text-sm text-yellow-700 dark:text-yellow-400">Memory usage is at 85%. Consider scaling resources.</p>
+                        <p className="text-xs text-yellow-600 dark:text-yellow-500 mt-1">2 hours ago</p>
                       </div>
                     </div>
 
-                    <div className="flex items-start space-x-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
+                    <div className="flex items-start space-x-3 p-3 bg-green-50 dark:bg-green-500/20 border border-green-200 dark:border-green-500/30 rounded-lg">
+                      <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 mt-0.5" />
                       <div>
-                        <p className="font-medium text-green-800">Backup Completed</p>
-                        <p className="text-sm text-green-700">Daily system backup completed successfully.</p>
-                        <p className="text-xs text-green-600 mt-1">4 hours ago</p>
+                        <p className="font-medium text-green-800 dark:text-green-300">Backup Completed</p>
+                        <p className="text-sm text-green-700 dark:text-green-400">Daily system backup completed successfully.</p>
+                        <p className="text-xs text-green-600 dark:text-green-500 mt-1">4 hours ago</p>
                       </div>
                     </div>
                   </div>
@@ -424,16 +424,16 @@ function AdminPageContent() {
             </TabsContent>
 
             <TabsContent value="settings" className="space-y-6">
-              <Card>
+              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
                 <CardHeader>
-                  <CardTitle>System Configuration</CardTitle>
-                  <CardDescription>Configure global system settings and preferences</CardDescription>
+                  <CardTitle className="text-slate-900 dark:text-slate-100">System Configuration</CardTitle>
+                  <CardDescription className="text-slate-600 dark:text-slate-400">Configure global system settings and preferences</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Session Timeout (minutes)</label>
-                      <select className="w-full p-2 border rounded-md" defaultValue="60">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Session Timeout (minutes)</label>
+                      <select className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" defaultValue="60">
                         <option value="15">15 minutes</option>
                         <option value="30">30 minutes</option>
                         <option value="60">1 hour</option>
@@ -442,8 +442,8 @@ function AdminPageContent() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Max File Upload Size (MB)</label>
-                      <select className="w-full p-2 border rounded-md" defaultValue="10">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Max File Upload Size (MB)</label>
+                      <select className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" defaultValue="10">
                         <option value="5">5 MB</option>
                         <option value="10">10 MB</option>
                         <option value="25">25 MB</option>
@@ -452,26 +452,26 @@ function AdminPageContent() {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Default User Role</label>
-                      <select className="w-full p-2 border rounded-md" defaultValue="user">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Default User Role</label>
+                      <select className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" defaultValue="user">
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                       </select>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium">Email Notifications</label>
-                      <select className="w-full p-2 border rounded-md" defaultValue="enabled">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email Notifications</label>
+                      <select className="w-full p-2 border border-slate-300 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" defaultValue="enabled">
                         <option value="enabled">Enabled</option>
                         <option value="disabled">Disabled</option>
                       </select>
                     </div>
                   </div>
 
-                  <div className="pt-4 border-t">
+                  <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
                     <div className="flex justify-end space-x-4">
-                      <Button variant="outline">Reset to Defaults</Button>
-                      <Button>Save Changes</Button>
+                      <Button variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">Reset to Defaults</Button>
+                      <Button className="bg-indigo-600 hover:bg-indigo-700 text-white">Save Changes</Button>
                     </div>
                   </div>
                 </CardContent>

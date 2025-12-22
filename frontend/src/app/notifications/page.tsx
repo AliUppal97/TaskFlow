@@ -74,11 +74,11 @@ const notificationIcons = {
 };
 
 const notificationColors = {
-  task_assigned: 'text-blue-600 bg-blue-50',
-  task_completed: 'text-green-600 bg-green-50',
-  mention: 'text-purple-600 bg-purple-50',
-  deadline_approaching: 'text-red-600 bg-red-50',
-  system: 'text-gray-600 bg-gray-50',
+  task_assigned: 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/20 border border-blue-200 dark:border-blue-500/30',
+  task_completed: 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/20 border border-green-200 dark:border-green-500/30',
+  mention: 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/20 border border-purple-200 dark:border-purple-500/30',
+  deadline_approaching: 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/20 border border-red-200 dark:border-red-500/30',
+  system: 'text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-500/20 border border-slate-200 dark:border-slate-500/30',
 };
 
 export default function NotificationsPage() {
@@ -122,21 +122,21 @@ export default function NotificationsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30 dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900">
         <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent flex items-center mb-2">
-                <Bell className="mr-3 h-8 w-8 text-purple-400" />
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-indigo-800 to-purple-800 dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 bg-clip-text text-transparent flex items-center mb-2">
+                <Bell className="mr-3 h-8 w-8 text-indigo-600 dark:text-indigo-400" />
                 Notifications
               </h1>
-              <p className="text-white/70 text-lg">
+              <p className="text-slate-600 dark:text-slate-400 text-lg">
                 Stay updated with your tasks and team activities
               </p>
             </div>
             {unreadCount > 0 && (
-              <Button onClick={markAllAsRead} variant="outline">
+              <Button onClick={markAllAsRead} variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">
                 Mark all as read ({unreadCount})
               </Button>
             )}
@@ -144,44 +144,44 @@ export default function NotificationsPage() {
 
           {/* Stats */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="bg-white/5 backdrop-blur-md border-white/10">
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/90">Total</CardTitle>
-                <Bell className="h-4 w-4 text-blue-400" />
+                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Total</CardTitle>
+                <Bell className="h-4 w-4 text-blue-500 dark:text-blue-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">{notifications.length}</div>
-                <p className="text-xs text-white/60">
+                <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">{notifications.length}</div>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
                   All notifications
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 backdrop-blur-md border-white/10">
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/90">Unread</CardTitle>
-                <Bell className="h-4 w-4 text-red-400" />
+                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">Unread</CardTitle>
+                <Bell className="h-4 w-4 text-red-500 dark:text-red-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-red-400">{unreadCount}</div>
-                <p className="text-xs text-white/60">
+                <div className="text-2xl font-bold text-red-600 dark:text-red-400">{unreadCount}</div>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
                   Require attention
                 </p>
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 backdrop-blur-md border-white/10">
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-white/90">This Week</CardTitle>
-                <Bell className="h-4 w-4 text-blue-400" />
+                <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-300">This Week</CardTitle>
+                <Bell className="h-4 w-4 text-blue-500 dark:text-blue-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-white">
+                <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   {notifications.filter(n =>
                     new Date(n.createdAt) > oneWeekAgo
                   ).length}
                 </div>
-                <p className="text-xs text-white/60">
+                <p className="text-xs text-slate-600 dark:text-slate-400">
                   Recent activity
                 </p>
               </CardContent>
@@ -189,7 +189,7 @@ export default function NotificationsPage() {
           </div>
 
           {/* Notifications List */}
-          <Card className="bg-white/5 backdrop-blur-md border-white/10">
+          <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
             <CardHeader>
               <Tabs value={selectedTab} onValueChange={setSelectedTab}>
                 <TabsList className="grid w-full grid-cols-5">
@@ -203,9 +203,9 @@ export default function NotificationsPage() {
                 <TabsContent value={selectedTab} className="mt-6">
                   {filteredNotifications.length === 0 ? (
                     <div className="text-center py-12">
-                      <Bell className="mx-auto h-12 w-12 text-gray-400" />
-                      <h3 className="mt-2 text-sm font-medium text-gray-900">No notifications</h3>
-                      <p className="mt-1 text-sm text-gray-500">
+                      <Bell className="mx-auto h-12 w-12 text-slate-400 dark:text-slate-600" />
+                      <h3 className="mt-2 text-sm font-medium text-slate-900 dark:text-slate-100">No notifications</h3>
+                      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                         {selectedTab === 'unread'
                           ? "You're all caught up!"
                           : `No ${selectedTab} notifications found.`}
@@ -226,7 +226,7 @@ export default function NotificationsPage() {
 
                               <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between">
-                                  <div className="text-sm font-medium text-gray-900">
+                                  <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
                                     {notification.title}
                                     {!notification.read && (
                                       <Badge variant="secondary" className="ml-2 text-xs">
@@ -240,7 +240,7 @@ export default function NotificationsPage() {
                                         size="sm"
                                         variant="ghost"
                                         onClick={() => markAsRead(notification.id)}
-                                        className="text-xs"
+                                        className="text-xs text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700"
                                       >
                                         <Check className="h-3 w-3 mr-1" />
                                         Mark read
@@ -250,25 +250,25 @@ export default function NotificationsPage() {
                                       size="sm"
                                       variant="ghost"
                                       onClick={() => deleteNotification(notification.id)}
-                                      className="text-red-600 hover:text-red-700 text-xs"
+                                      className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-xs hover:bg-red-50 dark:hover:bg-red-900/20"
                                     >
                                       <X className="h-3 w-3" />
                                     </Button>
                                   </div>
                                 </div>
 
-                                <p className="text-sm text-gray-600 mt-1">
+                                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
                                   {notification.message}
                                 </p>
 
                                 <div className="flex items-center justify-between mt-2">
-                                  <p className="text-xs text-gray-500">
+                                  <p className="text-xs text-slate-500 dark:text-slate-500">
                                     {formatDistanceToNow(notification.createdAt, { addSuffix: true })}
                                   </p>
                                   <Button
                                     size="sm"
                                     variant="link"
-                                    className="text-xs p-0 h-auto"
+                                    className="text-xs p-0 h-auto text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                                     asChild
                                   >
                                     <a href={notification.actionUrl}>
@@ -280,7 +280,7 @@ export default function NotificationsPage() {
                             </div>
 
                             {index < filteredNotifications.length - 1 && (
-                              <Separator className="my-4" />
+                              <Separator className="my-4 bg-slate-200 dark:bg-slate-700" />
                             )}
                           </div>
                         );

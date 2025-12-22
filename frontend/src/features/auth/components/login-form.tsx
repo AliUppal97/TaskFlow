@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { getErrorMessage } from '@/types';
 import { Logo } from '@/components/logo';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -52,12 +53,12 @@ export function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900 relative overflow-hidden flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#e3f2fd]/40 dark:bg-indigo-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-[#e0f2f1]/40 dark:bg-purple-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#e3f2fd]/40 dark:bg-blue-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-4000"></div>
       </div>
 
       {/* Logo/Brand Section */}
@@ -65,20 +66,25 @@ export function LoginForm() {
         <Logo size="lg" />
       </div>
 
+      {/* Theme Toggle */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Login Card */}
       <div className="relative z-10 w-full max-w-md animate-fade-in-up">
-        <Card className="bg-white/5 backdrop-blur-md border-white/10 shadow-2xl">
+        <Card className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 shadow-2xl">
           <CardHeader className="space-y-4 text-center pb-6">
             <div className="flex justify-center mb-2">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/50">
+              <div className="w-16 h-16 rounded-2xl bg-[#1976d2] flex items-center justify-center shadow-md">
                 <Lock className="h-8 w-8 text-white" />
               </div>
             </div>
             <div className="space-y-2">
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent">
+              <CardTitle className="text-3xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200">
                 Welcome Back
               </CardTitle>
-              <CardDescription className="text-white/70 text-base">
+              <CardDescription className="text-[#757575] dark:text-slate-400 text-base">
                 Sign in to your TaskFlow account to continue
               </CardDescription>
             </div>
@@ -86,20 +92,20 @@ export function LoginForm() {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               {message && (
-                <div className="p-4 text-sm text-green-300 bg-green-500/20 backdrop-blur-sm border border-green-400/30 rounded-lg flex items-center gap-2">
+                <div className="p-4 text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
                   {message}
                 </div>
               )}
 
               {error && (
-                <div className="p-4 text-sm text-red-300 bg-red-500/20 backdrop-blur-sm border border-red-400/30 rounded-lg">
+                <div className="p-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
                   {error}
                 </div>
               )}
 
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-white/90">
+                <label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Email Address
                 </label>
                 <Input
@@ -107,17 +113,17 @@ export function LoginForm() {
                   type="email"
                   placeholder="john@example.com"
                   {...register('email')}
-                  className={`bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-purple-400/50 focus:ring-purple-400/20 ${
-                    errors.email ? 'border-red-400/50 focus:border-red-400 focus:ring-red-400/20' : ''
+                  className={`border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 ${
+                    errors.email ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400' : ''
                   }`}
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-300">{errors.email.message}</p>
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-white/90">
+                <label htmlFor="password" className="text-sm font-medium text-slate-700 dark:text-slate-300">
                   Password
                 </label>
                 <div className="relative">
@@ -126,8 +132,8 @@ export function LoginForm() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
                     {...register('password')}
-                    className={`bg-white/5 border-white/20 text-white placeholder:text-white/40 focus:border-purple-400/50 focus:ring-purple-400/20 pr-10 ${
-                      errors.password ? 'border-red-400/50 focus:border-red-400 focus:ring-red-400/20' : ''
+                    className={`border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 pr-10 ${
+                      errors.password ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400' : ''
                     }`}
                   />
                   <button
@@ -136,14 +142,14 @@ export function LoginForm() {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-white/60" />
+                      <EyeOff className="h-5 w-5 text-slate-500 dark:text-slate-400" />
                     ) : (
-                      <Eye className="h-5 w-5 text-white/60" />
+                      <Eye className="h-5 w-5 text-slate-500 dark:text-slate-400" />
                     )}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-300">{errors.password.message}</p>
+                  <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
                 )}
               </div>
 
@@ -151,7 +157,7 @@ export function LoginForm() {
                 <button
                   type="button"
                   onClick={() => router.push('/forgot-password')}
-                  className="text-sm font-medium text-purple-300 hover:text-purple-200 transition-colors"
+                  className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
                 >
                   Forgot password?
                 </button>
@@ -159,7 +165,7 @@ export function LoginForm() {
 
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg shadow-purple-500/50 hover:shadow-xl hover:shadow-purple-500/60 transition-all h-11 text-base font-semibold" 
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all h-11 text-base font-semibold" 
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -176,12 +182,12 @@ export function LoginForm() {
               </Button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-white/10">
-              <p className="text-center text-sm text-white/70">
+            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
+              <p className="text-center text-sm text-slate-600 dark:text-slate-400">
                 Don&apos;t have an account?{' '}
                 <button
                   onClick={() => router.push('/register')}
-                  className="font-semibold text-purple-300 hover:text-purple-200 transition-colors inline-flex items-center gap-1"
+                  className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors inline-flex items-center gap-1"
                 >
                   Sign up
                   <ArrowRight className="h-4 w-4" />
@@ -195,7 +201,7 @@ export function LoginForm() {
         <div className="mt-6 text-center">
           <button
             onClick={() => router.push('/')}
-            className="text-sm text-white/60 hover:text-white/90 transition-colors inline-flex items-center gap-1"
+            className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors inline-flex items-center gap-1"
           >
             <ArrowRight className="h-4 w-4 rotate-180" />
             Back to home

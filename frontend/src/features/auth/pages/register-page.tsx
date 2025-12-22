@@ -20,10 +20,10 @@ export default function RegisterPage() {
   // Show loading while checking auth status
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-purple-400" />
-          <p className="mt-2 text-sm text-white/70">Loading...</p>
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-[#1976d2] dark:text-indigo-400" />
+          <p className="mt-2 text-sm text-[#757575] dark:text-slate-400">Loading...</p>
         </div>
       </div>
     );

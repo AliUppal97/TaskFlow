@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bell, Shield, Palette, Globe, Save, Loader2 } from 'lucide-react';
 
 import { ProtectedRoute } from '@/components/auth/protected-route';
@@ -9,9 +9,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { useTheme } from '@/providers/theme-provider';
 import { UserSettings, SettingCategory, SettingValue, Theme, Language, ProfileVisibility } from '@/types';
 
 export default function SettingsPage() {
+  const { theme, setTheme: setThemeFromProvider } = useTheme();
   const [settings, setSettings] = useState<UserSettings>({
     notifications: {
       email: true,
@@ -21,7 +23,7 @@ export default function SettingsPage() {
       taskCompleted: false,
     },
     appearance: {
-      theme: Theme.SYSTEM,
+      theme: theme,
       language: Language.EN,
       timezone: 'UTC',
     },
@@ -30,6 +32,17 @@ export default function SettingsPage() {
       activityStatus: true,
     },
   });
+
+  // Sync theme from provider
+  useEffect(() => {
+    setSettings(prev => ({
+      ...prev,
+      appearance: {
+        ...prev.appearance,
+        theme: theme,
+      },
+    }));
+  }, [theme]);
 
   const [isLoading, setIsLoading] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -61,15 +74,15 @@ export default function SettingsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30 dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900">
         <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-white via-purple-200 to-pink-200 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-indigo-800 to-purple-800 dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 bg-clip-text text-transparent mb-2">
                 Settings
               </h1>
-              <p className="text-white/70 text-lg">
+              <p className="text-slate-600 dark:text-slate-400 text-lg">
                 Customize your preferences and account settings
               </p>
             </div>
@@ -92,21 +105,21 @@ export default function SettingsPage() {
 
           <div className="space-y-6">
             {/* Notifications */}
-            <Card className="bg-white/5 backdrop-blur-md border-white/10">
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center text-white">
+                <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
                   <Bell className="mr-2 h-5 w-5" />
                   Notifications
                 </CardTitle>
-                <CardDescription className="text-white/70">
+                <CardDescription className="text-slate-600 dark:text-slate-400">
                   Configure how you receive notifications
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label className="text-base text-white/90">Email Notifications</Label>
-                    <p className="text-sm text-white/60">
+                    <Label className="text-base text-slate-700 dark:text-slate-300">Email Notifications</Label>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
                       Receive notifications via email
                     </p>
                   </div>
@@ -118,8 +131,8 @@ export default function SettingsPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label className="text-base">Push Notifications</Label>
-                    <p className="text-sm text-gray-600">
+                    <Label className="text-base text-slate-700 dark:text-slate-300">Push Notifications</Label>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
                       Receive push notifications in your browser
                     </p>
                   </div>
@@ -129,11 +142,11 @@ export default function SettingsPage() {
                   />
                 </div>
 
-                <div className="border-t pt-6">
-                  <h4 className="text-sm font-medium mb-4">Task Notifications</h4>
+                <div className="border-t border-slate-200 dark:border-slate-700 pt-6">
+                  <h4 className="text-sm font-medium mb-4 text-slate-700 dark:text-slate-300">Task Notifications</h4>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <Label>Task Assigned</Label>
+                      <Label className="text-slate-700 dark:text-slate-300">Task Assigned</Label>
                       <Switch
                         checked={settings.notifications.taskAssigned}
                         onCheckedChange={(checked) => updateSetting('notifications', 'taskAssigned', checked)}
@@ -141,7 +154,7 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <Label>Task Due Soon</Label>
+                      <Label className="text-slate-700 dark:text-slate-300">Task Due Soon</Label>
                       <Switch
                         checked={settings.notifications.taskDue}
                         onCheckedChange={(checked) => updateSetting('notifications', 'taskDue', checked)}
@@ -149,7 +162,7 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="flex items-center justify-between">
-                      <Label>Task Completed</Label>
+                      <Label className="text-slate-700 dark:text-slate-300">Task Completed</Label>
                       <Switch
                         checked={settings.notifications.taskCompleted}
                         onCheckedChange={(checked) => updateSetting('notifications', 'taskCompleted', checked)}
@@ -161,13 +174,13 @@ export default function SettingsPage() {
             </Card>
 
             {/* Appearance */}
-            <Card className="bg-white/5 backdrop-blur-md border-white/10">
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center text-white">
+                <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
                   <Palette className="mr-2 h-5 w-5" />
                   Appearance
                 </CardTitle>
-                <CardDescription className="text-white/70">
+                <CardDescription className="text-slate-600 dark:text-slate-400">
                   Customize the look and feel of your interface
                 </CardDescription>
               </CardHeader>
@@ -177,7 +190,10 @@ export default function SettingsPage() {
                     <Label htmlFor="theme">Theme</Label>
                     <Select
                       value={settings.appearance.theme}
-                      onValueChange={(value) => updateSetting('appearance', 'theme', value)}
+                      onValueChange={(value) => {
+                        updateSetting('appearance', 'theme', value);
+                        setThemeFromProvider(value as Theme);
+                      }}
                     >
                       <SelectTrigger>
                         <SelectValue />
@@ -232,19 +248,19 @@ export default function SettingsPage() {
             </Card>
 
             {/* Privacy */}
-            <Card className="bg-white/5 backdrop-blur-md border-white/10">
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center text-white">
+                <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
                   <Shield className="mr-2 h-5 w-5" />
                   Privacy
                 </CardTitle>
-                <CardDescription className="text-white/70">
+                <CardDescription className="text-slate-600 dark:text-slate-400">
                   Control your privacy and visibility settings
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="profile-visibility">Profile Visibility</Label>
+                  <Label htmlFor="profile-visibility" className="text-slate-700 dark:text-slate-300">Profile Visibility</Label>
                   <Select
                     value={settings.privacy.profileVisibility}
                     onValueChange={(value) => updateSetting('privacy', 'profileVisibility', value)}
@@ -258,16 +274,16 @@ export default function SettingsPage() {
                         <SelectItem value={ProfileVisibility.PRIVATE}>Private</SelectItem>
                       </SelectContent>
                   </Select>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
                     Control who can see your profile information
                   </p>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-0.5">
-                    <Label className="text-base">Show Activity Status</Label>
-                    <p className="text-sm text-gray-600">
-                      Let others see when you're active
+                    <Label className="text-base text-slate-700 dark:text-slate-300">Show Activity Status</Label>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      Let others see when you&apos;re active
                     </p>
                   </div>
                   <Switch
@@ -279,41 +295,41 @@ export default function SettingsPage() {
             </Card>
 
             {/* Account */}
-            <Card className="bg-white/5 backdrop-blur-md border-white/10">
+            <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
               <CardHeader>
-                <CardTitle className="flex items-center text-white">
+                <CardTitle className="flex items-center text-slate-900 dark:text-slate-100">
                   <Globe className="mr-2 h-5 w-5" />
                   Account
                 </CardTitle>
-                <CardDescription className="text-white/70">
+                <CardDescription className="text-slate-600 dark:text-slate-400">
                   Manage your account settings
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors">
                   <div>
-                    <h4 className="font-medium text-white">Change Password</h4>
-                    <p className="text-sm text-white/60">
+                    <h4 className="font-medium text-slate-900 dark:text-slate-100">Change Password</h4>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
                       Update your account password
                     </p>
                   </div>
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">Change</Button>
+                  <Button variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">Change</Button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border border-white/10 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                <div className="flex items-center justify-between p-4 border border-slate-200 dark:border-slate-700 rounded-lg bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors">
                   <div>
-                    <h4 className="font-medium text-white">Two-Factor Authentication</h4>
-                    <p className="text-sm text-white/60">
+                    <h4 className="font-medium text-slate-900 dark:text-slate-100">Two-Factor Authentication</h4>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
                       Add an extra layer of security
                     </p>
                   </div>
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">Enable</Button>
+                  <Button variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800">Enable</Button>
                 </div>
 
-                <div className="flex items-center justify-between p-4 border border-red-400/30 rounded-lg bg-red-500/10 hover:bg-red-500/20 transition-colors">
+                <div className="flex items-center justify-between p-4 border border-red-200 dark:border-red-800 rounded-lg bg-red-50 dark:bg-red-900/20 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors">
                   <div>
-                    <h4 className="font-medium text-red-400">Delete Account</h4>
-                    <p className="text-sm text-white/60">
+                    <h4 className="font-medium text-red-700 dark:text-red-400">Delete Account</h4>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
                       Permanently delete your account and all data
                     </p>
                   </div>

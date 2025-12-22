@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Logo } from '@/components/logo';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -56,7 +57,7 @@ export function Header() {
   }
 
   return (
-    <header className="bg-slate-900/95 backdrop-blur-md border-b border-white/10 shadow-lg">
+    <header className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo and Navigation */}
@@ -75,8 +76,8 @@ export function Header() {
                     href={item.href}
                     className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                       isActive
-                        ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white border border-purple-400/30'
-                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                        ? 'bg-[#e3f2fd] dark:from-indigo-900/50 dark:to-purple-900/50 text-[#1976d2] dark:text-indigo-300 border border-[#bbdefb] dark:border-indigo-700 shadow-sm'
+                        : 'text-[#757575] dark:text-slate-300 hover:text-[#212121] dark:hover:text-slate-100 hover:bg-[#f5f5f5] dark:hover:bg-slate-800'
                     }`}
                   >
                     <item.icon className="h-4 w-4 mr-2" />
@@ -89,8 +90,11 @@ export function Header() {
 
           {/* Right side */}
           <div className="flex items-center space-x-4">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {/* Notifications */}
-            <Button variant="ghost" size="sm" className="relative text-white/90 hover:text-white hover:bg-white/10" asChild>
+            <Button variant="ghost" size="sm" className="relative text-slate-700 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800" asChild>
               <Link href="/notifications">
                 <Bell className="h-5 w-5" />
                 {/* Notification badge - would be dynamic in real app */}
@@ -103,9 +107,9 @@ export function Header() {
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full hover:bg-white/10">
-                  <Avatar className="h-8 w-8 ring-2 ring-purple-500/50">
-                    <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
+                  <Avatar className="h-8 w-8 ring-2 ring-[#bbdefb] dark:ring-indigo-800">
+                    <AvatarFallback className="bg-[#1976d2] text-white">
                       {getInitials(user?.profile?.firstName, user?.profile?.lastName, user?.email)}
                     </AvatarFallback>
                   </Avatar>
@@ -168,7 +172,7 @@ export function Header() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-white/90 hover:text-white hover:bg-white/10"
+                className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
               >
                 {isMobileMenuOpen ? (
                   <X className="h-6 w-6" />
@@ -182,7 +186,7 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-white/10 bg-slate-900/95 backdrop-blur-md">
+          <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
             <div className="px-2 pt-2 pb-3 space-y-1">
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
@@ -192,8 +196,8 @@ export function Header() {
                     href={item.href}
                     className={`block px-3 py-2 rounded-lg text-base font-medium transition-all ${
                       isActive
-                        ? 'bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-white border border-purple-400/30'
-                        : 'text-white/70 hover:text-white hover:bg-white/10'
+                        ? 'bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/50 dark:to-purple-900/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

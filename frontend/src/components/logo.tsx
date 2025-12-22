@@ -56,21 +56,21 @@ export function Logo({
       className
     )}>
       <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg blur opacity-75 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 bg-gradient-to-r from-indigo-400 to-purple-400 rounded-lg blur opacity-50 group-hover:opacity-70 transition-opacity" />
         <div className="relative z-10">
           <Image
             src="/logo-icon.svg"
             alt="TaskFlow Logo"
             width={iconSize}
             height={iconSize}
-            className="drop-shadow-lg"
+            className="drop-shadow-md"
             priority
           />
         </div>
       </div>
       {showText && (
         <span className={cn(
-          'font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent',
+          'font-bold bg-gradient-to-r from-slate-900 via-indigo-800 to-purple-800 dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 bg-clip-text text-transparent',
           textSize,
           textClassName
         )}>
