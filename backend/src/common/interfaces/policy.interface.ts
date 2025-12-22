@@ -1,8 +1,8 @@
 import { User } from '../../entities/user.entity';
 
-export interface PolicyContext {
+export interface PolicyContext<T = unknown> {
   user: User;
-  resource?: any;
+  resource?: T;
   action: string;
   resourceType: string;
 }
@@ -11,9 +11,9 @@ export interface IPolicy {
   handle(context: PolicyContext): Promise<boolean> | boolean;
 }
 
-export interface ResourceOwnerPolicy extends IPolicy {
+export interface ResourceOwnerPolicy<T = unknown> extends IPolicy {
   // Checks if user owns the resource
-  isOwner(user: User, resource: any): boolean;
+  isOwner(user: User, resource: T): boolean;
 }
 
 export interface RoleBasedPolicy extends IPolicy {

@@ -1,12 +1,13 @@
 import { SetMetadata } from '@nestjs/common';
+import { PolicyRequest } from '../common/types';
 
 export const POLICY_KEY = 'policy';
 
-export interface PolicyConfig {
+export interface PolicyConfig<T = unknown> {
   policyName: string;
   action: string;
   resourceType: string;
-  getResource?: (request: any) => any;
+  getResource?: (request: PolicyRequest) => T;
 }
 
 export const UsePolicy = (config: PolicyConfig) =>
