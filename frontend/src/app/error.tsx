@@ -39,7 +39,7 @@ export default function Error({
           <div className="mx-auto w-16 h-16 bg-[#d32f2f] rounded-full flex items-center justify-center shadow-md">
             <AlertTriangle className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold text-[#212121] dark:from-slate-100 dark:via-red-200 dark:to-pink-200">
+          <CardTitle className="text-2xl font-bold text-[#212121] dark:text-slate-100">
             Something went wrong
           </CardTitle>
           <CardDescription className="text-[#757575] dark:text-slate-400">
@@ -47,7 +47,7 @@ export default function Error({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="text-6xl font-bold text-[#9e9e9e] dark:from-slate-500 dark:to-slate-700 mb-4">
+          <div className="text-6xl font-bold text-[#9e9e9e] dark:text-slate-500 mb-4">
             500
           </div>
 
@@ -103,5 +103,4 @@ export default function Error({
     </div>
   );
 }
-
 
