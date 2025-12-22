@@ -44,7 +44,7 @@ export class EventsService {
       this.logger.log(
         `Event logged: ${eventData.type} - Actor: ${eventData.actorId} - Entity: ${eventData.entityId}`,
       );
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error(`Failed to log event: ${eventData.type}`, error);
       // Don't throw error to avoid breaking the main flow
     }
@@ -111,9 +111,6 @@ export class EventsService {
       .exec();
   }
 }
-
-
-
 
 
 
