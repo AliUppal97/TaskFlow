@@ -45,10 +45,14 @@ export default function ProfilePage() {
     setIsLoading(true);
     try {
       // In a real app, you'd call an API to update the profile
-      console.log('Updating profile:', data);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Updating profile:', data);
+      }
       setIsEditing(false);
     } catch (error) {
-      console.error('Failed to update profile:', error);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('Failed to update profile:', error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -64,24 +68,24 @@ export default function ProfilePage() {
   const getRoleBadgeColor = (role: UserRole) => {
     switch (role) {
       case UserRole.ADMIN:
-        return 'bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-500/30';
+        return 'bg-[#ffebee] dark:bg-red-500/20 text-[#d32f2f] dark:text-red-300 border border-[#ffcdd2] dark:border-red-500/30';
       case UserRole.USER:
-        return 'bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30';
+        return 'bg-[#e3f2fd] dark:bg-blue-500/20 text-[#1976d2] dark:text-blue-300 border border-[#bbdefb] dark:border-blue-500/30';
       default:
-        return 'bg-slate-100 dark:bg-slate-700/50 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-600/50';
+        return 'bg-[#f5f5f5] dark:bg-slate-700/50 text-[#757575] dark:text-slate-200 border border-[#e0e0e0] dark:border-slate-600/50';
     }
   };
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/30 dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900">
+      <div className="min-h-screen bg-white dark:bg-slate-900">
         <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-900 via-indigo-800 to-purple-800 dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 mb-2">
               Profile
             </h1>
-            <p className="text-slate-600 dark:text-slate-400 text-lg">
+            <p className="text-[#757575] dark:text-slate-400 text-lg">
               Manage your account settings and preferences
             </p>
           </div>
@@ -89,19 +93,19 @@ export default function ProfilePage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Profile Overview */}
             <div className="lg:col-span-1">
-              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
+              <Card className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 shadow-sm">
                 <CardHeader className="text-center">
-                  <Avatar className="h-24 w-24 mx-auto mb-4 ring-4 ring-indigo-200 dark:ring-indigo-800">
-                    <AvatarFallback className="text-2xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white">
+                  <Avatar className="h-24 w-24 mx-auto mb-4 ring-4 ring-[#bbdefb] dark:ring-indigo-800">
+                    <AvatarFallback className="text-2xl bg-[#1976d2] text-white">
                       {getInitials(user?.profile?.firstName, user?.profile?.lastName, user?.email)}
                     </AvatarFallback>
                   </Avatar>
-                  <CardTitle className="text-xl text-slate-900 dark:text-slate-100">
+                  <CardTitle className="text-xl text-[#212121] dark:text-slate-100">
                     {user?.profile?.firstName && user?.profile?.lastName
                       ? `${user.profile.firstName} ${user.profile.lastName}`
                       : user?.email}
                   </CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-400">{user?.email}</CardDescription>
+                  <CardDescription className="text-[#757575] dark:text-slate-400">{user?.email}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-center justify-center">
@@ -111,11 +115,11 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="space-y-2 text-sm">
-                    <div className="flex items-center text-slate-600 dark:text-slate-400">
+                    <div className="flex items-center text-[#757575] dark:text-slate-400">
                       <User className="h-4 w-4 mr-2" />
                       Member since {new Date(user?.createdAt || '').toLocaleDateString()}
                     </div>
-                    <div className="flex items-center text-slate-600 dark:text-slate-400">
+                    <div className="flex items-center text-[#757575] dark:text-slate-400">
                       <Calendar className="h-4 w-4 mr-2" />
                       {totalTasks} tasks created
                     </div>
@@ -126,10 +130,10 @@ export default function ProfilePage() {
 
             {/* Profile Details */}
             <div className="lg:col-span-2">
-              <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
+              <Card className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-slate-900 dark:text-slate-100">Personal Information</CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-400">
+                  <CardTitle className="text-[#212121] dark:text-slate-100">Personal Information</CardTitle>
+                  <CardDescription className="text-[#757575] dark:text-slate-400">
                     Update your personal details and preferences
                   </CardDescription>
                 </CardHeader>
@@ -138,27 +142,27 @@ export default function ProfilePage() {
                     <div className="space-y-4">
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">First Name</label>
-                          <p className="mt-1 text-sm text-slate-900 dark:text-slate-100">
+                          <label className="text-sm font-medium text-[#212121] dark:text-slate-300">First Name</label>
+                          <p className="mt-1 text-sm text-[#212121] dark:text-slate-100">
                             {user?.profile?.firstName || 'Not set'}
                           </p>
                         </div>
                         <div>
-                          <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Last Name</label>
-                          <p className="mt-1 text-sm text-slate-900 dark:text-slate-100">
+                          <label className="text-sm font-medium text-[#212121] dark:text-slate-300">Last Name</label>
+                          <p className="mt-1 text-sm text-[#212121] dark:text-slate-100">
                             {user?.profile?.lastName || 'Not set'}
                           </p>
                         </div>
                       </div>
 
                       <div>
-                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
-                        <p className="mt-1 text-sm text-slate-900 dark:text-slate-100">{user?.email}</p>
+                        <label className="text-sm font-medium text-[#212121] dark:text-slate-300">Email</label>
+                        <p className="mt-1 text-sm text-[#212121] dark:text-slate-100">{user?.email}</p>
                       </div>
 
                       <div>
-                        <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Role</label>
-                        <p className="mt-1 text-sm text-slate-900 dark:text-slate-100 capitalize">{user?.role}</p>
+                        <label className="text-sm font-medium text-[#212121] dark:text-slate-300">Role</label>
+                        <p className="mt-1 text-sm text-[#212121] dark:text-slate-100 capitalize">{user?.role}</p>
                       </div>
 
                       <Button onClick={() => setIsEditing(true)} className="mt-6">
@@ -227,30 +231,30 @@ export default function ProfilePage() {
               </Card>
 
               {/* Account Statistics */}
-              <Card className="mt-6 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm">
+              <Card className="mt-6 bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 shadow-sm">
                 <CardHeader>
-                  <CardTitle className="text-slate-900 dark:text-slate-100">Account Statistics</CardTitle>
-                  <CardDescription className="text-slate-600 dark:text-slate-400">
+                  <CardTitle className="text-[#212121] dark:text-slate-100">Account Statistics</CardTitle>
+                  <CardDescription className="text-[#757575] dark:text-slate-400">
                     Your activity overview
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="text-center p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
-                      <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 dark:from-blue-400 dark:to-cyan-400 bg-clip-text text-transparent">{totalTasks}</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Tasks Created</div>
+                    <div className="text-center p-4 rounded-lg bg-[#e3f2fd] dark:bg-blue-900/20 border border-[#bbdefb] dark:border-blue-800">
+                      <div className="text-2xl font-bold text-[#1976d2] dark:from-blue-400 dark:to-cyan-400">{totalTasks}</div>
+                      <div className="text-sm text-[#757575] dark:text-slate-400">Tasks Created</div>
                     </div>
-                    <div className="text-center p-4 rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-100 dark:border-green-800">
-                      <div className="text-2xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">0</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Tasks Completed</div>
+                    <div className="text-center p-4 rounded-lg bg-[#e0f2f1] dark:bg-green-900/20 border border-[#b2dfdb] dark:border-green-800">
+                      <div className="text-2xl font-bold text-[#00796b] dark:from-green-400 dark:to-emerald-400">0</div>
+                      <div className="text-sm text-[#757575] dark:text-slate-400">Tasks Completed</div>
                     </div>
-                    <div className="text-center p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-100 dark:border-yellow-800">
-                      <div className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 dark:from-yellow-400 dark:to-orange-400 bg-clip-text text-transparent">0</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">In Progress</div>
+                    <div className="text-center p-4 rounded-lg bg-[#fff3e0] dark:bg-yellow-900/20 border border-[#ffe0b2] dark:border-yellow-800">
+                      <div className="text-2xl font-bold text-[#f57c00] dark:from-yellow-400 dark:to-orange-400">0</div>
+                      <div className="text-sm text-[#757575] dark:text-slate-400">In Progress</div>
                     </div>
-                    <div className="text-center p-4 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800">
-                      <div className="text-2xl font-bold bg-gradient-to-r from-red-600 to-pink-600 dark:from-red-400 dark:to-pink-400 bg-clip-text text-transparent">0</div>
-                      <div className="text-sm text-slate-600 dark:text-slate-400">Overdue</div>
+                    <div className="text-center p-4 rounded-lg bg-[#ffebee] dark:bg-red-900/20 border border-[#ffcdd2] dark:border-red-800">
+                      <div className="text-2xl font-bold text-[#d32f2f] dark:from-red-400 dark:to-pink-400">0</div>
+                      <div className="text-sm text-[#757575] dark:text-slate-400">Overdue</div>
                     </div>
                   </div>
                 </CardContent>

@@ -53,7 +53,7 @@ export function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900 relative overflow-hidden flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-white dark:bg-slate-900 relative overflow-hidden flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-96 h-96 bg-[#e3f2fd]/40 dark:bg-indigo-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"></div>
@@ -73,7 +73,7 @@ export function LoginForm() {
 
       {/* Login Card */}
       <div className="relative z-10 w-full max-w-md animate-fade-in-up">
-        <Card className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 shadow-2xl">
+        <Card className="shadow-2xl">
           <CardHeader className="space-y-4 text-center pb-6">
             <div className="flex justify-center mb-2">
               <div className="w-16 h-16 rounded-2xl bg-[#1976d2] flex items-center justify-center shadow-md">
@@ -81,10 +81,10 @@ export function LoginForm() {
               </div>
             </div>
             <div className="space-y-2">
-              <CardTitle className="text-3xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200">
+              <CardTitle className="text-3xl font-bold">
                 Welcome Back
               </CardTitle>
-              <CardDescription className="text-[#757575] dark:text-slate-400 text-base">
+              <CardDescription className="text-base">
                 Sign in to your TaskFlow account to continue
               </CardDescription>
             </div>
@@ -92,20 +92,20 @@ export function LoginForm() {
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
               {message && (
-                <div className="p-4 text-sm text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg flex items-center gap-2">
+                <div className="p-4 text-sm text-[#00796b] dark:text-green-400 bg-[#e0f2f1] dark:bg-green-900/20 border border-[#b2dfdb] dark:border-green-800 rounded-lg flex items-center gap-2">
                   <Sparkles className="h-4 w-4" />
                   {message}
                 </div>
               )}
 
               {error && (
-                <div className="p-4 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <div className="p-4 text-sm text-[#d32f2f] dark:text-red-400 bg-[#ffebee] dark:bg-red-900/20 border border-[#ffcdd2] dark:border-red-800 rounded-lg">
                   {error}
                 </div>
               )}
 
               <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label htmlFor="email" className="text-sm font-medium text-foreground">
                   Email Address
                 </label>
                 <Input
@@ -113,17 +113,15 @@ export function LoginForm() {
                   type="email"
                   placeholder="john@example.com"
                   {...register('email')}
-                  className={`border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 ${
-                    errors.email ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400' : ''
-                  }`}
+                  className={errors.email ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}
                 />
                 {errors.email && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.email.message}</p>
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <label htmlFor="password" className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                <label htmlFor="password" className="text-sm font-medium text-foreground">
                   Password
                 </label>
                 <div className="relative">
@@ -132,9 +130,7 @@ export function LoginForm() {
                     type={showPassword ? 'text' : 'password'}
                     placeholder="Enter your password"
                     {...register('password')}
-                    className={`border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-indigo-500 dark:focus:border-indigo-400 focus:ring-indigo-500 dark:focus:ring-indigo-400 pr-10 ${
-                      errors.password ? 'border-red-300 dark:border-red-700 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400' : ''
-                    }`}
+                    className={`pr-10 ${errors.password ? 'border-destructive focus:border-destructive focus:ring-destructive' : ''}`}
                   />
                   <button
                     type="button"
@@ -142,14 +138,14 @@ export function LoginForm() {
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-5 w-5 text-slate-500 dark:text-slate-400" />
+                      <EyeOff className="h-5 w-5 text-muted-foreground" />
                     ) : (
-                      <Eye className="h-5 w-5 text-slate-500 dark:text-slate-400" />
+                      <Eye className="h-5 w-5 text-muted-foreground" />
                     )}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-red-600 dark:text-red-400">{errors.password.message}</p>
+                  <p className="text-sm text-destructive">{errors.password.message}</p>
                 )}
               </div>
 
@@ -157,7 +153,7 @@ export function LoginForm() {
                 <button
                   type="button"
                   onClick={() => router.push('/forgot-password')}
-                  className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
+                  className="text-sm font-medium text-primary hover:text-primary/90 transition-colors"
                 >
                   Forgot password?
                 </button>
@@ -165,7 +161,7 @@ export function LoginForm() {
 
               <Button 
                 type="submit" 
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all h-11 text-base font-semibold" 
+                className="w-full h-11 text-base font-semibold shadow-md hover:shadow-lg" 
                 disabled={isLoading}
               >
                 {isLoading ? (
@@ -182,12 +178,12 @@ export function LoginForm() {
               </Button>
             </form>
 
-            <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700">
-              <p className="text-center text-sm text-slate-600 dark:text-slate-400">
+            <div className="mt-6 pt-6 border-t border-border">
+              <p className="text-center text-sm text-muted-foreground">
                 Don&apos;t have an account?{' '}
                 <button
                   onClick={() => router.push('/register')}
-                  className="font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors inline-flex items-center gap-1"
+                  className="font-semibold text-primary hover:text-primary/90 transition-colors inline-flex items-center gap-1"
                 >
                   Sign up
                   <ArrowRight className="h-4 w-4" />
@@ -201,7 +197,7 @@ export function LoginForm() {
         <div className="mt-6 text-center">
           <button
             onClick={() => router.push('/')}
-            className="text-sm text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors inline-flex items-center gap-1"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
           >
             <ArrowRight className="h-4 w-4 rotate-180" />
             Back to home

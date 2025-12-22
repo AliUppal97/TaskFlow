@@ -108,7 +108,14 @@ class ApiClient {
             // Clear tokens and redirect to login
             this.clearTokens();
             if (typeof window !== 'undefined') {
-              window.location.href = '/login';
+              // Only redirect if not already on login page to avoid loops
+              if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+              }
+            }
+            // Silently handle refresh errors - don't log to console unless in development
+            if (process.env.NODE_ENV === 'development') {
+              console.warn('Token refresh failed:', refreshError);
             }
           }
         }
@@ -130,15 +137,10 @@ class ApiClient {
    */
   private async refreshToken(): Promise<{ accessToken: string; refreshToken: string } | null> {
     try {
-      const refreshToken = this.getRefreshToken();
-      if (!refreshToken) return null;
-
       // Refresh token is in HttpOnly cookie, sent automatically with withCredentials
+      // We don't need to manually read or set it - the browser handles it
       const response = await axios.post(`${this.baseURL}/api/v1/auth/refresh`, {}, {
-        headers: {
-          Cookie: `refreshToken=${refreshToken}`,
-        },
-        withCredentials: true, // Required for cookie-based auth
+        withCredentials: true, // Required for cookie-based auth - sends HttpOnly cookie automatically
       });
 
       return response.data;
@@ -251,8 +253,8 @@ class ApiClient {
     // Handle both wrapped (ApiResponse) and direct (PaginatedResponse) formats
     const responseData = response.data;
     
-    // Debug logging (remove in production)
-    if (process.env.NODE_ENV === 'development') {
+    // Debug logging (development only)
+    if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_API === 'true') {
       console.log('[API Client] Tasks response:', {
         hasData: !!responseData,
         isArray: Array.isArray(responseData),
@@ -278,7 +280,9 @@ class ApiClient {
     }
     
     // Fallback - return empty response if structure doesn't match
-    console.warn('[API Client] Unexpected response structure for tasks:', responseData);
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('[API Client] Unexpected response structure for tasks:', responseData);
+    }
     return {
       data: [],
       pagination: {

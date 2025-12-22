@@ -55,34 +55,75 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
     socket.on('connect', () => {
       setIsConnected(true);
-      console.log('Connected to WebSocket');
+      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
+        console.log('Connected to WebSocket');
+      }
     });
 
     socket.on('disconnect', () => {
       setIsConnected(false);
-      console.log('Disconnected from WebSocket');
+      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
+        console.log('Disconnected from WebSocket');
+      }
     });
 
     socket.on('connected', (data) => {
-      console.log('WebSocket authenticated:', data);
+      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
+        console.log('WebSocket authenticated:', data);
+      }
     });
 
     socket.on('task-event', (event: TaskEvent) => {
-      console.log('Task event received:', event);
+      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
+        console.log('Task event received:', event);
+      }
       taskEventCallbacks.current.forEach(callback => callback(event));
     });
 
     socket.on('notification', (notification: WebSocketNotification) => {
-      console.log('Notification received:', notification);
+      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
+        console.log('Notification received:', notification);
+      }
       notificationCallbacks.current.forEach(callback => callback(notification));
     });
 
     socket.on('subscribed', (data) => {
-      console.log('Subscribed to task:', data.taskId);
+      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
+        console.log('Subscribed to task:', data.taskId);
+      }
     });
 
     socket.on('unsubscribed', (data) => {
-      console.log('Unsubscribed from task:', data.taskId);
+      if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
+        console.log('Unsubscribed from task:', data.taskId);
+      }
+    });
+
+    // Handle connection errors
+    socket.on('connect_error', (error) => {
+      setIsConnected(false);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('WebSocket connection error:', error.message);
+      }
+    });
+
+    // Handle general socket errors
+    socket.on('error', (error) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.error('WebSocket error:', error);
+      }
+    });
+
+    // Handle authentication errors
+    socket.on('unauthorized', (error) => {
+      setIsConnected(false);
+      if (process.env.NODE_ENV === 'development') {
+        console.error('WebSocket authentication failed:', error);
+      }
+      // Optionally clear token and redirect to login
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('accessToken');
+      }
     });
 
     socketRef.current = socket;
@@ -90,6 +131,8 @@ export function WebSocketProvider({ children }: WebSocketProviderProps) {
 
   const disconnectSocket = () => {
     if (socketRef.current) {
+      // Remove all event listeners before disconnecting to prevent errors
+      socketRef.current.removeAllListeners();
       socketRef.current.disconnect();
       socketRef.current = null;
       setIsConnected(false);

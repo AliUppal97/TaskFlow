@@ -10,30 +10,41 @@ export function useTaskUpdates() {
 
   useEffect(() => {
     const unsubscribe = onTaskEvent((event: TaskEvent) => {
-      console.log('Received task event:', event);
+      try {
+        if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
+          console.log('Received task event:', event);
+        }
 
-      // Update the specific task in cache
-      if (event.taskId) {
+        // Update the specific task in cache
+        if (event.taskId) {
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.tasks.detail(event.taskId),
+          });
+        }
+
+        // Invalidate tasks list to get fresh data
         queryClient.invalidateQueries({
-          queryKey: queryKeys.tasks.detail(event.taskId),
+          queryKey: queryKeys.tasks.all(),
+          refetchType: 'active', // Only refetch active queries
         });
-      }
 
-      // Invalidate tasks list to get fresh data
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.tasks.all(),
-        refetchType: 'active', // Only refetch active queries
-      });
+        // Update stats
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.tasks.stats(),
+        });
 
-      // Update stats
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.tasks.stats(),
-      });
-
-      // Show notification for certain events
-      if (event.type === TaskEventType.TASK_ASSIGNED) {
-        // You could show a toast notification here
-        console.log('Task assigned:', event.payload);
+        // Show notification for certain events
+        if (event.type === TaskEventType.TASK_ASSIGNED) {
+          // You could show a toast notification here
+          if (process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_DEBUG_WS === 'true') {
+            console.log('Task assigned:', event.payload);
+          }
+        }
+      } catch (error) {
+        // Handle errors in event processing to prevent console errors
+        if (process.env.NODE_ENV === 'development') {
+          console.error('Error processing task event:', error);
+        }
       }
     });
 

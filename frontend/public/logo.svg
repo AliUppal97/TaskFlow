@@ -1,15 +1,30 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
-      <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#9333ea;stop-opacity:1" />
+    <linearGradient id="largeLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#3b82f6">
+        <animate attributeName="stop-color" values="#3b82f6;#8b5cf6;#06b6d4;#3b82f6" dur="6s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" stopColor="#6366f1">
+        <animate attributeName="stop-color" values="#6366f1;#a855f7;#0891b2;#6366f1" dur="6s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stopColor="#8b5cf6">
+        <animate attributeName="stop-color" values="#8b5cf6;#06b6d4;#3b82f6;#8b5cf6" dur="6s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
-    <linearGradient id="logoGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#818cf8;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#a855f7;stop-opacity:1" />
+
+    <linearGradient id="largeFlowGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stopColor="#60a5fa" stopOpacity="0">
+        <animate attributeName="stop-opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="50%" stopColor="#a78bfa" stopOpacity="0.9">
+        <animate attributeName="stop-opacity" values="0.9;0.4;0.9" dur="3s" repeatCount="indefinite"/>
+      </stop>
+      <stop offset="100%" stopColor="#34d399" stopOpacity="0">
+        <animate attributeName="stop-opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/>
+      </stop>
     </linearGradient>
-    <filter id="glow">
+
+    <filter id="largeGlow">
       <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
       <feMerge>
         <feMergeNode in="coloredBlur"/>
@@ -17,33 +32,111 @@
       </feMerge>
     </filter>
   </defs>
-  
-  <!-- Background circle with gradient -->
-  <circle cx="256" cy="256" r="240" fill="url(#logoGradient)" opacity="0.08"/>
-  
-  <!-- Main T shape with flow lines -->
-  <g transform="translate(256, 256)" filter="url(#glow)">
-    <!-- Vertical bar of T with subtle shadow -->
-    <rect x="-22" y="-122" width="44" height="204" rx="22" fill="url(#logoGradient)" opacity="0.3"/>
-    <rect x="-20" y="-120" width="40" height="200" rx="20" fill="url(#logoGradient)"/>
-    
-    <!-- Horizontal bar of T with subtle shadow -->
-    <rect x="-122" y="-22" width="244" height="44" rx="22" fill="url(#logoGradient)" opacity="0.3"/>
-    <rect x="-120" y="-20" width="240" height="40" rx="20" fill="url(#logoGradient)"/>
-    
-    <!-- Flow indicator - elegant curved arrow on the right -->
-    <path d="M 100 0 Q 135 -18 155 -35 Q 175 -52 180 -70" 
-          stroke="url(#logoGradientLight)" 
-          stroke-width="18" 
-          fill="none" 
-          stroke-linecap="round"
-          stroke-linejoin="round"/>
-    <path d="M 180 -70 L 200 -50 L 180 -30 Z" 
-          fill="url(#logoGradientLight)"/>
-    
-    <!-- Subtle accent dots representing workflow progression -->
-    <circle cx="135" cy="-55" r="7" fill="url(#logoGradientLight)" opacity="0.9"/>
-    <circle cx="155" cy="-90" r="5" fill="url(#logoGradientLight)" opacity="0.7"/>
-  </g>
-</svg>
 
+  <!-- Background circle with subtle animation -->
+  <circle
+    cx="256"
+    cy="256"
+    r="240"
+    fill="url(#largeLogoGradient)"
+    opacity="0.08"
+  >
+    <animate
+      attributeName="r"
+      values="240;250;240"
+      dur="4s"
+      repeatCount="indefinite"
+    />
+  </circle>
+
+  <!-- Flowing data streams representing workflow -->
+  <g transform="translate(256, 256)">
+    <!-- Main task flow line -->
+    <path
+      d="M -128 0 Q -48 -80 0 0 T 128 0"
+      stroke="url(#largeFlowGradient)"
+      strokeWidth="12"
+      fill="none"
+      strokeLinecap="round"
+      filter="url(#largeGlow)"
+    >
+      <animate
+        attributeName="d"
+        values="M -128 0 Q -48 -80 0 0 T 128 0;M -128 0 Q -48 80 0 0 T 128 0;M -128 0 Q -48 -80 0 0 T 128 0"
+        dur="4s"
+        repeatCount="indefinite"
+      />
+    </path>
+
+    <!-- Animated task nodes -->
+    <circle cx="-128" cy="0" r="16" fill="url(#largeLogoGradient)" filter="url(#largeGlow)">
+      <animate
+        attributeName="r"
+        values="16;24;16"
+        dur="3s"
+        repeatCount="indefinite"
+      />
+    </circle>
+
+    <circle cx="0" cy="0" r="16" fill="url(#largeLogoGradient)" filter="url(#largeGlow)">
+      <animate
+        attributeName="r"
+        values="16;24;16"
+        dur="3.5s"
+        repeatCount="indefinite"
+      />
+    </circle>
+
+    <circle cx="128" cy="0" r="16" fill="url(#largeLogoGradient)" filter="url(#largeGlow)">
+      <animate
+        attributeName="r"
+        values="16;24;16"
+        dur="4s"
+        repeatCount="indefinite"
+      />
+    </circle>
+
+    <!-- Flow arrows -->
+    <path
+      d="M 104 -12 L 128 0 L 104 12"
+      fill="url(#largeLogoGradient)"
+      opacity="0.8"
+    >
+      <animateTransform
+        attributeName="transform"
+        type="translate"
+        values="0 0;16 0;0 0"
+        dur="3s"
+        repeatCount="indefinite"
+      />
+    </path>
+  </g>
+
+  <!-- Subtle particle effects -->
+  <circle cx="120" cy="180" r="4" fill="#60a5fa" opacity="0.7">
+    <animate
+      attributeName="opacity"
+      values="0.7;0;0.7"
+      dur="2s"
+      repeatCount="indefinite"
+    />
+  </circle>
+
+  <circle cx="400" cy="350" r="6" fill="#a78bfa" opacity="0.5">
+    <animate
+      attributeName="opacity"
+      values="0.5;0.9;0.5"
+      dur="2.5s"
+      repeatCount="indefinite"
+    />
+  </circle>
+
+  <circle cx="80" cy="420" r="3" fill="#34d399" opacity="0.6">
+    <animate
+      attributeName="opacity"
+      values="0.6;0.2;0.6"
+      dur="3s"
+      repeatCount="indefinite"
+    />
+  </circle>
+</svg>

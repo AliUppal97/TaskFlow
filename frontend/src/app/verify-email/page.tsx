@@ -29,7 +29,9 @@ function VerifyEmailContent() {
     // Simulate email verification API call
     const verifyEmail = async () => {
       try {
-        console.log('Verifying email with token:', token);
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Verifying email with token:', token);
+        }
 
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 2000));

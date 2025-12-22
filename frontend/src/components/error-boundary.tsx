@@ -26,7 +26,9 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Uncaught error:', error, errorInfo);
+    }
 
     this.setState({
       error,
@@ -105,12 +107,16 @@ export class ErrorBoundary extends Component<Props, State> {
 // Hook version for functional components
 export function useErrorHandler() {
   return (error: Error, errorInfo?: { componentStack?: string }) => {
-    console.error('Error caught by hook:', error, errorInfo);
+    if (process.env.NODE_ENV === 'development') {
+      console.error('Error caught by hook:', error, errorInfo);
+    }
 
     // In a real app, you might want to log this to an error reporting service
     // logErrorToService(error, errorInfo);
   };
 }
+
+
 
 
 

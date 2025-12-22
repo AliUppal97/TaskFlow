@@ -40,6 +40,23 @@ export function QueryProvider({ children }: QueryProviderProps) {
           },
           mutations: {
             retry: false,
+            onError: (error: unknown) => {
+              // Global error handler for mutations
+              // Prevents unhandled promise rejections from appearing in console
+              // Individual mutations can still handle errors via onError callback
+              if (process.env.NODE_ENV === 'development') {
+                // Only log in development for debugging
+                if (error instanceof Error) {
+                  console.error('Mutation error:', error.message);
+                } else if (error && typeof error === 'object' && 'isAxiosError' in error) {
+                  const axiosError = error as AxiosError<ApiErrorResponse>;
+                  const message = axiosError.response?.data?.error?.message || axiosError.message;
+                  console.error('Mutation error:', message);
+                }
+              }
+              // In production, errors should be handled by individual mutations
+              // or by UI error boundaries/toast notifications
+            },
           },
         },
       })

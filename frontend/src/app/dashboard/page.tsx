@@ -13,7 +13,7 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-white dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900">
+      <div className="min-h-screen bg-white dark:bg-slate-900">
         <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           <main className="space-y-8">
             {/* Welcome Section */}

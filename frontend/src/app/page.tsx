@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/auth-provider';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { 
   CheckCircle, 
   Users, 
-  Zap, 
+  Radio, 
   Shield, 
   CheckSquare, 
   ArrowRight, 
@@ -31,10 +32,10 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      <div className="min-h-screen flex items-center justify-center bg-white dark:bg-slate-900">
         <div className="relative">
-          <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-100 dark:border-indigo-900 border-t-indigo-600 dark:border-t-indigo-400"></div>
-          <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-indigo-600 dark:text-indigo-400 animate-pulse" />
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-[#bbdefb] dark:border-indigo-900 border-t-[#1976d2] dark:border-t-indigo-400"></div>
+          <Sparkles className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-[#1976d2] dark:text-indigo-400 animate-pulse" strokeWidth={2} />
         </div>
       </div>
     );
@@ -45,79 +46,86 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-white via-blue-50/40 to-indigo-50/40 dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-indigo-200/40 dark:bg-indigo-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"></div>
-        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-200/40 dark:bg-purple-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-2000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-blue-200/40 dark:bg-blue-900/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-4000"></div>
+    <div className="min-h-screen bg-white dark:bg-slate-900 relative overflow-hidden">
+      {/* Subtle gradient overlay - clean and light for light theme */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white via-white to-blue-50/30 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pointer-events-none" />
+      
+      {/* Animated background elements - subtle and light for light theme */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-[500px] h-[500px] bg-blue-100/20 dark:bg-primary/10 rounded-full blur-3xl animate-blob" />
+        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] bg-indigo-100/20 dark:bg-blue-500/10 rounded-full blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-purple-100/20 dark:bg-purple-500/10 rounded-full blur-3xl animate-blob animation-delay-4000" />
       </div>
 
       {/* Navigation */}
-      <nav className="relative z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-slate-800/60 shadow-sm">
-        <div className="container mx-auto px-6 py-5">
-          <div className="flex items-center justify-between">
-            <Logo size="lg" />
-            <div className="flex items-center space-x-4">
+      <nav className="sticky top-0 z-50 w-full border-b border-border bg-white dark:bg-slate-900/80 backdrop-blur-xl supports-[backdrop-filter]:bg-white supports-[backdrop-filter]:dark:bg-slate-900/60">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between">
+            <Link href="/" className="flex items-center transition-opacity hover:opacity-80">
+              <Logo size="lg" />
+            </Link>
+            <div className="flex items-center gap-3">
               {/* Theme Toggle */}
-              <ThemeToggle />
+              <div className="hidden sm:block">
+                <ThemeToggle />
+              </div>
               <Button 
                 variant="ghost" 
                 onClick={() => router.push('/login')}
-                className="text-[#757575] dark:text-slate-300 hover:text-[#212121] dark:hover:text-slate-100 hover:bg-[#f5f5f5] dark:hover:bg-slate-800"
+                className="hidden sm:inline-flex h-9 px-4 text-sm font-medium text-foreground hover:text-foreground hover:bg-accent transition-all duration-200"
               >
                 Sign In
               </Button>
               <Button 
                 onClick={() => router.push('/register')}
-                className="bg-[#1976d2] hover:bg-[#1565c0] text-white shadow-md hover:shadow-lg transition-all"
+                className="h-9 px-4 text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm hover:shadow-md transition-all duration-200 group"
               >
                 Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
               </Button>
             </div>
           </div>
         </div>
       </nav>
 
-      <div className="relative z-10 container mx-auto px-6 py-20">
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
         {/* Hero Section */}
-        <div className="text-center mb-24 animate-fade-in-up">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#e3f2fd] dark:bg-indigo-900/30 border border-[#bbdefb] dark:border-indigo-800 mb-6 shadow-sm">
-            <Sparkles className="h-4 w-4 text-[#1976d2] dark:text-indigo-400" />
-            <span className="text-sm text-[#1565c0] dark:text-indigo-300 font-medium">Enterprise-Grade Task Management</span>
+        <div className="text-center mb-32 animate-fade-in-up">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent dark:bg-accent/20 border border-border/60 mb-8 shadow-sm">
+            <Sparkles className="h-4 w-4 text-primary" strokeWidth={2} />
+            <span className="text-sm text-accent-foreground dark:text-foreground/80 font-medium">Enterprise-Grade Task Management</span>
           </div>
           
-          <h1 className="text-6xl md:text-7xl font-bold mb-6 text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 leading-tight">
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-8 text-foreground leading-tight tracking-tight">
             Streamline Your Team&apos;s
             <br />
-            <span className="bg-gradient-to-r from-[#1976d2] via-[#1565c0] to-[#0d47a1] dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-primary via-blue-600 to-purple-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
               Workflow
             </span>
           </h1>
           
-          <p className="text-xl md:text-2xl text-[#757575] dark:text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg sm:text-xl lg:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed font-light">
             A production-ready, enterprise-grade task management system with{' '}
-            <span className="text-[#1976d2] dark:text-indigo-400 font-semibold">real-time collaboration</span>,
+            <span className="text-foreground font-medium">real-time collaboration</span>,
             built for teams that demand{' '}
-            <span className="text-[#00796b] dark:text-purple-400 font-semibold">reliability</span> and{' '}
-            <span className="text-[#1976d2] dark:text-pink-400 font-semibold">performance</span>.
+            <span className="text-foreground font-medium">reliability</span> and{' '}
+            <span className="text-foreground font-medium">performance</span>.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button 
-                size="lg" 
-                onClick={() => router.push('/register')}
-                className="bg-[#1976d2] hover:bg-[#1565c0] text-white px-8 py-6 text-lg shadow-md hover:shadow-lg transition-all"
-              >
-                Start Free Trial
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
+            <Button 
+              size="lg" 
+              onClick={() => router.push('/register')}
+              className="h-12 px-8 text-base font-semibold bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-200 group"
+            >
+              Start Free Trial
+              <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-200 group-hover:translate-x-1" />
+            </Button>
             <Button 
               size="lg" 
               variant="outline" 
               onClick={() => router.push('/login')}
-              className="border-2 border-[#e0e0e0] dark:border-slate-700 bg-white dark:bg-slate-800 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-700 hover:border-[#bdbdbd] dark:hover:border-slate-600 px-8 py-6 text-lg shadow-sm"
+              className="h-12 px-8 text-base font-medium border-2 border-border/80 hover:bg-accent transition-all duration-200"
             >
               Sign In
             </Button>
@@ -125,50 +133,50 @@ export default function HomePage() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-20">
-          <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 transition-all duration-300 hover:shadow-xl hover:shadow-indigo-500/10 group">
-            <CardHeader>
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-lg shadow-blue-500/30">
-                <Zap className="h-6 w-6 text-white" />
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-32">
+          <Card className="group relative overflow-hidden border border-border/80 bg-card hover:border-primary/50 hover:shadow-xl transition-all duration-300">
+            <CardHeader className="pb-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-700 to-blue-800 dark:from-primary dark:to-blue-600 flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg shadow-md icon-container">
+                <Radio className="h-7 w-7 text-white icon-white" strokeWidth={2.5} />
               </div>
-              <CardTitle className="text-slate-900 dark:text-slate-100 text-xl mb-2">Real-time Collaboration</CardTitle>
-              <CardDescription className="text-slate-600 dark:text-slate-400">
+              <CardTitle className="text-xl mb-3 font-semibold">Real-time Collaboration</CardTitle>
+              <CardDescription className="text-muted-foreground leading-relaxed">
                 See task updates instantly with WebSocket-powered real-time synchronization across your entire team.
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-green-300 dark:hover:border-green-600 transition-all duration-300 hover:shadow-xl hover:shadow-green-500/10 group">
-            <CardHeader>
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-lg shadow-green-500/30">
-                <Shield className="h-6 w-6 text-white" />
+          <Card className="group relative overflow-hidden border border-border/80 bg-card hover:border-primary/50 hover:shadow-xl transition-all duration-300">
+            <CardHeader className="pb-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg shadow-md">
+                <Shield className="h-7 w-7 text-white" strokeWidth={2} />
               </div>
-              <CardTitle className="text-slate-900 dark:text-slate-100 text-xl mb-2">Enterprise Security</CardTitle>
-              <CardDescription className="text-slate-600 dark:text-slate-400">
+              <CardTitle className="text-xl mb-3 font-semibold">Enterprise Security</CardTitle>
+              <CardDescription className="text-muted-foreground leading-relaxed">
                 JWT authentication, role-based access control, and HttpOnly cookies for maximum security.
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/10 group">
-            <CardHeader>
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-lg shadow-purple-500/30">
-                <Users className="h-6 w-6 text-white" />
+          <Card className="group relative overflow-hidden border border-border/80 bg-card hover:border-primary/50 hover:shadow-xl transition-all duration-300">
+            <CardHeader className="pb-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg shadow-md">
+                <Users className="h-7 w-7 text-white" strokeWidth={2} />
               </div>
-              <CardTitle className="text-slate-900 dark:text-slate-100 text-xl mb-2">Team Management</CardTitle>
-              <CardDescription className="text-slate-600 dark:text-slate-400">
+              <CardTitle className="text-xl mb-3 font-semibold">Team Management</CardTitle>
+              <CardDescription className="text-muted-foreground leading-relaxed">
                 Assign tasks, track progress, and manage team workflows efficiently with intuitive controls.
               </CardDescription>
             </CardHeader>
           </Card>
 
-          <Card className="bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-300 hover:shadow-xl hover:shadow-orange-500/10 group">
-            <CardHeader>
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center mb-4 transition-transform group-hover:scale-110 shadow-lg shadow-orange-500/30">
-                <CheckCircle className="h-6 w-6 text-white" />
+          <Card className="group relative overflow-hidden border border-border/80 bg-card hover:border-primary/50 hover:shadow-xl transition-all duration-300">
+            <CardHeader className="pb-4">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center mb-6 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg shadow-md">
+                <CheckCircle className="h-7 w-7 text-white" strokeWidth={2} />
               </div>
-              <CardTitle className="text-slate-900 dark:text-slate-100 text-xl mb-2">Production Ready</CardTitle>
-              <CardDescription className="text-slate-600 dark:text-slate-400">
+              <CardTitle className="text-xl mb-3 font-semibold">Production Ready</CardTitle>
+              <CardDescription className="text-muted-foreground leading-relaxed">
                 Built with TypeScript, comprehensive testing, and enterprise-grade architecture.
               </CardDescription>
             </CardHeader>
@@ -176,39 +184,45 @@ export default function HomePage() {
         </div>
 
         {/* Stats Section */}
-        <div className="grid md:grid-cols-3 gap-6 mb-20">
-          <Card className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-indigo-200 dark:border-indigo-800 shadow-lg">
+        <div className="grid md:grid-cols-3 gap-6 mb-32">
+          <Card className="border border-border/80 bg-gradient-to-br from-blue-50 via-blue-50/80 to-indigo-50 dark:from-blue-950/30 dark:via-blue-950/20 dark:to-indigo-950/30 shadow-lg hover:shadow-xl transition-all duration-300">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm mb-1 font-medium">Active Users</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">10K+</p>
+                  <p className="text-muted-foreground text-sm mb-2 font-medium uppercase tracking-wide">Active Users</p>
+                  <p className="text-4xl font-bold bg-gradient-to-r from-primary via-blue-600 to-blue-700 dark:from-blue-400 dark:via-indigo-400 dark:to-blue-500 bg-clip-text text-transparent">10K+</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-green-500 dark:text-green-400" />
+                <div className="w-12 h-12 rounded-xl bg-primary/20 dark:bg-primary/20 flex items-center justify-center">
+                  <TrendingUp className="h-6 w-6 text-primary dark:text-blue-400" strokeWidth={2} />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border-purple-200 dark:border-purple-800 shadow-lg">
+          <Card className="border border-border/80 bg-gradient-to-br from-purple-50 via-purple-50/80 to-pink-50 dark:from-purple-950/30 dark:via-purple-950/20 dark:to-pink-950/30 shadow-lg hover:shadow-xl transition-all duration-300">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm mb-1 font-medium">Tasks Managed</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-400 bg-clip-text text-transparent">1M+</p>
+                  <p className="text-muted-foreground text-sm mb-2 font-medium uppercase tracking-wide">Tasks Managed</p>
+                  <p className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-purple-700 dark:from-purple-400 dark:via-pink-400 dark:to-purple-500 bg-clip-text text-transparent">1M+</p>
                 </div>
-                <CheckSquare className="h-8 w-8 text-blue-500 dark:text-blue-400" />
+                <div className="w-12 h-12 rounded-xl bg-purple-500/20 dark:bg-purple-500/20 flex items-center justify-center">
+                  <CheckSquare className="h-6 w-6 text-purple-600 dark:text-purple-400" strokeWidth={2} />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-pink-50 to-orange-50 dark:from-pink-900/30 dark:to-orange-900/30 border-pink-200 dark:border-pink-800 shadow-lg">
+          <Card className="border border-border/80 bg-gradient-to-br from-amber-50 via-amber-50/80 to-orange-50 dark:from-amber-950/30 dark:via-amber-950/20 dark:to-orange-950/30 shadow-lg hover:shadow-xl transition-all duration-300">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-slate-600 dark:text-slate-400 text-sm mb-1 font-medium">Uptime</p>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-orange-600 dark:from-pink-400 dark:to-orange-400 bg-clip-text text-transparent">99.9%</p>
+                  <p className="text-muted-foreground text-sm mb-2 font-medium uppercase tracking-wide">Uptime</p>
+                  <p className="text-4xl font-bold bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 dark:from-amber-400 dark:via-orange-400 dark:to-amber-500 bg-clip-text text-transparent">99.9%</p>
                 </div>
-                <Clock className="h-8 w-8 text-yellow-500 dark:text-yellow-400" />
+                <div className="w-12 h-12 rounded-xl bg-amber-500/20 dark:bg-amber-500/20 flex items-center justify-center">
+                  <Clock className="h-6 w-6 text-amber-600 dark:text-amber-400" strokeWidth={2} />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -216,10 +230,10 @@ export default function HomePage() {
 
         {/* Tech Stack */}
         <div className="text-center">
-          <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-slate-900 to-indigo-800 dark:from-slate-100 dark:to-indigo-200 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 text-foreground tracking-tight">
             Built with Modern Tech Stack
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-10 text-lg">Powered by cutting-edge technologies</p>
+          <p className="text-muted-foreground mb-12 text-lg font-light">Powered by cutting-edge technologies</p>
           <div className="flex flex-wrap justify-center gap-3">
             {[
               'Next.js 16',
@@ -235,7 +249,7 @@ export default function HomePage() {
             ].map((tech) => (
               <span
                 key={tech}
-                className="px-5 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-indigo-300 dark:hover:border-indigo-600 hover:text-indigo-700 dark:hover:text-indigo-400 transition-all cursor-default shadow-sm"
+                className="px-5 py-2.5 bg-card dark:bg-card/30 border border-border/80 rounded-full text-sm font-medium text-foreground hover:text-foreground hover:border-primary/50 hover:bg-accent hover:shadow-md transition-all duration-200 cursor-default"
               >
                 {tech}
               </span>

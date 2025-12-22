@@ -38,7 +38,9 @@ export default function ForgotPasswordPage() {
 
     try {
       // In a real app, this would call an API to send reset email
-      console.log('Sending password reset email to:', data.email);
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Sending password reset email to:', data.email);
+      }
 
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));

@@ -67,24 +67,15 @@ export default function TasksPage() {
   // Memoized data
   const tasks = useMemo(() => {
     if (!tasksResponse) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[Tasks Page] No tasksResponse');
-      }
       return [];
     }
     
     // Handle both direct response and wrapped response
     if (Array.isArray(tasksResponse)) {
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[Tasks Page] tasksResponse is array, length:', tasksResponse.length);
-      }
       return tasksResponse;
     }
     
     const taskList = tasksResponse.data || [];
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[Tasks Page] tasksResponse.data length:', taskList.length, 'pagination:', tasksResponse.pagination);
-    }
     return taskList;
   }, [tasksResponse]);
   
@@ -142,7 +133,7 @@ export default function TasksPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-white dark:from-slate-900 dark:via-slate-800/30 dark:to-slate-900">
+      <div className="min-h-screen bg-white dark:bg-slate-900">
         <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">

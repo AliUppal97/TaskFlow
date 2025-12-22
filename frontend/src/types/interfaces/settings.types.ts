@@ -34,3 +34,6 @@ export type SettingCategory = 'notifications' | 'appearance' | 'privacy';
 export type SettingValue = boolean | string | number;
 
 
+
+
+

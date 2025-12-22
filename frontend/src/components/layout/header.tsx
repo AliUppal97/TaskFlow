@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -40,6 +40,39 @@ export function Header() {
   const { user, logout, isAuthenticated } = useAuth();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // Set mounted state after initial render to prevent hydration mismatch
+    const timeoutId = setTimeout(() => {
+      setMounted(true);
+    }, 0);
+    
+    if (typeof window === 'undefined') {
+      return () => clearTimeout(timeoutId);
+    }
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      setIsScrolled(scrollPosition > 20);
+    };
+
+    // Check initial scroll position after mount
+    const checkScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    
+    // Use setTimeout to avoid hydration mismatch
+    const scrollTimeoutId = setTimeout(checkScroll, 0);
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      clearTimeout(timeoutId);
+      clearTimeout(scrollTimeoutId);
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const handleLogout = async () => {
     await logout();
@@ -56,32 +89,52 @@ export function Header() {
     return null;
   }
 
+  // Prevent hydration mismatch by using mounted state
+  const shouldShowScrolled = mounted && isScrolled;
+
   return (
-    <header className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <header 
+      className={`sticky top-0 z-50 w-full bg-white dark:bg-slate-900 transition-all duration-500 ease-out ${
+        shouldShowScrolled 
+          ? 'pt-4 px-4' 
+          : 'pt-0 px-0'
+      }`}
+    >
+      <div 
+        className={`relative transition-all duration-500 ease-out ${
+          shouldShowScrolled 
+            ? 'mx-auto mb-4 rounded-xl shadow-md shadow-black/5 dark:shadow-black/20 border border-border/30 bg-white dark:bg-slate-900 max-w-7xl' 
+            : 'mx-0 mb-0 rounded-none shadow-none border-0 border-b border-border/30 bg-white dark:bg-slate-900'
+        }`}
+      >
+        <div className={`relative z-10 mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-500 ${
+          shouldShowScrolled ? 'py-3' : 'py-0'
+        }`}>
+        <div className={`flex items-center justify-between transition-all duration-500 ${
+          shouldShowScrolled ? 'h-14' : 'h-16'
+        }`}>
           {/* Logo and Navigation */}
-          <div className="flex items-center">
-            <Link href="/dashboard">
+          <div className="flex items-center gap-8">
+            <Link href="/dashboard" className="flex items-center transition-opacity hover:opacity-80">
               <Logo size="md" clickable={false} />
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:ml-8 md:flex md:space-x-8">
+            <nav className="hidden md:flex md:items-center md:gap-1">
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                    className={`group relative inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${
                       isActive
-                        ? 'bg-[#e3f2fd] dark:from-indigo-900/50 dark:to-purple-900/50 text-[#1976d2] dark:text-indigo-300 border border-[#bbdefb] dark:border-indigo-700 shadow-sm'
-                        : 'text-[#757575] dark:text-slate-300 hover:text-[#212121] dark:hover:text-slate-100 hover:bg-[#f5f5f5] dark:hover:bg-slate-800'
+                        ? 'text-primary bg-accent/50'
+                        : 'text-foreground/70 hover:text-foreground hover:bg-accent/30'
                     }`}
                   >
-                    <item.icon className="h-4 w-4 mr-2" />
-                    {item.name}
+                    <item.icon className={`h-4 w-4 transition-all duration-200 ${isActive ? 'text-primary' : 'text-foreground/60 group-hover:text-foreground'}`} />
+                    <span>{item.name}</span>
                   </Link>
                 );
               })}
@@ -89,16 +142,23 @@ export function Header() {
           </div>
 
           {/* Right side */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center gap-2">
             {/* Theme Toggle */}
-            <ThemeToggle />
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
 
             {/* Notifications */}
-            <Button variant="ghost" size="sm" className="relative text-slate-700 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-300 dark:hover:text-slate-100 dark:hover:bg-slate-800" asChild>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative h-9 w-9 text-foreground/70 hover:text-foreground hover:bg-accent/30 rounded-lg transition-all duration-200" 
+              asChild
+            >
               <Link href="/notifications">
-                <Bell className="h-5 w-5" />
-                {/* Notification badge - would be dynamic in real app */}
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-gradient-to-r from-red-500 to-pink-500 rounded-full text-xs text-white flex items-center justify-center shadow-lg">
+                <Bell className="h-5 w-5 transition-transform duration-200" />
+                {/* Notification badge */}
+                <span className="absolute -top-0.5 -right-0.5 h-5 w-5 bg-destructive rounded-full text-[10px] font-semibold text-white flex items-center justify-center shadow-md ring-2 ring-background">
                   3
                 </span>
               </Link>
@@ -107,77 +167,85 @@ export function Header() {
             {/* User Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="relative h-8 w-8 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800">
-                  <Avatar className="h-8 w-8 ring-2 ring-[#bbdefb] dark:ring-indigo-800">
-                    <AvatarFallback className="bg-[#1976d2] text-white">
+                <Button 
+                  variant="ghost" 
+                  className="relative h-9 w-9 rounded-full hover:bg-accent/30 transition-all duration-200 p-0"
+                >
+                  <Avatar className="relative h-9 w-9 ring-2 ring-border/50 hover:ring-border transition-all duration-200">
+                    <AvatarFallback className="bg-primary text-primary-foreground font-semibold text-sm">
                       {getInitials(user?.profile?.firstName, user?.profile?.lastName, user?.email)}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
-                <DropdownMenuLabel className="font-normal">
+              <DropdownMenuContent className="w-56 p-2" align="end">
+                <DropdownMenuLabel className="px-3 py-2">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-medium leading-none">
+                    <p className="text-sm font-semibold leading-none">
                       {user?.profile?.firstName && user?.profile?.lastName
                         ? `${user.profile.firstName} ${user.profile.lastName}`
                         : user?.email}
                     </p>
-                    <p className="text-xs leading-none text-muted-foreground">
+                    <p className="text-xs leading-none text-muted-foreground font-normal">
                       {user?.email}
                     </p>
                   </div>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link href="/profile" className="flex items-center">
-                    <User className="mr-2 h-4 w-4" />
-                    Profile
+                <DropdownMenuSeparator className="my-2" />
+                <DropdownMenuItem asChild className="cursor-pointer rounded-md px-3 py-2">
+                  <Link href="/profile" className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    <span>Profile</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="flex items-center">
-                    <Settings className="mr-2 h-4 w-4" />
-                    Settings
+                <DropdownMenuItem asChild className="cursor-pointer rounded-md px-3 py-2">
+                  <Link href="/settings" className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link href="/help" className="flex items-center">
-                    <HelpCircle className="mr-2 h-4 w-4" />
-                    Help & Support
+                <DropdownMenuItem asChild className="cursor-pointer rounded-md px-3 py-2">
+                  <Link href="/help" className="flex items-center gap-2">
+                    <HelpCircle className="h-4 w-4" />
+                    <span>Help & Support</span>
                   </Link>
                 </DropdownMenuItem>
                 {user?.role === UserRole.ADMIN && (
                   <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem asChild>
-                      <Link href="/admin" className="flex items-center">
-                        <Shield className="mr-2 h-4 w-4" />
-                        Admin Panel
+                    <DropdownMenuSeparator className="my-2" />
+                    <DropdownMenuItem asChild className="cursor-pointer rounded-md px-3 py-2">
+                      <Link href="/admin" className="flex items-center gap-2">
+                        <Shield className="h-4 w-4" />
+                        <span>Admin Panel</span>
                       </Link>
                     </DropdownMenuItem>
                   </>
                 )}
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout} className="text-red-600">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Log out
+                <DropdownMenuSeparator className="my-2" />
+                <DropdownMenuItem 
+                  onClick={handleLogout} 
+                  className="cursor-pointer rounded-md px-3 py-2 text-destructive focus:text-destructive focus:bg-destructive/10"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  <span>Log out</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
             {/* Mobile menu button */}
-            <div className="md:hidden">
+            <div className="md:hidden flex items-center gap-2">
+              <ThemeToggle />
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="h-9 w-9 text-foreground/70 hover:text-foreground hover:bg-accent/30 rounded-lg transition-all duration-200"
+                aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
-                  <X className="h-6 w-6" />
+                  <X className="h-5 w-5 transition-transform duration-200" />
                 ) : (
-                  <Menu className="h-6 w-6" />
+                  <Menu className="h-5 w-5 transition-transform duration-200" />
                 )}
               </Button>
             </div>
@@ -186,31 +254,32 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl">
-            <div className="px-2 pt-2 pb-3 space-y-1">
-              {navigation.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.name}
-                    href={item.href}
-                    className={`block px-3 py-2 rounded-lg text-base font-medium transition-all ${
-                      isActive
-                        ? 'bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/50 dark:to-purple-900/50 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700'
-                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800'
-                    }`}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                  >
-                    <div className="flex items-center">
-                      <item.icon className="h-5 w-5 mr-3" />
-                      {item.name}
-                    </div>
-                  </Link>
-                );
-              })}
+          <div className={`md:hidden border-t border-border/40 ${
+            shouldShowScrolled ? 'mt-2' : ''
+          }`}>
+              <nav className="px-2 py-3 space-y-1">
+                {navigation.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className={`group flex items-center gap-3 px-4 py-2.5 rounded-lg text-base font-medium transition-all duration-200 ${
+                        isActive
+                          ? 'text-primary bg-accent/50'
+                          : 'text-foreground/70 hover:text-foreground hover:bg-accent/30'
+                      }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      <item.icon className={`h-5 w-5 transition-all duration-200 ${isActive ? 'text-primary' : 'text-foreground/60 group-hover:text-foreground'}`} />
+                      <span>{item.name}</span>
+                    </Link>
+                  );
+                })}
+              </nav>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </header>
   );
