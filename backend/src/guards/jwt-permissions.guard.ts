@@ -38,7 +38,7 @@ export class JwtPermissionsGuard implements CanActivate {
       }
 
       request.user = user;
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof UnauthorizedException) {
         throw error;
       }
@@ -77,7 +77,5 @@ export class JwtPermissionsGuard implements CanActivate {
     return type === 'Bearer' ? token : undefined;
   }
 }
-
-
 
 
