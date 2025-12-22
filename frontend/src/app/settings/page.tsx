@@ -83,7 +83,7 @@ export default function SettingsPage() {
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-4xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200 mb-2">
+              <h1 className="text-4xl font-bold text-[#212121] dark:text-slate-100 mb-2">
                 Settings
               </h1>
               <p className="text-[#757575] dark:text-slate-400 text-lg">
