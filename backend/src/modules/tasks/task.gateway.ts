@@ -151,7 +151,7 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
         },
       });
 
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error(`Connection failed for client ${client.id}:`, error);
       client.disconnect(); // Invalid token or other error
     }
@@ -348,6 +348,4 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     return token && token.length > 0 ? token : null;
   }
 }
-
-
 
