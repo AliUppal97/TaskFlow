@@ -33,17 +33,17 @@ export class LoggerService extends Logger {
     return `[${timestamp}] ${level.toUpperCase()}: ${message}${contextStr}`;
   }
 
-  error(message: any, trace?: string, context?: string): void {
+  error(message: string | Error, trace?: string, context?: string): void {
     const formattedMessage = this.formatMessage(LogLevel.ERROR, String(message), undefined);
     super.error(formattedMessage, trace, context);
   }
 
-  warn(message: any, context?: string): void {
+  warn(message: string | Error, context?: string): void {
     const formattedMessage = this.formatMessage(LogLevel.WARN, String(message), undefined);
     super.warn(formattedMessage, context);
   }
 
-  log(message: any, context?: string): void {
+  log(message: string, context?: string): void {
     const formattedMessage = this.formatMessage(LogLevel.INFO, String(message), undefined);
     super.log(formattedMessage, context);
   }
@@ -53,14 +53,14 @@ export class LoggerService extends Logger {
     super.log(formattedMessage);
   }
 
-  debug(message: any, context?: string): void {
+  debug(message: string, context?: string): void {
     if (this.configService.get('app.nodeEnv') === 'development') {
       const formattedMessage = this.formatMessage(LogLevel.DEBUG, String(message), undefined);
       super.debug(formattedMessage, context);
     }
   }
 
-  verbose(message: any, context?: string): void {
+  verbose(message: string, context?: string): void {
     if (this.configService.get('app.nodeEnv') === 'development') {
       const formattedMessage = this.formatMessage(LogLevel.VERBOSE, String(message), undefined);
       super.verbose(formattedMessage, context);

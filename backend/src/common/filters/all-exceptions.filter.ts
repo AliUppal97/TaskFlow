@@ -14,7 +14,7 @@ export interface ErrorResponse {
   error: {
     code: string;
     message: string;
-    details?: any;
+    details?: Record<string, unknown>;
     timestamp: string;
     path: string;
     method: string;
@@ -33,7 +33,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let code = 'INTERNAL_SERVER_ERROR';
     let message = 'Internal server error';
-    let details: any = undefined;
+    let details: Record<string, unknown> | undefined = undefined;
 
     // Handle known exceptions
     if (exception instanceof HttpException) {

@@ -6,10 +6,10 @@ import {
   Logger,
 } from '@nestjs/common';
 import { Observable, catchError, tap } from 'rxjs';
-import { DataSource } from 'typeorm';
+import { DataSource, EntityManager } from 'typeorm';
 
 export interface TransactionContext {
-  transactionalEntityManager: any;
+  transactionalEntityManager: EntityManager;
 }
 
 @Injectable()
