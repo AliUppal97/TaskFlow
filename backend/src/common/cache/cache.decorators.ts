@@ -7,9 +7,7 @@ export function CacheResult(options: CacheOptions = {}) {
     const method = descriptor.value;
     const logger = new Logger(`${target.constructor.name}.${propertyName}`);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     descriptor.value = async function (...args: unknown[]) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const cacheManager = (this as { cacheManager?: { get: (key: string) => Promise<unknown>; set: (key: string, value: unknown, ttl?: number) => Promise<void> } }).cacheManager;
       if (!cacheManager) {
         logger.warn('Cache manager not found, executing method without caching');
@@ -26,7 +24,6 @@ export function CacheResult(options: CacheOptions = {}) {
         const cachedResult = await cacheManager.get(key);
         if (cachedResult !== undefined) {
           logger.debug(`Cache hit for ${key}`);
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return cachedResult;
         }
 
@@ -60,15 +57,13 @@ export function InvalidateCache(pattern: string) {
     const method = descriptor.value;
     const logger = new Logger(`${target.constructor.name}.${propertyName}`);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     descriptor.value = async function (...args: unknown[]) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const cacheManager = (this as { cacheManager?: { deletePattern?: (pattern: string) => Promise<void> } }).cacheManager;
       let result: unknown;
 
       try {
         // Execute method first
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
         result = await method.apply(this, args);
 
         // Invalidate cache - use the cache service's deletePattern method for proper Redis support
@@ -95,9 +90,7 @@ export function CacheKey(key: string) {
     const method = descriptor.value;
     const logger = new Logger(`${target.constructor.name}.${propertyName}`);
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     descriptor.value = async function (...args: unknown[]) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const cacheManager = (this as { cacheManager?: { get: (key: string) => Promise<unknown>; set: (key: string, value: unknown) => Promise<void> } }).cacheManager;
       if (!cacheManager) {
         logger.warn('Cache manager not found, executing method without caching');
@@ -110,7 +103,6 @@ export function CacheKey(key: string) {
         const cachedResult = await cacheManager.get(key);
         if (cachedResult !== undefined) {
           logger.debug(`Cache hit for ${key}`);
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-return
           return cachedResult;
         }
 
@@ -135,10 +127,6 @@ export function CacheKey(key: string) {
     return descriptor;
   };
 }
-
-
-
-
 
 
 
