@@ -78,6 +78,8 @@ POST /api/v1/auth/login
 - Access token returned in response body
 - Refresh token set as HttpOnly cookie automatically
 - Refresh token stored in Redis with unique ID for revocation
+- Account lockout after 5 failed attempts (30-minute lockout)
+- Failed login attempts are tracked and reset on successful login
 
 ### 3. Token Refresh
 ```typescript
@@ -114,22 +116,24 @@ Authorization: Bearer <access_token>
 - **Hashing**: bcrypt with 12 salt rounds
 - **Validation**: Constant-time comparison to prevent timing attacks
 - **No Enumeration**: Same error message for invalid email/password
+- **Complexity Requirements**: Must contain uppercase, lowercase, numbers, and special characters
+- **Minimum Length**: 8 characters minimum
 
-### 2. Token Security
-- **Access Tokens**: 15-minute expiration, stored in localStorage
-- **Refresh Tokens**: 7-day expiration, stored in HttpOnly cookies
-- **Token Revocation**: Unique refresh token IDs stored in Redis
-- **Blacklisting**: Access tokens can be blacklisted on logout/security events
+### 2. Account Security
+- **Account Lockout**: 5 failed login attempts result in 30-minute lockout
+- **Account Deactivation**: Administrators can deactivate user accounts
+- **Failed Attempt Tracking**: Failed login attempts are tracked and reset on successful login
 
 ### 3. Session Management
 - **Automatic Refresh**: Frontend intercepts 401 errors and refreshes tokens
 - **Concurrent Sessions**: Multiple sessions supported with individual refresh tokens
 - **Session Invalidation**: Logout invalidates all user tokens
 
-### 4. Audit Logging
-- **Event Types**: USER_REGISTERED, USER_LOGIN, USER_LOGOUT
-- **Data Captured**: User ID, email, IP address, user agent, timestamp
-- **Storage**: MongoDB collection for compliance and security monitoring
+### 4. Security Headers
+- **Helmet**: Comprehensive security headers (CSP, X-Frame-Options, etc.)
+- **Content Security Policy**: Prevents XSS attacks by controlling resource loading
+- **X-Frame-Options**: Prevents clickjacking attacks
+- **X-Content-Type-Options**: Prevents MIME type sniffing
 
 ## Configuration
 
@@ -149,7 +153,23 @@ REDIS_PORT=6379
 REDIS_PASSWORD=
 ```
 
-### Token Expiration Strategy
+### Security Configuration
+
+#### Password Policy
+- **Minimum Length**: 8 characters
+- **Complexity Requirements**:
+  - At least one uppercase letter (A-Z)
+  - At least one lowercase letter (a-z)
+  - At least one number (0-9)
+  - At least one special character (@$!%*?&)
+- **Hashing**: bcrypt with 12 salt rounds
+
+#### Account Lockout Policy
+- **Failed Attempts Threshold**: 5 attempts
+- **Lockout Duration**: 30 minutes
+- **Reset on Success**: Failed attempts reset to 0 on successful login
+
+#### Token Expiration Strategy
 - **Access Tokens**: Short-lived (15 minutes) for security
 - **Refresh Tokens**: Long-lived (7 days) for user convenience
 - **Blacklist TTL**: Matches token expiration time
