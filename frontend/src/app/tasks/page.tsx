@@ -141,7 +141,7 @@ export default function TasksPage() {
           <div className="flex items-center justify-between mb-8">
             <div>
               <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-4xl font-bold text-[#212121] dark:from-slate-100 dark:via-indigo-200 dark:to-purple-200">
+                <h1 className="text-4xl font-bold text-[#212121] dark:text-slate-100">
                   Tasks
                 </h1>
                 <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${
