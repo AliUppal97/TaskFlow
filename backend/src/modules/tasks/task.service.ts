@@ -159,7 +159,7 @@ export class TaskService {
       totalPages: number;
     };
   }> {
-    const { page = 1, limit = 10, status, priority, assigneeId, creatorId, search } = query;
+    const { page = 1, limit = 10, status, priority, assigneeId, creatorId, search, sortBy, sortOrder = 'DESC' } = query;
 
     // Build query with eager loading to prevent N+1 query problem
     const queryBuilder = this.taskRepository
@@ -204,8 +204,12 @@ export class TaskService {
       );
     }
 
-    // Default sorting: newest tasks first (most relevant for active workflows)
-    queryBuilder.orderBy('task.createdAt', 'DESC');
+    // Sorting: Use provided sortBy and sortOrder, or default to createdAt DESC
+    // Validate sortBy to prevent SQL injection by only allowing known fields
+    const allowedSortFields = ['createdAt', 'updatedAt', 'dueDate', 'completedAt', 'title', 'status', 'priority', 'assigneeId', 'creatorId'];
+    const sortField = sortBy && allowedSortFields.includes(sortBy) ? sortBy : 'createdAt';
+    const sortDirection = sortOrder === 'ASC' ? 'ASC' : 'DESC';
+    queryBuilder.orderBy(`task.${sortField}`, sortDirection);
 
     // Pagination: skip and take for efficient data loading
     queryBuilder.skip((page - 1) * limit).take(limit);
