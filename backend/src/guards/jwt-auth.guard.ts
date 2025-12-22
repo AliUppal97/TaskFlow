@@ -63,7 +63,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       // Attach user payload to request for use in controllers/services
       request.user = payload;
       return true;
-    } catch (error) {
+    } catch (error: unknown) {
       // Token invalid, expired, blacklisted, or malformed
       throw new UnauthorizedException('Invalid token');
     }
@@ -82,6 +82,4 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return type === 'Bearer' ? token : undefined;
   }
 }
-
-
 
