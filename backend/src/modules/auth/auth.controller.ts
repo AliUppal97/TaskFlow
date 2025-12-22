@@ -8,6 +8,7 @@ import {
   Request,
   Response,
   Get,
+  Patch,
   UseInterceptors,
   NotFoundException,
 } from '@nestjs/common';
@@ -30,6 +31,7 @@ import {
   AuthResponseDto,
   RefreshTokenDto,
   UserProfileDto,
+  UpdateUserProfileDto,
 } from '../../dto/auth.dto';
 import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { JwtRefreshGuard } from '../../guards/jwt-refresh.guard';
@@ -174,6 +176,26 @@ export class AuthController {
     return userProfile as UserProfileDto;
   }
 
+  @Patch('profile')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Update user profile' })
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: 200,
+    description: 'User profile updated successfully',
+    type: UserProfileDto,
+  })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async updateProfile(
+    @Request() req: RequestWithUser,
+    @Body() updateProfileDto: UpdateUserProfileDto,
+  ): Promise<UserProfileDto> {
+    const updatedUser = await this.userService.updateProfile(req.user.id, updateProfileDto);
+
+    const { passwordHash, ...userProfile } = updatedUser;
+    return userProfile as UserProfileDto;
+  }
+
   /**
    * Extract Bearer token from Authorization header
    * Format: "Bearer <token>"
@@ -181,7 +203,7 @@ export class AuthController {
    * @param request - HTTP request object
    * @returns Token string or undefined if not found
    */
-  private extractTokenFromHeader(request: any): string | undefined {
+  private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }

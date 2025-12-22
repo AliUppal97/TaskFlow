@@ -185,5 +185,31 @@ export class UpdateUserRoleDto {
   role: UserRole;
 }
 
+export class UpdateUserProfileDto {
+  @ApiPropertyOptional({
+    description: 'User first name',
+    example: 'John',
+  })
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @ApiPropertyOptional({
+    description: 'User last name',
+    example: 'Doe',
+  })
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @ApiPropertyOptional({
+    description: 'User avatar URL',
+    example: 'https://example.com/avatar.jpg',
+  })
+  @IsOptional()
+  @IsString()
+  avatar?: string;
+}
+
 
 

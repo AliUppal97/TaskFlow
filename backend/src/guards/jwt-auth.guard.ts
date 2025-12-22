@@ -1,4 +1,4 @@
-import { Injectable, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ExecutionContext, UnauthorizedException, Request } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -76,7 +76,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
    * @param request - HTTP request object
    * @returns Token string or undefined if not found
    */
-  private extractTokenFromHeader(request: any): string | undefined {
+  private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
   }
