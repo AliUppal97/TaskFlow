@@ -46,7 +46,7 @@ export class CacheService {
         this.logger.debug(`Cache miss for key: ${key}`);
       }
       return value || null;
-    } catch (error) {
+    } catch (error: unknown) {
       // Cache errors don't break the application (graceful degradation)
       this.logger.error(`Error getting cache key ${key}:`, error);
       return null;
@@ -66,7 +66,7 @@ export class CacheService {
       this.logger.debug(
         `Cache set for key: ${key}, TTL: ${options?.ttl || 'default'}`,
       );
-    } catch (error) {
+    } catch (error: unknown) {
       // Cache errors don't break the application
       this.logger.error(`Error setting cache key ${key}:`, error);
     }
@@ -81,7 +81,7 @@ export class CacheService {
     try {
       await this.cacheManager.del(key);
       this.logger.debug(`Cache deleted for key: ${key}`);
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error(`Error deleting cache key ${key}:`, error);
     }
   }
@@ -108,12 +108,12 @@ export class CacheService {
           await Promise.all(keys.map((key: string) => this.cacheManager.del(key)));
           this.logger.debug(`Deleted ${keys.length} cache keys matching pattern: ${pattern}`);
         }
-      } else {
-        this.logger.warn('Pattern deletion not supported by this cache store');
+        } else {
+          this.logger.warn('Pattern deletion not supported by this cache store');
+        }
+      } catch (error: unknown) {
+        this.logger.error(`Error deleting cache pattern ${pattern}:`, error);
       }
-    } catch (error) {
-      this.logger.error(`Error deleting cache pattern ${pattern}:`, error);
-    }
   }
 
   async clear(): Promise<void> {
@@ -126,7 +126,7 @@ export class CacheService {
         this.logger.warn('Cache reset not available, skipping');
       }
       this.logger.debug('Cache cleared');
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error('Error clearing cache:', error);
     }
   }
@@ -160,7 +160,7 @@ export class CacheService {
       const retrieved = await this.get(testKey);
 
       return retrieved === testValue;
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error('Redis health check failed:', error);
       return false;
     }
@@ -183,7 +183,7 @@ export class CacheService {
         connected: isHealthy,
         storeType,
       };
-    } catch (error) {
+    } catch (error: unknown) {
       this.logger.error('Error getting cache stats:', error);
       return { connected: false, storeType: 'unknown' };
     }
