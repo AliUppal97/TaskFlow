@@ -38,8 +38,8 @@ async function bootstrap() {
       },
       exceptionFactory: (errors) => {
         // Aggregate all validation errors into a single, user-friendly message
-        const messages = errors.map((error) => {
-          const constraints = error.constraints;
+        const messages = errors.map((validationError) => {
+          const constraints = validationError.constraints;
           return constraints
             ? Object.values(constraints)[0]
             : 'Validation error';
@@ -100,7 +100,7 @@ async function bootstrap() {
    * Cookie parser middleware - enables reading HttpOnly cookies
    * Required for refresh token authentication strategy (stored in HttpOnly cookies for security)
    */
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
   app.use(cookieParser());
 
   /**
@@ -174,4 +174,7 @@ async function bootstrap() {
   }
 }
 
-void bootstrap();
+bootstrap().catch((error: unknown) => {
+  console.error('Failed to start application:', error);
+  process.exit(1);
+});
