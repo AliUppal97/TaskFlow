@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useMemo, ReactNode } from 'react';
 import { Theme } from '@/types';
 
 interface ThemeContextType {
@@ -17,40 +17,55 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProviderProps) {
-  const [theme, setThemeState] = useState<Theme>(Theme.LIGHT);
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
-  const [mounted, setMounted] = useState(false);
-
-  // Initialize theme from localStorage or default to light
-  useEffect(() => {
+  const [theme, setThemeState] = useState<Theme>(() => {
+    // Initialize theme from localStorage or default to dark
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('theme') as Theme | null;
       // Use stored theme if valid, otherwise default to dark
-      const initialTheme = (stored && Object.values(Theme).includes(stored)) ? stored : Theme.DARK;
-      setThemeState(initialTheme);
-      
+      return (stored && Object.values(Theme).includes(stored)) ? stored : Theme.DARK;
+    }
+    return defaultTheme;
+  });
+  const [mounted, setMounted] = useState(false);
+
+  // Derive resolvedTheme from theme and system preference
+  const resolvedTheme = useMemo(() => {
+    // CRITICAL: If user explicitly selected light or dark, NEVER check system preference
+    if (theme === Theme.LIGHT) {
+      return 'light';
+    }
+    if (theme === Theme.DARK) {
+      return 'dark';
+    }
+    // Only check system preference when theme is SYSTEM
+    if (theme === Theme.SYSTEM && typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    // Fallback to dark
+    return 'dark';
+  }, [theme]);
+
+  // Apply initial theme to DOM
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
       // Sync with the theme already applied by the inline script in layout
       const root = document.documentElement;
       const resolveTheme = (): 'light' | 'dark' => {
         // CRITICAL: If user explicitly selected light or dark, NEVER check system preference
-        if (initialTheme === Theme.LIGHT) {
+        if (theme === Theme.LIGHT) {
           return 'light';
         }
-        if (initialTheme === Theme.DARK) {
+        if (theme === Theme.DARK) {
           return 'dark';
         }
         // Only check system preference when theme is SYSTEM
-        if (initialTheme === Theme.SYSTEM) {
+        if (theme === Theme.SYSTEM) {
           return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
         // Fallback to dark
         return 'dark';
       };
       const resolved = resolveTheme();
-      
-      // CRITICAL: Always use the resolved theme from logic, not from DOM
-      // The DOM might be wrong (e.g., from previous session or system preference)
-      setResolvedTheme(resolved);
       
       // Forcefully apply the correct theme to DOM - MULTIPLE TIMES to ensure it sticks
       // Remove dark class first (critical for light theme)
@@ -93,42 +108,23 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
       // On server, set mounted immediately to provide context
       setMounted(true);
     }
-  }, [defaultTheme]);
+  }, [defaultTheme, theme]);
 
-  // Resolve theme based on system preference if needed
+  // Apply theme to DOM when resolvedTheme changes
   useEffect(() => {
     if (!mounted) return;
-
-    const resolveTheme = (): 'light' | 'dark' => {
-      // CRITICAL: If user explicitly selected light or dark, NEVER check system preference
-      if (theme === Theme.LIGHT) {
-        return 'light';
-      }
-      if (theme === Theme.DARK) {
-        return 'dark';
-      }
-      // Only check system preference when theme is SYSTEM
-      if (theme === Theme.SYSTEM) {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      }
-      // Fallback to dark
-      return 'dark';
-    };
-
-    const resolved = resolveTheme();
-    setResolvedTheme(resolved);
 
     // Apply theme class to document IMMEDIATELY
     // Tailwind uses .dark class for dark mode, no class for light mode
     const root = document.documentElement;
-    
+
     // CRITICAL: Forcefully remove dark class first - do it multiple times
     root.classList.remove('light', 'dark');
     // Force a reflow to ensure browser processes the removal
     void root.offsetHeight;
-    
+
     // Only add dark if explicitly dark, otherwise ensure it's removed
-    if (resolved === 'dark') {
+    if (resolvedTheme === 'dark') {
       root.classList.add('dark');
     } else {
       // CRITICAL: Explicitly ensure dark is removed for light theme
@@ -140,32 +136,31 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
       void root.offsetHeight;
       root.classList.remove('dark');
     }
-    
+
     // Multiple verification checks to ensure theme is applied correctly
     const checkAndFix = () => {
-      const currentResolved = resolveTheme();
       const hasDark = root.classList.contains('dark');
-      if (currentResolved === 'light' && hasDark) {
+      if (resolvedTheme === 'light' && hasDark) {
         root.classList.remove('dark');
         // Force reflow after removal
         void root.offsetHeight;
-      } else if (currentResolved === 'dark' && !hasDark) {
+      } else if (resolvedTheme === 'dark' && !hasDark) {
         root.classList.add('dark');
       }
     };
-    
+
     // Check immediately
     setTimeout(checkAndFix, 0);
     // Check after a brief delay
     const timeoutId1 = setTimeout(checkAndFix, 10);
     // Check after a longer delay to catch any async issues
     const timeoutId2 = setTimeout(checkAndFix, 50);
-    
+
     return () => {
       clearTimeout(timeoutId1);
       clearTimeout(timeoutId2);
     };
-  }, [theme, mounted]);
+  }, [resolvedTheme, mounted]);
 
   // Listen for system theme changes if using system theme
   useEffect(() => {
@@ -174,7 +169,6 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = () => {
       const newResolved = mediaQuery.matches ? 'dark' : 'light';
-      setResolvedTheme(newResolved);
       const root = document.documentElement;
       // Forcefully remove dark class first
       root.classList.remove('light', 'dark');
@@ -213,15 +207,14 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
         return 'dark';
       };
       const resolved = resolveTheme();
-      setResolvedTheme(resolved);
-      
+
       // CRITICAL: Forcefully remove dark class first - this must happen before adding
       root.classList.remove('dark');
       root.classList.remove('light');
-      
+
       // Force a reflow to ensure browser processes the removal
       void root.offsetHeight;
-      
+
       // Apply the correct theme IMMEDIATELY
       if (resolved === 'dark') {
         root.classList.add('dark');
@@ -234,10 +227,10 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
         void root.offsetHeight;
         root.classList.remove('dark');
       }
-      
+
       // Force another synchronous reflow to ensure browser applies styles immediately
       void root.offsetHeight;
-      
+
       // Multiple checks to ensure theme is applied correctly
       const checkAndFix = () => {
         const currentResolved = resolveTheme();
@@ -251,7 +244,7 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
           root.classList.add('dark');
         }
       };
-      
+
       // Check 1: After a microtask
       setTimeout(checkAndFix, 0);
       // Check 2: After a slightly longer delay
