@@ -25,7 +25,8 @@ export class TransactionInterceptor implements NestInterceptor {
 
     // Add transaction manager to request context
     const request = context.switchToHttp().getRequest();
-    (request as any).transactionalEntityManager = queryRunner.manager;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    (request).transactionalEntityManager = queryRunner.manager;
 
     return next.handle().pipe(
       tap(async () => {
@@ -33,10 +34,11 @@ export class TransactionInterceptor implements NestInterceptor {
         await queryRunner.commitTransaction();
         this.logger.debug('Transaction committed successfully');
       }),
-      catchError(async (error) => {
+      catchError(async (error: unknown) => {
         // Rollback transaction on error
         await queryRunner.rollbackTransaction();
-        this.logger.warn(`Transaction rolled back due to error: ${error.message}`);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        this.logger.warn(`Transaction rolled back due to error: ${errorMessage}`);
         throw error;
       }),
       tap(async () => {
@@ -46,9 +48,6 @@ export class TransactionInterceptor implements NestInterceptor {
     );
   }
 }
-
-
-
 
 
 
