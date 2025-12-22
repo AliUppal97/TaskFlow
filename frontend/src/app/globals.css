@@ -164,6 +164,86 @@ html.dark body {
   color: var(--foreground);
 }
 
+/* Ensure all text in dark theme is light */
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark * {
+  /* Ensure text colors are light in dark theme */
+}
+
+/* Force light text colors in dark theme for common text elements */
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+  color: var(--foreground) !important;
+}
+
+html.dark p,
+html.dark span,
+html.dark div,
+html.dark label {
+  color: inherit;
+}
+
+/* Ensure labels and descriptions are visible in dark theme */
+html.dark label:not([class*="text-"]),
+html.dark .text-muted-foreground {
+  color: var(--muted-foreground) !important;
+}
+
+/* Ensure card titles and descriptions are visible in dark theme */
+html.dark [class*="CardTitle"]:not([class*="text-"]),
+html.dark [class*="CardDescription"]:not([class*="text-"]) {
+  color: var(--card-foreground) !important;
+}
+
+/* Ensure all text elements inherit proper colors in dark theme */
+html.dark {
+  color: var(--foreground);
+}
+
+html.dark body {
+  color: var(--foreground);
+}
+
+/* Ensure form labels are visible in dark theme */
+html.dark label {
+  color: var(--foreground);
+}
+
+/* Ensure all headings are visible in dark theme */
+html.dark h1,
+html.dark h2,
+html.dark h3,
+html.dark h4,
+html.dark h5,
+html.dark h6 {
+  color: var(--foreground);
+}
+
+/* Ensure paragraphs and spans inherit proper colors */
+html.dark p,
+html.dark span {
+  color: inherit;
+}
+
+/* Ensure select items and dropdown items are visible */
+html.dark [role="option"],
+html.dark [data-radix-select-item] {
+  color: var(--popover-foreground);
+}
+
+/* Ensure dialog titles and descriptions are visible */
+html.dark [data-radix-dialog-title],
+html.dark [data-radix-dialog-description] {
+  color: var(--card-foreground);
+}
+
 body {
   background: #ffffff;
   background-color: #ffffff;
