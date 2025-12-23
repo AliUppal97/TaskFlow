@@ -25,3 +25,4 @@ export interface CacheMethodParams {
   descriptor: PropertyDescriptor;
   args: unknown[];
 }
+

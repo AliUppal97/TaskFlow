@@ -32,3 +32,4 @@ export interface LogEntry {
   timestamp: Date;
   stack?: string;
 }
+
