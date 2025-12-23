@@ -11,6 +11,7 @@ import { AuthService } from './auth.service';
 import { UserService } from './user.service';
 import { JwtStrategy } from './jwt.strategy';
 import { JwtRefreshStrategy } from './jwt-refresh.strategy';
+import { JwtAuthGuard } from '../../guards/jwt-auth.guard';
 import { EventsModule } from '../events/events.module';
 import { CacheService } from '../../common/cache/cache.service';
 
@@ -37,6 +38,7 @@ import { CacheService } from '../../common/cache/cache.service';
     UserService,
     JwtStrategy,
     JwtRefreshStrategy,
+    JwtAuthGuard,
     CacheService,
   ],
   exports: [
