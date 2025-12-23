@@ -15,7 +15,8 @@ import {
   UserCheck
 } from 'lucide-react';
 
-import { Task, TaskStatus, TaskPriority } from '@/types';
+import { Task, TaskStatus, TaskPriority, UserRole } from '@/types';
+import { useAuth } from '@/providers/auth-provider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
@@ -44,6 +45,8 @@ export function TaskCard({
   currentUserId,
 }: TaskCardProps) {
   const [isUpdating, setIsUpdating] = useState(false);
+  const { user: currentUser } = useAuth();
+  const isAdmin = currentUser?.role === UserRole.ADMIN;
 
   const getStatusColor = (status: TaskStatus) => {
     switch (status) {
@@ -101,15 +104,17 @@ export function TaskCard({
     }
   };
 
-  const canEdit = task.creatorId === currentUserId || task.assigneeId === currentUserId;
-  const canDelete = task.creatorId === currentUserId;
-  const canAssign = canEdit;
-  const canChangeStatus = canEdit;
+  // Admins can perform all actions on any task
+  const canEdit = isAdmin || task.creatorId === currentUserId || task.assigneeId === currentUserId;
+  const canDelete = isAdmin || task.creatorId === currentUserId;
+  const canAssign = isAdmin; // Only admins can change assignees
+  const canChangeStatus = isAdmin || canEdit;
+  const hasAnyActions = canEdit || canAssign || canChangeStatus || canDelete;
 
   return (
-    <Card className={`transition-all duration-300 hover:shadow-lg hover:shadow-[#1976d2]/10 dark:hover:shadow-purple-500/30 bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 ${task.isOverdue ? 'border-[#d32f2f] dark:border-red-500/50 bg-[#ffebee] dark:bg-red-500/10 ring-2 ring-[#ffcdd2] dark:ring-red-500/30' : ''}`}>
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
+    <Card className={`relative overflow-visible transition-all duration-300 hover:shadow-lg hover:shadow-[#1976d2]/10 dark:hover:shadow-purple-500/30 bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 ${task.isOverdue ? 'border-[#d32f2f] dark:border-red-500/50 bg-[#ffebee] dark:bg-red-500/10 ring-2 ring-[#ffcdd2] dark:ring-red-500/30' : ''}`}>
+      <CardHeader className="pb-3 overflow-visible">
+        <div className="flex items-start justify-between relative">
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-lg text-[#212121] dark:text-slate-100 truncate mb-2">
               {task.title}
@@ -131,7 +136,7 @@ export function TaskCard({
                 <MoreVertical className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700">
+            <DropdownMenuContent align="end" className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 z-[100]">
               {canEdit && (
                 <DropdownMenuItem onClick={() => onEdit?.(task)} className="text-[#212121] dark:text-slate-100 focus:bg-[#f5f5f5] dark:focus:bg-slate-700">
                   <Edit className="h-4 w-4 mr-2" />
@@ -146,7 +151,7 @@ export function TaskCard({
               )}
               {canChangeStatus && (
                 <>
-                  <DropdownMenuSeparator className="bg-[#e0e0e0] dark:bg-slate-700" />
+                  {(canEdit || canAssign) && <DropdownMenuSeparator className="bg-[#e0e0e0] dark:bg-slate-700" />}
                   <DropdownMenuItem
                     onClick={() => handleStatusChange(TaskStatus.TODO)}
                     disabled={task.status === TaskStatus.TODO || isUpdating}
@@ -183,7 +188,7 @@ export function TaskCard({
               )}
               {canDelete && (
                 <>
-                  <DropdownMenuSeparator className="bg-[#e0e0e0] dark:bg-slate-700" />
+                  {(canEdit || canAssign || canChangeStatus) && <DropdownMenuSeparator className="bg-[#e0e0e0] dark:bg-slate-700" />}
                   <DropdownMenuItem
                     onClick={() => onDelete?.(task.id)}
                     className="text-[#d32f2f] dark:text-red-400 focus:text-[#c62828] dark:focus:text-red-300 focus:bg-[#ffebee] dark:focus:bg-red-900/20"
@@ -192,6 +197,11 @@ export function TaskCard({
                     Delete
                   </DropdownMenuItem>
                 </>
+              )}
+              {!hasAnyActions && (
+                <DropdownMenuItem disabled className="text-[#9e9e9e] dark:text-slate-500 text-xs italic">
+                  No actions available
+                </DropdownMenuItem>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
@@ -207,12 +217,20 @@ export function TaskCard({
 
         <div className="flex items-center justify-between text-sm pt-3 border-t border-[#e0e0e0] dark:border-slate-700">
           <div className="flex items-center gap-4 flex-wrap">
-            {task.assignee && (
+            {isAdmin && (
               <div className="flex items-center gap-1.5 text-[#212121] dark:text-slate-300">
                 <div className="p-1.5 rounded-full bg-[#e3f2fd] dark:bg-indigo-500/20 border border-[#bbdefb] dark:border-indigo-500/30">
                   <User className="h-3.5 w-3.5 text-[#1976d2] dark:text-indigo-400" />
                 </div>
-                <span className="text-xs font-medium">{task.assignee.profile?.firstName || task.assignee.email}</span>
+                {task.assignee ? (
+                  <span className="text-xs font-medium">
+                    {task.assignee.profile?.firstName && task.assignee.profile?.lastName
+                      ? `${task.assignee.profile.firstName} ${task.assignee.profile.lastName}`
+                      : task.assignee.email || 'Unknown'}
+                  </span>
+                ) : (
+                  <span className="text-xs font-medium italic text-[#757575] dark:text-slate-400">Unassigned</span>
+                )}
               </div>
             )}
 

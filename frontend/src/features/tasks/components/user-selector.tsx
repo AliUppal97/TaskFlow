@@ -88,8 +88,12 @@ export function UserSelector({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[300px] p-0">
-        <Command>
+      <PopoverContent 
+        className="w-[300px] p-0" 
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        style={{ pointerEvents: 'auto', zIndex: 100 }}
+      >
+        <Command shouldFilter={false}>
           <CommandInput
             placeholder="Search users..."
             value={searchTerm}
@@ -100,8 +104,17 @@ export function UserSelector({
             <CommandGroup>
               {/* Unassigned option */}
               <CommandItem
-                value=""
+                value="__unassigned__"
                 onSelect={() => {
+                  onValueChange(null);
+                  setOpen(false);
+                }}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  // Don't preventDefault - let cmdk handle it first
                   onValueChange(null);
                   setOpen(false);
                 }}
@@ -121,8 +134,20 @@ export function UserSelector({
                 <CommandItem
                   key={user.id}
                   value={user.id}
-                  onSelect={(currentValue) => {
-                    onValueChange(currentValue === value ? null : currentValue);
+                  onSelect={(selectedValue) => {
+                    // cmdk passes the value prop as selectedValue
+                    onValueChange(user.id);
+                    setOpen(false);
+                  }}
+                  onMouseDown={(e) => {
+                    // Prevent event bubbling to modal
+                    e.stopPropagation();
+                  }}
+                  onClick={(e) => {
+                    // Fallback click handler - ensure selection works
+                    e.stopPropagation();
+                    // Don't preventDefault - let cmdk handle it first, then our handler runs
+                    onValueChange(user.id);
                     setOpen(false);
                   }}
                 >
