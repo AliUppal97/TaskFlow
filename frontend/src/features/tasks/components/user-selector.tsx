@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Check, ChevronsUpDown, User } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -43,11 +43,16 @@ export function UserSelector({
 
   const selectedUser = users.find(user => user.id === value);
 
-  const filteredUsers = users.filter(user =>
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (user.profile?.firstName && user.profile.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (user.profile?.lastName && user.profile.lastName.toLowerCase().includes(searchTerm.toLowerCase()))
-  );
+  // Filter users: Only include active users (isActive !== false)
+  // Inactive users are excluded as they cannot log in or receive assignments
+  // Then apply search filter
+  const filteredUsers = users
+    .filter(user => user.isActive !== false) // Exclude inactive users
+    .filter(user =>
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (user.profile?.firstName && user.profile.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.profile?.lastName && user.profile.lastName.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
 
   const getUserDisplayName = (user: UserType) => {
     if (user.profile?.firstName && user.profile?.lastName) {
@@ -89,34 +94,33 @@ export function UserSelector({
         </Button>
       </PopoverTrigger>
       <PopoverContent 
-        className="w-[300px] p-0" 
+        className="w-[300px] p-0 z-[99999]" 
         onOpenAutoFocus={(e) => e.preventDefault()}
-        style={{ pointerEvents: 'auto', zIndex: 100 }}
+        style={{ pointerEvents: 'auto' }}
       >
         <Command shouldFilter={false}>
           <CommandInput
             placeholder="Search users..."
             value={searchTerm}
             onValueChange={setSearchTerm}
+            disabled={false}
           />
           <CommandList>
             <CommandEmpty>No users found.</CommandEmpty>
             <CommandGroup>
-              {/* Unassigned option */}
+              {/* 
+                Unassigned option - ALWAYS enabled for task assignment.
+                Override disabled styles to ensure it's always clickable.
+              */}
               <CommandItem
                 value="__unassigned__"
+                className="data-[disabled]:pointer-events-auto data-[disabled]:opacity-100 cursor-pointer"
                 onSelect={() => {
                   onValueChange(null);
                   setOpen(false);
                 }}
                 onMouseDown={(e) => {
                   e.stopPropagation();
-                }}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  // Don't preventDefault - let cmdk handle it first
-                  onValueChange(null);
-                  setOpen(false);
                 }}
               >
                 <Check
@@ -129,26 +133,23 @@ export function UserSelector({
                 <span>Unassigned</span>
               </CommandItem>
 
-              {/* User options */}
+              {/* 
+                User options - ALWAYS enabled for task assignment flow.
+                Override disabled styles to ensure all users are always clickable,
+                regardless of their status or any other properties.
+              */}
               {filteredUsers.map((user) => (
                 <CommandItem
                   key={user.id}
                   value={user.id}
-                  onSelect={(selectedValue) => {
-                    // cmdk passes the value prop as selectedValue
+                  className="data-[disabled]:pointer-events-auto data-[disabled]:opacity-100 cursor-pointer"
+                  onSelect={() => {
                     onValueChange(user.id);
                     setOpen(false);
                   }}
                   onMouseDown={(e) => {
                     // Prevent event bubbling to modal
                     e.stopPropagation();
-                  }}
-                  onClick={(e) => {
-                    // Fallback click handler - ensure selection works
-                    e.stopPropagation();
-                    // Don't preventDefault - let cmdk handle it first, then our handler runs
-                    onValueChange(user.id);
-                    setOpen(false);
                   }}
                 >
                   <Check

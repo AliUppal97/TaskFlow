@@ -158,10 +158,10 @@ export function Header() {
                     className={`group relative inline-flex items-center gap-2 px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${
                       isActive
                         ? 'text-primary bg-accent/50'
-                        : 'text-foreground/70 hover:text-foreground hover:bg-accent/30'
+                        : 'text-foreground dark:text-foreground/70 hover:text-foreground hover:bg-accent/30'
                     }`}
                   >
-                    <item.icon className={`h-4 w-4 transition-all duration-200 ${isActive ? 'text-primary' : 'text-foreground/60 group-hover:text-foreground'}`} />
+                    <item.icon className={`h-4 w-4 transition-all duration-200 ${isActive ? 'text-primary' : 'text-foreground dark:text-foreground/60 group-hover:text-foreground'}`} />
                     <span>{item.name}</span>
                   </Link>
                 );
@@ -186,7 +186,7 @@ export function Header() {
                 }`}
                 title={`Real-time updates: ${isConnected ? 'Connected' : 'Disconnected'}`}
               />
-              <span className="text-xs text-foreground/60 font-medium">
+              <span className="text-xs text-foreground dark:text-foreground/60 font-medium">
                 {isConnected ? 'Live' : 'Offline'}
               </span>
             </div>
@@ -195,7 +195,7 @@ export function Header() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="relative h-9 w-9 text-foreground/70 hover:text-foreground hover:bg-accent/30 rounded-lg transition-all duration-200" 
+              className="relative h-9 w-9 text-foreground dark:text-foreground/70 hover:text-foreground hover:bg-accent/30 rounded-lg transition-all duration-200" 
               asChild
             >
               <Link href="/notifications">
@@ -284,7 +284,7 @@ export function Header() {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="h-9 w-9 text-foreground/70 hover:text-foreground hover:bg-accent/30 rounded-lg transition-all duration-200"
+                className="h-9 w-9 text-foreground dark:text-foreground/70 hover:text-foreground hover:bg-accent/30 rounded-lg transition-all duration-200"
                 aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
@@ -312,11 +312,11 @@ export function Header() {
                       className={`group flex items-center gap-3 px-4 py-2.5 rounded-lg text-base font-medium transition-all duration-200 ${
                         isActive
                           ? 'text-primary bg-accent/50'
-                          : 'text-foreground/70 hover:text-foreground hover:bg-accent/30'
+                          : 'text-foreground dark:text-foreground/70 hover:text-foreground hover:bg-accent/30'
                       }`}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      <item.icon className={`h-5 w-5 transition-all duration-200 ${isActive ? 'text-primary' : 'text-foreground/60 group-hover:text-foreground'}`} />
+                      <item.icon className={`h-5 w-5 transition-all duration-200 ${isActive ? 'text-primary' : 'text-foreground dark:text-foreground/60 group-hover:text-foreground'}`} />
                       <span>{item.name}</span>
                     </Link>
                   );

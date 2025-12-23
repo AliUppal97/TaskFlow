@@ -51,30 +51,30 @@ export function TaskCard({
   const getStatusColor = (status: TaskStatus) => {
     switch (status) {
       case TaskStatus.TODO:
-        return 'bg-[#f5f5f5] dark:bg-slate-700/50 text-[#757575] dark:text-slate-200 border border-[#e0e0e0] dark:border-slate-600/50';
+        return 'bg-slate-100 dark:bg-slate-700/50 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600/50';
       case TaskStatus.IN_PROGRESS:
-        return 'bg-[#e3f2fd] dark:bg-blue-500/20 text-[#1976d2] dark:text-blue-300 border border-[#bbdefb] dark:border-blue-500/30';
+        return 'bg-blue-50 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-500/30';
       case TaskStatus.REVIEW:
-        return 'bg-[#fff3e0] dark:bg-yellow-500/20 text-[#f57c00] dark:text-yellow-300 border border-[#ffe0b2] dark:border-yellow-500/30';
+        return 'bg-amber-50 dark:bg-yellow-500/20 text-amber-700 dark:text-yellow-300 border border-amber-200 dark:border-yellow-500/30';
       case TaskStatus.DONE:
-        return 'bg-[#e0f2f1] dark:bg-green-500/20 text-[#00796b] dark:text-green-300 border border-[#b2dfdb] dark:border-green-500/30';
+        return 'bg-emerald-50 dark:bg-green-500/20 text-emerald-700 dark:text-green-300 border border-emerald-200 dark:border-green-500/30';
       default:
-        return 'bg-[#f5f5f5] dark:bg-slate-700/50 text-[#757575] dark:text-slate-200 border border-[#e0e0e0] dark:border-slate-600/50';
+        return 'bg-slate-100 dark:bg-slate-700/50 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600/50';
     }
   };
 
   const getPriorityColor = (priority: TaskPriority) => {
     switch (priority) {
       case TaskPriority.LOW:
-        return 'bg-[#e0f2f1] dark:bg-emerald-500/20 text-[#00796b] dark:text-emerald-300 border border-[#b2dfdb] dark:border-emerald-500/30';
+        return 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30';
       case TaskPriority.MEDIUM:
-        return 'bg-[#fff3e0] dark:bg-yellow-500/20 text-[#f57c00] dark:text-yellow-300 border border-[#ffe0b2] dark:border-yellow-500/30';
+        return 'bg-amber-50 dark:bg-yellow-500/20 text-amber-700 dark:text-yellow-300 border border-amber-200 dark:border-yellow-500/30';
       case TaskPriority.HIGH:
-        return 'bg-[#ffe0b2] dark:bg-orange-500/20 text-[#e65100] dark:text-orange-300 border border-[#ffcc80] dark:border-orange-500/30';
+        return 'bg-orange-50 dark:bg-orange-500/20 text-orange-700 dark:text-orange-300 border border-orange-200 dark:border-orange-500/30';
       case TaskPriority.URGENT:
-        return 'bg-[#ffebee] dark:bg-red-500/20 text-[#d32f2f] dark:text-red-300 border border-[#ffcdd2] dark:border-red-500/30';
+        return 'bg-rose-50 dark:bg-red-500/20 text-rose-700 dark:text-red-300 border border-rose-200 dark:border-red-500/30';
       default:
-        return 'bg-[#f5f5f5] dark:bg-slate-700/50 text-[#757575] dark:text-slate-200 border border-[#e0e0e0] dark:border-slate-600/50';
+        return 'bg-slate-100 dark:bg-slate-700/50 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-600/50';
     }
   };
 
@@ -112,7 +112,10 @@ export function TaskCard({
   const hasAnyActions = canEdit || canAssign || canChangeStatus || canDelete;
 
   return (
-    <Card className={`relative overflow-visible transition-all duration-300 hover:shadow-lg hover:shadow-[#1976d2]/10 dark:hover:shadow-purple-500/30 bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700 ${task.isOverdue ? 'border-[#d32f2f] dark:border-red-500/50 bg-[#ffebee] dark:bg-red-500/10 ring-2 ring-[#ffcdd2] dark:ring-red-500/30' : ''}`}>
+    <Card className={`group relative overflow-visible bg-white dark:bg-slate-800 border border-border/60 dark:border-slate-700/60 
+      transition-all duration-300 shadow-sm
+      hover:shadow-lg hover:border-primary/40 dark:hover:border-purple-500/50
+      ${task.isOverdue ? 'border-rose-300 dark:border-red-500/50 bg-gradient-to-br from-rose-50/50 to-pink-50/30 dark:from-red-500/10 dark:to-pink-500/10 ring-2 ring-rose-200/50 dark:ring-red-500/30' : ''}`}>
       <CardHeader className="pb-3 overflow-visible">
         <div className="flex items-start justify-between relative">
           <div className="flex-1 min-w-0">

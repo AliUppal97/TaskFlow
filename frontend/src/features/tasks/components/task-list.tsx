@@ -41,12 +41,12 @@ const TaskListHeader = memo(function TaskListHeader({
   return (
     <div className="flex items-center justify-between">
       <div>
-        <h2 className="text-2xl font-bold text-[#212121] dark:text-slate-100 mb-1">Task List</h2>
-        <p className="text-[#757575] dark:text-slate-400">{tasksCount} {tasksCount === 1 ? 'task' : 'tasks'} found</p>
+        <h2 className="text-2xl font-bold text-foreground mb-1 tracking-tight">Task List</h2>
+        <p className="text-muted-foreground">{tasksCount} {tasksCount === 1 ? 'task' : 'tasks'} found</p>
       </div>
       <Button 
         onClick={onCreateTask} 
-        className="flex items-center gap-2 bg-[#1976d2] hover:bg-[#1565c0] text-white shadow-md hover:shadow-lg"
+        className="flex items-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all duration-200"
       >
         <Plus className="h-4 w-4" />
         New Task
@@ -108,12 +108,12 @@ const SearchInput = memo(function SearchInput({
 
   return (
     <div className="relative flex-1">
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#9e9e9e] dark:text-slate-500 h-4 w-4 z-10 pointer-events-none transition-opacity duration-200 will-change-transform" />
+      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4 z-10 pointer-events-none transition-opacity duration-200 will-change-transform" />
       <Input
         placeholder="Search tasks..."
         value={localValue}
         onChange={(e) => handleChange(e.target.value)}
-        className="h-9 pl-10 bg-white dark:bg-slate-800 border border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-100 placeholder:text-[#9e9e9e] dark:placeholder:text-slate-500 focus:border-[#1976d2] dark:focus:border-indigo-400 text-sm transition-all duration-200 ease-in-out"
+        className="h-9 pl-10 bg-card border border-border/80 text-foreground placeholder:text-muted-foreground focus:border-primary text-sm transition-all duration-200 ease-in-out"
       />
     </div>
   );
@@ -155,37 +155,37 @@ const TaskListFilters = memo(function TaskListFilters({
 
       <div className="flex gap-2 items-center">
         <Select value={filters.status || 'all'} onValueChange={onStatusFilter}>
-          <SelectTrigger className="w-36 h-9 bg-white dark:bg-slate-800 border border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 text-sm">
+          <SelectTrigger className="w-36 h-9 bg-card border border-border/80 text-foreground text-sm">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700">
+          <SelectContent className="bg-card border-border/80">
             <SelectItem 
               value="all" 
-              className="text-[#212121] dark:text-slate-100 text-sm cursor-pointer focus:bg-[#f5f5f5] dark:focus:bg-slate-700"
+              className="text-foreground text-sm cursor-pointer focus:bg-accent"
             >
               All Status
             </SelectItem>
             <SelectItem 
               value={TaskStatus.TODO} 
-              className="text-[#212121] dark:text-slate-100 text-sm cursor-pointer focus:bg-[#f5f5f5] dark:focus:bg-slate-700"
+              className="text-foreground text-sm cursor-pointer focus:bg-accent"
             >
               To Do
             </SelectItem>
             <SelectItem 
               value={TaskStatus.IN_PROGRESS} 
-              className="text-[#212121] dark:text-slate-100 text-sm cursor-pointer focus:bg-[#f5f5f5] dark:focus:bg-slate-700"
+              className="text-foreground text-sm cursor-pointer focus:bg-accent"
             >
               In Progress
             </SelectItem>
             <SelectItem 
               value={TaskStatus.REVIEW} 
-              className="text-[#212121] dark:text-slate-100 text-sm cursor-pointer focus:bg-[#f5f5f5] dark:focus:bg-slate-700"
+              className="text-foreground text-sm cursor-pointer focus:bg-accent"
             >
               Review
             </SelectItem>
             <SelectItem 
               value={TaskStatus.DONE} 
-              className="text-[#212121] dark:text-slate-100 text-sm cursor-pointer focus:bg-[#f5f5f5] dark:focus:bg-slate-700"
+              className="text-foreground text-sm cursor-pointer focus:bg-accent"
             >
               Done
             </SelectItem>
@@ -193,49 +193,54 @@ const TaskListFilters = memo(function TaskListFilters({
         </Select>
 
         <Select value={filters.priority || 'all'} onValueChange={onPriorityFilter}>
-          <SelectTrigger className="w-36 h-9 bg-white dark:bg-slate-800 border border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 text-sm">
+          <SelectTrigger className="w-36 h-9 bg-card border border-border/80 text-foreground text-sm">
             <SelectValue placeholder="Priority" />
           </SelectTrigger>
-          <SelectContent className="bg-white dark:bg-slate-800 border-[#e0e0e0] dark:border-slate-700">
+          <SelectContent className="bg-card border-border/80">
             <SelectItem 
               value="all" 
-              className="text-[#212121] dark:text-slate-100 text-sm cursor-pointer focus:bg-[#f5f5f5] dark:focus:bg-slate-700"
+              className="text-foreground text-sm cursor-pointer focus:bg-accent"
             >
               All Priority
             </SelectItem>
             <SelectItem 
               value={TaskPriority.LOW} 
-              className="text-[#212121] dark:text-slate-100 text-sm cursor-pointer focus:bg-[#f5f5f5] dark:focus:bg-slate-700"
+              className="text-foreground text-sm cursor-pointer focus:bg-accent"
             >
               Low
             </SelectItem>
             <SelectItem 
               value={TaskPriority.MEDIUM} 
-              className="text-[#212121] dark:text-slate-100 text-sm cursor-pointer focus:bg-[#f5f5f5] dark:focus:bg-slate-700"
+              className="text-foreground text-sm cursor-pointer focus:bg-accent"
             >
               Medium
             </SelectItem>
             <SelectItem 
               value={TaskPriority.HIGH} 
-              className="text-[#212121] dark:text-slate-100 text-sm cursor-pointer focus:bg-[#f5f5f5] dark:focus:bg-slate-700"
+              className="text-foreground text-sm cursor-pointer focus:bg-accent"
             >
               High
             </SelectItem>
             <SelectItem 
               value={TaskPriority.URGENT} 
-              className="text-[#212121] dark:text-slate-100 text-sm cursor-pointer focus:bg-[#f5f5f5] dark:focus:bg-slate-700"
+              className="text-foreground text-sm cursor-pointer focus:bg-accent"
             >
               Urgent
             </SelectItem>
           </SelectContent>
         </Select>
 
-        <div className="inline-flex border border-[#e0e0e0] dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 overflow-hidden h-9">
+        <div className="inline-flex border border-border/80 rounded-md bg-white dark:bg-card overflow-hidden h-9">
           <Button
             variant={viewMode === 'grid' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => onViewModeChange('grid')}
-            className={`rounded-r-none border-0 h-full px-3 m-0 shadow-none text-sm ${viewMode === 'grid' ? 'bg-[#1976d2] text-white hover:bg-[#1565c0]' : 'text-[#757575] dark:text-slate-300 hover:text-[#212121] dark:hover:text-slate-100 hover:bg-[#f5f5f5] dark:hover:bg-slate-700'}`}
+            className={`rounded-r-none border-0 h-full px-3 m-0 shadow-none text-sm transition-all duration-200 ${
+              viewMode === 'grid' 
+                ? 'text-white hover:bg-blue-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90' 
+                : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-foreground dark:hover:bg-accent'
+            }`}
+            style={viewMode === 'grid' ? { backgroundColor: '#2563eb' } : undefined}
           >
             <Grid3X3 className="h-4 w-4" />
           </Button>
@@ -243,7 +248,12 @@ const TaskListFilters = memo(function TaskListFilters({
             variant={viewMode === 'list' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => onViewModeChange('list')}
-            className={`rounded-l-none border-0 h-full px-3 m-0 shadow-none text-sm ${viewMode === 'list' ? 'bg-[#1976d2] text-white hover:bg-[#1565c0]' : 'text-[#757575] dark:text-slate-300 hover:text-[#212121] dark:hover:text-slate-100 hover:bg-[#f5f5f5] dark:hover:bg-slate-700'}`}
+            className={`rounded-l-none border-0 h-full px-3 m-0 shadow-none text-sm transition-all duration-200 ${
+              viewMode === 'list' 
+                ? 'text-white hover:bg-blue-700 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90' 
+                : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:text-muted-foreground dark:hover:text-foreground dark:hover:bg-accent'
+            }`}
+            style={viewMode === 'list' ? { backgroundColor: '#2563eb' } : undefined}
           >
             <List className="h-4 w-4" />
           </Button>
@@ -291,18 +301,18 @@ const TaskListContent = memo(function TaskListContent({
   if (tasks.length === 0) {
     return (
       <div className="text-center py-16">
-        <div className="text-[#9e9e9e] dark:text-slate-600 mb-4">
+        <div className="text-muted-foreground mb-4">
           <Filter className="h-16 w-16 mx-auto" />
         </div>
-        <h3 className="text-xl font-semibold text-[#212121] dark:text-slate-100 mb-2">No tasks found</h3>
-        <p className="text-[#757575] dark:text-slate-400 mb-6 max-w-md mx-auto">
+        <h3 className="text-xl font-semibold text-foreground mb-2">No tasks found</h3>
+        <p className="text-muted-foreground mb-6 max-w-md mx-auto">
           {filters.search || filters.status || filters.priority
             ? 'Try adjusting your filters or search terms to find what you\'re looking for.'
             : 'Get started by creating your first task and begin organizing your work.'}
         </p>
         <Button 
           onClick={onCreateTask}
-          className="bg-[#1976d2] hover:bg-[#1565c0] text-white shadow-md hover:shadow-lg"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all duration-200"
         >
           <Plus className="h-4 w-4 mr-2" />
           Create Your First Task
@@ -414,7 +424,7 @@ export function TaskList({
       <div className="space-y-4">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="animate-pulse">
-            <div className="bg-white dark:bg-slate-800 border border-[#e0e0e0] dark:border-slate-700 h-48 rounded-xl"></div>
+            <div className="bg-card border border-border/80 h-48 rounded-xl"></div>
           </div>
         ))}
       </div>
