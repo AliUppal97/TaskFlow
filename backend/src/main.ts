@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import cookieParser from 'cookie-parser';
@@ -39,12 +39,26 @@ async function bootstrap() {
       exceptionFactory: (errors) => {
         // Aggregate all validation errors into a single, user-friendly message
         const messages = errors.map((validationError) => {
-          const constraints = validationError.constraints;
-          return constraints
-            ? Object.values(constraints)[0]
-            : 'Validation error';
+          // Type-safe access to constraints
+          if (
+            validationError &&
+            typeof validationError === 'object' &&
+            'constraints' in validationError &&
+            validationError.constraints &&
+            typeof validationError.constraints === 'object'
+          ) {
+            const constraintValues = Object.values(validationError.constraints);
+            return constraintValues.length > 0 && typeof constraintValues[0] === 'string'
+              ? constraintValues[0]
+              : 'Validation error';
+          }
+          return 'Validation error';
         });
-        return new Error(messages.join(', '));
+        return new BadRequestException({
+          message: messages.join(', '),
+          code: 'VALIDATION_ERROR',
+          details: errors,
+        });
       },
     }),
   );
@@ -100,7 +114,7 @@ async function bootstrap() {
    * Cookie parser middleware - enables reading HttpOnly cookies
    * Required for refresh token authentication strategy (stored in HttpOnly cookies for security)
    */
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-assignment
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call
   app.use(cookieParser());
 
   /**
@@ -154,7 +168,8 @@ async function bootstrap() {
       error &&
       typeof error === 'object' &&
       'code' in error &&
-      error.code === 'EADDRINUSE'
+      typeof (error as { code: unknown }).code === 'string' &&
+      (error as { code: string }).code === 'EADDRINUSE'
     ) {
       console.error(`\n❌ Error: Port ${port} is already in use.\n`);
       console.error('💡 Solutions:');
@@ -174,7 +189,12 @@ async function bootstrap() {
   }
 }
 
-bootstrap().catch((error: unknown) => {
-  console.error('Failed to start application:', error);
+void bootstrap().catch((error: unknown) => {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorStack = error instanceof Error ? error.stack : undefined;
+  console.error('Failed to start application:', errorMessage);
+  if (errorStack) {
+    console.error(errorStack);
+  }
   process.exit(1);
 });
