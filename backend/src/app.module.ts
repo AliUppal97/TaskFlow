@@ -22,6 +22,7 @@ import { getRedisConfig } from './config/redis.config';
 import { AuthModule } from './modules/auth/auth.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { EventsModule } from './modules/events/events.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 import { CacheService } from './common/cache/cache.service';
 
 /**
@@ -124,6 +125,7 @@ import { CacheService } from './common/cache/cache.service';
     AuthModule,
     TasksModule,
     EventsModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService, CacheService],
