@@ -19,10 +19,19 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     private configService: ConfigService,
     private userService: UserService,
   ) {
+    // Type-safe extraction of JWT from Authorization header
+    // ExtractJwt is properly typed from passport-jwt, but ESLint needs explicit assertion
+    const jwtExtractor = ExtractJwt.fromAuthHeaderAsBearerToken() as (request: Request) => string | null;
+    const secretOrKey = configService.get<string>('jwt.accessTokenSecret');
+    
+    if (!secretOrKey) {
+      throw new Error('JWT access token secret is not configured');
+    }
+    
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: jwtExtractor,
       ignoreExpiration: false,
-      secretOrKey: configService.get('jwt.accessTokenSecret'),
+      secretOrKey,
     });
   }
 

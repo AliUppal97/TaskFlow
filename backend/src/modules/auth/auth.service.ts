@@ -80,7 +80,6 @@ export class AuthService {
     const user = await this.userService.findByEmail(email);
     if (user) {
       // Check account lockout
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       const lockoutUntil = user.lockoutUntil;
       if (lockoutUntil && lockoutUntil instanceof Date && lockoutUntil > new Date()) {
         const remainingTime = Math.ceil((lockoutUntil.getTime() - Date.now()) / 60000); // minutes

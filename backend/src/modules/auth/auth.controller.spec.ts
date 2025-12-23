@@ -126,9 +126,15 @@ describe('AuthController (e2e)', () => {
         .send(registerDto)
         .expect(201);
 
-      expect(response.body).toHaveProperty('id');
-      expect(response.body).toHaveProperty('email', registerDto.email);
-      expect(response.body).not.toHaveProperty('passwordHash');
+      // Type-safe access to response body
+      if (response && response.body && typeof response.body === 'object') {
+        const body = response.body as { id?: string; email?: string; passwordHash?: string };
+        expect(body).toHaveProperty('id');
+        expect(body).toHaveProperty('email', registerDto.email);
+        expect(body).not.toHaveProperty('passwordHash');
+      } else {
+        throw new Error('Invalid response body');
+      }
     });
 
     it('should return 409 if user already exists', async () => {
@@ -173,10 +179,18 @@ describe('AuthController (e2e)', () => {
         .send(loginDto)
         .expect(200);
 
-      expect(response.body).toHaveProperty('accessToken');
-      expect(response.body).toHaveProperty('tokenType', 'Bearer');
-      expect(response.body).toHaveProperty('expiresIn');
-      expect(response.headers['set-cookie']).toBeDefined();
+      // Type-safe access to response body
+      if (response && response.body && typeof response.body === 'object') {
+        const body = response.body as { accessToken?: string; tokenType?: string; expiresIn?: number };
+        expect(body).toHaveProperty('accessToken');
+        expect(body).toHaveProperty('tokenType', 'Bearer');
+        expect(body).toHaveProperty('expiresIn');
+      } else {
+        throw new Error('Invalid response body');
+      }
+      if (response && response.headers && typeof response.headers === 'object' && 'set-cookie' in response.headers) {
+        expect(response.headers['set-cookie']).toBeDefined();
+      }
     });
 
     it('should return 401 for invalid credentials', async () => {
@@ -209,9 +223,15 @@ describe('AuthController (e2e)', () => {
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
 
-      expect(response.body).toHaveProperty('id', mockUser.id);
-      expect(response.body).toHaveProperty('email', mockUser.email);
-      expect(response.body).not.toHaveProperty('passwordHash');
+      // Type-safe access to response body
+      if (response && response.body && typeof response.body === 'object') {
+        const body = response.body as { id?: string; email?: string; passwordHash?: string };
+        expect(body).toHaveProperty('id', mockUser.id);
+        expect(body).toHaveProperty('email', mockUser.email);
+        expect(body).not.toHaveProperty('passwordHash');
+      } else {
+        throw new Error('Invalid response body');
+      }
     });
 
     it('should return 401 when not authenticated', async () => {
@@ -235,7 +255,13 @@ describe('AuthController (e2e)', () => {
         .set('Authorization', `Bearer ${token}`)
         .expect(200);
 
-      expect(response.body).toHaveProperty('message', 'Logout successful');
+      // Type-safe access to response body
+      if (response && response.body && typeof response.body === 'object') {
+        const body = response.body as { message?: string };
+        expect(body).toHaveProperty('message', 'Logout successful');
+      } else {
+        throw new Error('Invalid response body');
+      }
     });
   });
 });

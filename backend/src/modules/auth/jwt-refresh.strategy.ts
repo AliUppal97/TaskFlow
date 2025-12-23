@@ -21,18 +21,33 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, 'jwt-refresh'
     private configService: ConfigService,
     private userService: UserService,
   ) {
+    // Type-safe extraction of JWT from cookies
+    // ExtractJwt is properly typed from passport-jwt, but ESLint needs explicit assertion
+    const extractorFunction = (request: Request): string | null => {
+      // Type-safe access to cookies
+      if (request && typeof request === 'object' && 'cookies' in request) {
+        const cookies = request.cookies as { refreshToken?: string } | undefined;
+        const refreshToken = cookies?.refreshToken;
+        if (!refreshToken || typeof refreshToken !== 'string') {
+          return null;
+        }
+        return refreshToken;
+      }
+      return null;
+    };
+    
+    const jwtExtractor = ExtractJwt.fromExtractors([extractorFunction]) as (request: Request) => string | null;
+    
+    const secretOrKey = configService.get<string>('jwt.refreshTokenSecret');
+    
+    if (!secretOrKey) {
+      throw new Error('JWT refresh token secret is not configured');
+    }
+    
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: Request) => {
-          const refreshToken = request?.cookies?.refreshToken;
-          if (!refreshToken) {
-            return null;
-          }
-          return refreshToken;
-        },
-      ]),
+      jwtFromRequest: jwtExtractor,
       ignoreExpiration: false,
-      secretOrKey: configService.get('jwt.refreshTokenSecret'),
+      secretOrKey,
       passReqToCallback: true,
     });
   }
