@@ -207,8 +207,38 @@ export function useAssignTask(options?: UseMutationOptions<Task, Error, { id: st
       // Update the specific task in cache
       queryClient.setQueryData(queryKeys.tasks.detail(id), updatedTask);
 
-      // Invalidate tasks list
+      // Update task in all list queries by finding and updating cached lists
+      queryClient.setQueriesData(
+        { queryKey: queryKeys.tasks.all(), exact: false },
+        (oldData: any) => {
+          if (!oldData) return oldData;
+          
+          // Handle paginated response
+          if (oldData?.data && Array.isArray(oldData.data)) {
+            return {
+              ...oldData,
+              data: oldData.data.map((task: Task) => 
+                task.id === id ? updatedTask : task
+              ),
+            };
+          }
+          
+          // Handle array response
+          if (Array.isArray(oldData)) {
+            return oldData.map((task: Task) => 
+              task.id === id ? updatedTask : task
+            );
+          }
+          
+          return oldData;
+        }
+      );
+
+      // Invalidate tasks list to ensure fresh data
       queryClient.invalidateQueries({ queryKey: queryKeys.tasks.all() });
+      
+      // Invalidate stats as assignment might affect stats
+      queryClient.invalidateQueries({ queryKey: queryKeys.tasks.stats() });
     },
     ...options,
   });

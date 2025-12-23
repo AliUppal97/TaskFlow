@@ -16,13 +16,13 @@ interface ThemeProviderProps {
   defaultTheme?: Theme;
 }
 
-export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProviderProps) {
+export function ThemeProvider({ children, defaultTheme = Theme.LIGHT }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(() => {
     // Initialize theme from localStorage or default to dark
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('theme') as Theme | null;
-      // Use stored theme if valid, otherwise default to dark
-      return (stored && Object.values(Theme).includes(stored)) ? stored : Theme.DARK;
+      // Use stored theme if valid, otherwise default to light
+      return (stored && Object.values(Theme).includes(stored)) ? stored : Theme.LIGHT;
     }
     return defaultTheme;
   });
@@ -62,8 +62,8 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
         if (theme === Theme.SYSTEM) {
           return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
-        // Fallback to dark
-        return 'dark';
+        // Fallback to light
+        return 'light';
       };
       const resolved = resolveTheme();
       
@@ -203,8 +203,8 @@ export function ThemeProvider({ children, defaultTheme = Theme.DARK }: ThemeProv
         if (newTheme === Theme.SYSTEM) {
           return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
         }
-        // Fallback to dark
-        return 'dark';
+        // Fallback to light
+        return 'light';
       };
       const resolved = resolveTheme();
 
