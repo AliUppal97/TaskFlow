@@ -212,3 +212,4 @@ describe('Input', () => {
     expect(input).toHaveAttribute('autoComplete', 'username');
   });
 });
+
