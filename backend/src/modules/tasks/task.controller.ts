@@ -13,6 +13,7 @@ import {
   HttpStatus,
   UseInterceptors,
 } from '@nestjs/common';
+import { PolicyGuard } from '../../guards/policy.guard';
 import {
   ApiTags,
   ApiOperation,
@@ -144,6 +145,7 @@ export class TaskController {
   }
 
   @Patch(':id/assign')
+  @UseGuards(PolicyGuard)
   @UsePolicy({
     policyName: 'task',
     action: 'assign',
