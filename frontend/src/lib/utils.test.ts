@@ -109,3 +109,4 @@ describe('cn utility function', () => {
     expect(cn('flex', 'custom-component', 'bg-blue-500')).toBe('flex custom-component bg-blue-500');
   });
 });
+
