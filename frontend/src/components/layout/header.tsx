@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   CheckSquare,
   LayoutDashboard,
@@ -19,6 +20,7 @@ import {
 import { useAuth } from '@/providers/auth-provider';
 import { useWebSocket } from '@/providers/websocket-provider';
 import { UserRole } from '@/types';
+import { apiClient } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -39,11 +41,35 @@ const navigation = [
 
 export function Header() {
   const { user, logout, isAuthenticated } = useAuth();
-  const { isConnected } = useWebSocket();
+  const { isConnected, onNotification } = useWebSocket();
+  const queryClient = useQueryClient();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mounted, setMounted] = useState(false);
+
+  // Fetch notification stats
+  const { data: notificationStats } = useQuery({
+    queryKey: ['notificationStats'],
+    queryFn: () => apiClient.getNotificationStats(),
+    enabled: isAuthenticated,
+    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchOnWindowFocus: true, // Refetch when user returns to the tab
+  });
+
+  const unreadCount = notificationStats?.unread || 0;
+
+  // Listen for WebSocket notification events and update stats
+  useEffect(() => {
+    if (!isAuthenticated) return;
+
+    const unsubscribe = onNotification(() => {
+      // Invalidate notification stats when a new notification is received
+      queryClient.invalidateQueries({ queryKey: ['notificationStats'] });
+    });
+
+    return unsubscribe;
+  }, [isAuthenticated, onNotification, queryClient]);
 
   useEffect(() => {
     // Set mounted state after initial render to prevent hydration mismatch
@@ -175,9 +201,11 @@ export function Header() {
               <Link href="/notifications">
                 <Bell className="h-5 w-5 transition-transform duration-200" />
                 {/* Notification badge */}
-                <span className="absolute -top-0.5 -right-0.5 h-5 w-5 bg-destructive rounded-full text-[10px] font-semibold text-white flex items-center justify-center shadow-md ring-2 ring-background">
-                  3
-                </span>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[20px] h-5 bg-destructive rounded-full text-[10px] font-semibold text-white flex items-center justify-center shadow-md ring-2 ring-background px-1">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
               </Link>
             </Button>
 
