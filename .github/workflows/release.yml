@@ -63,3 +63,4 @@ jobs:
         text: "Release ${{ github.ref }} ${{ job.status == 'success' && 'completed successfully' || 'failed' }}"
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+

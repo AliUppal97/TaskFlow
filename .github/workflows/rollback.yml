@@ -64,3 +64,4 @@ jobs:
         text: "Deployment rolled back to version ${{ steps.previous.outputs.sha }} in ${{ inputs.environment }}"
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+

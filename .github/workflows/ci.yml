@@ -213,3 +213,4 @@ jobs:
         # If successful, scale down green
         kubectl scale deployment taskflow-backend-green --replicas=0
         kubectl scale deployment taskflow-frontend-green --replicas=0
+
