@@ -7,6 +7,7 @@ import { User } from '../../entities/user.entity';
 import { CreateTaskDto, UpdateTaskDto, TaskQueryDto } from '../../dto/task.dto';
 import { EventsService } from '../events/events.service';
 import { TaskGateway, TaskEvent, TaskEventType } from './task.gateway';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CacheService } from '../../common/cache/cache.service';
 import { CacheResult, InvalidateCache } from '../../common/cache/cache.decorators';
 import { EventType } from '../../entities/event-log.entity';
@@ -41,6 +42,7 @@ export class TaskService {
     private cacheService: CacheService,
     private eventsService: EventsService,
     private taskGateway: TaskGateway,
+    private notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -122,6 +124,19 @@ export class TaskService {
       },
       timestamp: new Date(),
     });
+
+    // Create notification for assignee if task was assigned
+    if (createTaskDto.assigneeId && createTaskDto.assigneeId !== creator.id) {
+      const creatorName = creator.profile?.firstName && creator.profile?.lastName
+        ? `${creator.profile.firstName} ${creator.profile.lastName}`
+        : creator.email;
+      await this.notificationsService.createTaskAssignmentNotification(
+        createTaskDto.assigneeId,
+        savedTask.id,
+        savedTask.title,
+        creatorName,
+      );
+    }
 
     // Reload task with relations for response transformation
     // The controller's transformTaskResponse needs creator and assignee relations
@@ -364,6 +379,65 @@ export class TaskService {
 
       // Send real-time notification to new assignee
       await this.taskGateway.notifyTaskAssignment(id, assigneeId, user.id);
+
+      // Create database notification for new assignee
+      if (assigneeId) {
+        const assignorName = user.profile?.firstName && user.profile?.lastName
+          ? `${user.profile.firstName} ${user.profile.lastName}`
+          : user.email;
+        await this.notificationsService.createTaskAssignmentNotification(
+          assigneeId,
+          id,
+          savedTask.title,
+          assignorName,
+        );
+      }
+    }
+
+    /**
+     * Handle task completion notifications
+     * Notify task creator and assignee when task is completed
+     */
+    if (updateTaskDto.status === TaskStatus.DONE && task.status !== TaskStatus.DONE) {
+      const completedByName = user.profile?.firstName && user.profile?.lastName
+        ? `${user.profile.firstName} ${user.profile.lastName}`
+        : user.email;
+
+      // Notify task creator (if different from completer)
+      if (task.creatorId !== user.id) {
+        await this.notificationsService.createTaskCompletionNotification(
+          task.creatorId,
+          id,
+          savedTask.title,
+          completedByName,
+        );
+      }
+
+      // Notify assignee (if different from completer and creator)
+      if (task.assigneeId && task.assigneeId !== user.id && task.assigneeId !== task.creatorId) {
+        await this.notificationsService.createTaskCompletionNotification(
+          task.assigneeId,
+          id,
+          savedTask.title,
+          completedByName,
+        );
+      }
+    }
+
+    /**
+     * Handle task update notifications (for assignee)
+     * Notify assignee when task is updated (but not when they're the one updating)
+     */
+    if (task.assigneeId && task.assigneeId !== user.id && updateTaskDto.status !== TaskStatus.DONE) {
+      const updatedByName = user.profile?.firstName && user.profile?.lastName
+        ? `${user.profile.firstName} ${user.profile.lastName}`
+        : user.email;
+      await this.notificationsService.createTaskUpdatedNotification(
+        task.assigneeId,
+        id,
+        savedTask.title,
+        updatedByName,
+      );
     }
 
     return savedTask;
@@ -469,6 +543,19 @@ export class TaskService {
 
     // Notify assignee via WebSocket
     await this.taskGateway.notifyTaskAssignment(id, assigneeId, user.id);
+
+    // Create database notification for new assignee
+    if (assigneeId && assigneeId !== oldAssigneeId) {
+      const assignorName = user.profile?.firstName && user.profile?.lastName
+        ? `${user.profile.firstName} ${user.profile.lastName}`
+        : user.email;
+      await this.notificationsService.createTaskAssignmentNotification(
+        assigneeId,
+        id,
+        savedTask.title,
+        assignorName,
+      );
+    }
 
     return savedTask;
   }
