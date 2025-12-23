@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -8,7 +8,7 @@ import { Loader2, User, Calendar } from 'lucide-react';
 
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { useAuth } from '@/providers/auth-provider';
-import { useTasks } from '@/hooks/use-api';
+import { useTasks, useUpdateProfile } from '@/hooks/use-api';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,13 +25,23 @@ const profileSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, refreshProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-
+  
   // Get user's tasks stats
   const { data: tasksData } = useTasks({ creatorId: user?.id }, { enabled: !!user?.id });
   const totalTasks = tasksData?.pagination.total || 0;
+
+  const updateProfileMutation = useUpdateProfile({
+    onSuccess: async () => {
+      // Refresh user data from auth provider
+      await refreshProfile();
+      setIsEditing(false);
+    },
+    onError: (error) => {
+      console.error('Failed to update profile:', error);
+    },
+  });
 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -41,20 +51,24 @@ export default function ProfilePage() {
     },
   });
 
+  // Update form when user data changes
+  useEffect(() => {
+    if (user) {
+      form.reset({
+        firstName: user.profile?.firstName || '',
+        lastName: user.profile?.lastName || '',
+      });
+    }
+  }, [user, form]);
+
   const onSubmit = async (data: ProfileFormData) => {
-    setIsLoading(true);
     try {
-      // In a real app, you'd call an API to update the profile
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Updating profile:', data);
-      }
-      setIsEditing(false);
+      await updateProfileMutation.mutateAsync({
+        firstName: data.firstName,
+        lastName: data.lastName,
+      });
     } catch (error) {
-      if (process.env.NODE_ENV === 'development') {
-        console.error('Failed to update profile:', error);
-      }
-    } finally {
-      setIsLoading(false);
+      // Error handled by mutation onError
     }
   };
 
@@ -203,8 +217,8 @@ export default function ProfilePage() {
                         </div>
 
                         <div className="flex gap-4 pt-4">
-                          <Button type="submit" disabled={isLoading}>
-                            {isLoading ? (
+                          <Button type="submit" disabled={updateProfileMutation.isPending}>
+                            {updateProfileMutation.isPending ? (
                               <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                                 Saving...

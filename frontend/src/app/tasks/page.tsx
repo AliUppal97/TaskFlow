@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Plus, BarChart3, Users, AlertTriangle, ChevronLeft, ChevronRight, Wifi, WifiOff } from 'lucide-react';
+import { useState, useMemo, useEffect } from 'react';
+import { Plus, BarChart3, Users, AlertTriangle, ChevronLeft, ChevronRight, Wifi, WifiOff, CheckCircle, X, Trash2 } from 'lucide-react';
 
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { useAuth } from '@/providers/auth-provider';
@@ -32,6 +32,7 @@ export default function TasksPage() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'delete' } | null>(null);
 
   // Filters state
   const [filters, setFilters] = useState<TaskFilters>({
@@ -51,10 +52,56 @@ export default function TasksPage() {
 
   const { data: stats, isLoading: statsLoading } = useTaskStats();
 
-  const createTaskMutation = useCreateTask();
-  const updateTaskMutation = useUpdateTask();
-  const deleteTaskMutation = useDeleteTask();
-  const assignTaskMutation = useAssignTask();
+  const createTaskMutation = useCreateTask({
+    onSuccess: () => {
+      setShowCreateForm(false);
+      setToast({ message: 'Task created successfully', type: 'success' });
+    },
+    onError: (error) => {
+      setToast({ 
+        message: error instanceof Error ? error.message : 'Failed to create task', 
+        type: 'error' 
+      });
+    },
+  });
+  const updateTaskMutation = useUpdateTask({
+    onSuccess: () => {
+      setShowEditForm(false);
+      setSelectedTask(null);
+      setToast({ message: 'Task updated successfully', type: 'success' });
+    },
+    onError: (error) => {
+      setToast({ 
+        message: error instanceof Error ? error.message : 'Failed to update task', 
+        type: 'error' 
+      });
+    },
+  });
+  const deleteTaskMutation = useDeleteTask({
+    onSuccess: () => {
+      setToast({ message: 'Task deleted successfully', type: 'delete' });
+    },
+    onError: (error) => {
+      setToast({ 
+        message: error instanceof Error ? error.message : 'Failed to delete task', 
+        type: 'error' 
+      });
+    },
+  });
+  const assignTaskMutation = useAssignTask({
+    onSuccess: () => {
+      setShowAssignModal(false);
+      setSelectedTask(null);
+      setSelectedAssigneeId(null);
+      setToast({ message: 'Task assigned successfully', type: 'success' });
+    },
+    onError: (error) => {
+      setToast({ 
+        message: error instanceof Error ? error.message : 'Failed to assign task', 
+        type: 'error' 
+      });
+    },
+  });
 
   // Get users for assignment
   const { data: usersData } = useUsers({ limit: 50 });
@@ -113,21 +160,41 @@ export default function TasksPage() {
     }
   };
 
-  const handleAssignTask = async (taskId: string) => {
-    setSelectedTask(tasks.find(t => t.id === taskId) || null);
-    setShowAssignModal(true);
-  };
+  const [selectedAssigneeId, setSelectedAssigneeId] = useState<string | null>(null);
 
-  const handleAssignSubmit = async (assigneeId: string | null) => {
-    if (selectedTask) {
-      await assignTaskMutation.mutateAsync({
-        id: selectedTask.id,
-        assigneeId
-      });
-      setShowAssignModal(false);
-      setSelectedTask(null);
+  const handleAssignTask = async (taskId: string) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (task) {
+      setSelectedTask(task);
+      setSelectedAssigneeId(task.assigneeId || null);
+      setShowAssignModal(true);
     }
   };
+
+  const handleAssignSubmit = async () => {
+    if (selectedTask) {
+      try {
+        await assignTaskMutation.mutateAsync({
+          id: selectedTask.id,
+          assigneeId: selectedAssigneeId
+        });
+        // Success handling is done in the mutation's onSuccess callback
+      } catch (error) {
+        // Error handling is done in the mutation's onError callback
+        console.error('Failed to assign task:', error);
+      }
+    }
+  };
+
+  // Auto-dismiss toast after 5 seconds
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => {
+        setToast(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
 
   const handleFiltersChange = (newFilters: Partial<typeof filters>) => {
     setFilters(prev => ({ ...prev, ...newFilters, page: 1 })); // Reset to first page
@@ -136,6 +203,31 @@ export default function TasksPage() {
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-white dark:bg-slate-900">
+        {/* Toast Notification */}
+        {toast && (
+          <div className={`fixed top-28 right-4 z-50 flex items-center gap-3 p-4 rounded-lg border shadow-lg animate-in slide-in-from-top-5 ${
+            toast.type === 'success'
+              ? 'bg-[#e0f2f1] dark:bg-green-500/20 border-[#b2dfdb] dark:border-green-500/30 text-[#00796b] dark:text-green-300'
+              : toast.type === 'delete'
+              ? 'bg-[#ffebee] dark:bg-red-500/20 border-[#ffcdd2] dark:border-red-500/30 text-[#d32f2f] dark:text-red-300'
+              : 'bg-[#ffebee] dark:bg-red-500/20 border-[#ffcdd2] dark:border-red-500/30 text-[#d32f2f] dark:text-red-300'
+          }`}>
+            {toast.type === 'success' ? (
+              <CheckCircle className="h-5 w-5" />
+            ) : toast.type === 'delete' ? (
+              <Trash2 className="h-5 w-5" />
+            ) : (
+              <AlertTriangle className="h-5 w-5" />
+            )}
+            <p className="text-sm font-medium">{toast.message}</p>
+            <button 
+              onClick={() => setToast(null)} 
+              className="ml-2 hover:opacity-70"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
         <div className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
@@ -342,8 +434,19 @@ export default function TasksPage() {
 
           {/* Assign Task Modal */}
           {showAssignModal && selectedTask && (
-            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-              <div className="bg-white dark:bg-slate-800 border border-[#e0e0e0] dark:border-slate-700 rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50" onClick={(e) => {
+              // Close modal when clicking backdrop
+              if (e.target === e.currentTarget) {
+                setShowAssignModal(false);
+                setSelectedTask(null);
+                setSelectedAssigneeId(null);
+              }
+            }}>
+              <div 
+                className="bg-white dark:bg-slate-800 border border-[#e0e0e0] dark:border-slate-700 rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl relative z-50"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
                 <h3 className="text-lg font-semibold mb-4 text-[#212121] dark:text-slate-100">Assign Task</h3>
                 <p className="text-sm text-[#757575] dark:text-slate-400 mb-6">
                   Assign &quot;{selectedTask.title}&quot; to a team member
@@ -356,11 +459,8 @@ export default function TasksPage() {
                     </label>
                     <UserSelector
                       users={users}
-                      value={selectedTask.assigneeId}
-                      onValueChange={(userId) => {
-                        // Update local state
-                        setSelectedTask(prev => prev ? { ...prev, assigneeId: userId } : null);
-                      }}
+                      value={selectedAssigneeId}
+                      onValueChange={setSelectedAssigneeId}
                       placeholder="Choose a team member..."
                       className="w-full"
                     />
@@ -372,13 +472,14 @@ export default function TasksPage() {
                       onClick={() => {
                         setShowAssignModal(false);
                         setSelectedTask(null);
+                        setSelectedAssigneeId(null);
                       }}
                       className="border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-700"
                     >
                       Cancel
                     </Button>
                     <Button
-                      onClick={() => handleAssignSubmit(selectedTask.assigneeId)}
+                      onClick={handleAssignSubmit}
                       disabled={assignTaskMutation.isPending}
                       className="bg-[#1976d2] hover:bg-[#1565c0] text-white"
                     >
