@@ -153,7 +153,8 @@ export class TaskGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       });
 
     } catch (error: unknown) {
-      this.logger.error(`Connection failed for client ${client.id}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Connection failed for client ${client.id}: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
       client.disconnect(); // Invalid token or other error
     }
   }

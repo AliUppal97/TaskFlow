@@ -494,7 +494,22 @@ export class TaskService {
 
   @InvalidateCache('task:*')
   async assignTask(id: string, assigneeId: string | null, user: User): Promise<Task> {
-    const task = await this.findOne(id, user);
+    // Invalidate cache BEFORE fetching to ensure fresh data
+    await this.cacheService.deletePattern('task:*');
+    
+    const task = await this.taskRepository.findOne({
+      where: { id, deletedAt: IsNull() },
+      relations: ['creator', 'assignee'],
+    });
+
+    if (!task) {
+      throw new NotFoundException('Task not found');
+    }
+
+    // Check permissions
+    if (user.role !== 'admin' && task.creatorId !== user.id && task.assigneeId !== user.id) {
+      throw new NotFoundException('Task not found');
+    }
 
     const oldAssigneeId = task.assigneeId;
 
@@ -506,10 +521,31 @@ export class TaskService {
       }
     }
 
-    task.assigneeId = assigneeId ?? null;
-    task.updatedAt = new Date();
+    // Use update query builder to directly update the database
+    // This bypasses any entity manager caching issues
+    await this.taskRepository
+      .createQueryBuilder()
+      .update(Task)
+      .set({ 
+        assigneeId: assigneeId ?? null, 
+        updatedAt: new Date() 
+      })
+      .where('id = :id', { id: task.id })
+      .execute();
 
-    const savedTask = await this.taskRepository.save(task);
+    // Reload task with relations using query builder to bypass any entity manager cache
+    // This ensures we get fresh data from the database with the correct assignee relation
+    const updatedTask = await this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.creator', 'creator')
+      .leftJoinAndSelect('task.assignee', 'assignee')
+      .where('task.id = :id', { id: task.id })
+      .andWhere('task.deletedAt IS NULL')
+      .getOne();
+
+    if (!updatedTask) {
+      throw new NotFoundException('Task not found after update');
+    }
 
     // Log assignment event
     await this.eventsService.logEvent({
@@ -532,10 +568,10 @@ export class TaskService {
         oldAssigneeId,
         newAssigneeId: assigneeId,
         task: {
-          id: savedTask.id,
-          title: savedTask.title,
-          assigneeId: savedTask.assigneeId,
-          updatedAt: savedTask.updatedAt,
+          id: updatedTask.id,
+          title: updatedTask.title,
+          assigneeId: updatedTask.assigneeId,
+          updatedAt: updatedTask.updatedAt,
         },
       },
       timestamp: new Date(),
@@ -552,12 +588,12 @@ export class TaskService {
       await this.notificationsService.createTaskAssignmentNotification(
         assigneeId,
         id,
-        savedTask.title,
+        updatedTask.title,
         assignorName,
       );
     }
 
-    return savedTask;
+    return updatedTask;
   }
 
   /**

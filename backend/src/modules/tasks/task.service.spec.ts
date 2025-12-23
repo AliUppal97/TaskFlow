@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TaskService } from './task.service';
 import { Task, TaskStatus, TaskPriority } from '../../entities/task.entity';
-import { User } from '../../entities/user.entity';
+import { User, UserRole } from '../../entities/user.entity';
 import { CreateTaskDto, UpdateTaskDto } from '../../dto/task.dto';
 import { CacheService } from '../../common/cache/cache.service';
 import { EventsService } from '../events/events.service';
@@ -21,7 +21,7 @@ describe('TaskService', () => {
     id: 'user-123',
     email: 'creator@example.com',
     passwordHash: 'hashed-password',
-    role: 'user' as any,
+    role: UserRole.USER,
     profile: { firstName: 'Creator', lastName: 'User' },
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -265,7 +265,7 @@ describe('TaskService', () => {
     });
 
     it('should throw NotFoundException if user has no access', async () => {
-      const adminUser = { ...mockUser, role: 'admin' as any };
+      const adminUser = { ...mockUser, role: UserRole.ADMIN };
       mockCacheService.get.mockResolvedValue(null);
       mockRepository.findOne.mockResolvedValue(mockTask);
 
@@ -470,7 +470,7 @@ describe('TaskService', () => {
     });
 
     it('should allow admin users to see all tasks', async () => {
-      const adminUser = { ...mockUser, role: 'admin' as any };
+      const adminUser = { ...mockUser, role: UserRole.ADMIN };
       const mockStats = {
         total: 5,
         todo: 2,
@@ -603,7 +603,7 @@ describe('TaskService', () => {
     });
 
     it('should handle admin access to all tasks', async () => {
-      const adminUser = { ...mockUser, role: 'admin' as any };
+      const adminUser = { ...mockUser, role: UserRole.ADMIN };
       const otherUserTask = { ...mockTask, id: 'task-other', creatorId: 'other-user' };
       const tasks = [mockTask, otherUserTask];
 
