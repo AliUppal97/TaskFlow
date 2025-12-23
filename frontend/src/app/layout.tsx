@@ -52,8 +52,8 @@ export default function RootLayout({
                   const stored = localStorage.getItem('theme');
                   const root = document.documentElement;
                   
-                  // Determine theme: use stored value if valid, otherwise default to dark
-                  let shouldBeDark = true;
+                  // Determine theme: use stored value if valid, otherwise default to light
+                  let shouldBeDark = false;
                   if (stored === 'dark') {
                     shouldBeDark = true;
                   } else if (stored === 'light') {
@@ -61,8 +61,8 @@ export default function RootLayout({
                   } else if (stored === 'system') {
                     shouldBeDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                   } else {
-                    // Default to dark if no valid theme stored
-                    shouldBeDark = true;
+                    // Default to light if no valid theme stored
+                    shouldBeDark = false;
                   }
                   
                   // CRITICAL: Forcefully remove dark class FIRST

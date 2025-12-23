@@ -479,9 +479,38 @@ html:not(.dark) [class*="Card"][class*="border"] {
 }
 
 /* Ensure text has proper contrast in light theme */
+html:not(.dark) [class*="text-foreground/60"] {
+  color: rgba(33, 33, 33, 0.75) !important;
+}
+
 html:not(.dark) [class*="text-foreground/70"],
 html:not(.dark) [class*="text-foreground/80"] {
-  color: rgba(33, 33, 33, 0.9) !important;
+  color: rgba(33, 33, 33, 0.85) !important;
+}
+
+/* Ensure muted foreground text has good contrast in light theme */
+html:not(.dark) .text-muted-foreground {
+  color: #757575 !important;
+}
+
+html:not(.dark) [class*="text-muted-foreground"] {
+  color: #757575 !important;
+}
+
+/* Ensure slate colors have good contrast in light theme */
+html:not(.dark) .text-slate-400,
+html:not(.dark) [class*="text-slate-400"] {
+  color: #757575 !important;
+}
+
+html:not(.dark) .text-slate-500,
+html:not(.dark) [class*="text-slate-500"] {
+  color: #616161 !important;
+}
+
+html:not(.dark) .text-slate-600,
+html:not(.dark) [class*="text-slate-600"] {
+  color: #424242 !important;
 }
 
 /* Force primary buttons to be visible in light theme */

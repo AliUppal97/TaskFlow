@@ -123,11 +123,11 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   {tasksLoading ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {Array.from({ length: 3 }).map((_, i) => (
                         <div key={i} className="animate-pulse">
-                          <div className="flex items-center space-x-4 p-4 rounded-lg bg-[#f5f5f5] dark:bg-slate-700/50">
-                            <div className="w-3 h-3 bg-[#e0e0e0] dark:bg-slate-600 rounded-full"></div>
+                          <div className="flex items-center space-x-4 p-4 rounded-lg bg-[#f5f5f5] dark:bg-slate-700/50 border border-[#e0e0e0] dark:border-slate-600">
+                            <div className="w-4 h-4 bg-[#e0e0e0] dark:bg-slate-600 rounded-full"></div>
                             <div className="flex-1">
                               <div className="h-4 bg-[#e0e0e0] dark:bg-slate-600 rounded w-3/4 mb-2"></div>
                               <div className="h-3 bg-[#e0e0e0] dark:bg-slate-600 rounded w-1/2"></div>
@@ -137,51 +137,98 @@ export default function DashboardPage() {
                       ))}
                     </div>
                   ) : recentTasks.length > 0 ? (
-                    <div className="space-y-3">
+                    <div className="space-y-2">
                       {recentTasks.slice(0, 5).map((task) => (
                         <div
                           key={task.id}
-                          className="flex items-center space-x-4 p-4 rounded-lg bg-[#f5f5f5] dark:bg-slate-700/50 hover:bg-[#e3f2fd] dark:hover:bg-blue-900/20 transition-colors border border-[#e0e0e0] dark:border-slate-600 cursor-pointer"
+                          className="group flex items-center gap-4 p-4 rounded-lg bg-white dark:bg-slate-800 hover:bg-[#f8f9fa] dark:hover:bg-slate-700/50 transition-all duration-200 border border-[#e5e7eb] dark:border-slate-700 hover:border-[#d1d5db] dark:hover:border-slate-600 cursor-pointer shadow-sm hover:shadow-md"
                           onClick={() => router.push('/tasks')}
                         >
-                          <div className={`w-3 h-3 rounded-full shadow-md ${
-                            task.status === TaskStatus.TODO ? 'bg-[#f5f5f5] dark:bg-slate-600 border border-[#e0e0e0] dark:border-slate-500' :
-                            task.status === TaskStatus.IN_PROGRESS ? 'bg-[#1976d2] dark:bg-blue-400' :
-                            task.status === TaskStatus.REVIEW ? 'bg-[#f57c00] dark:bg-yellow-400' :
-                            'bg-[#00796b] dark:bg-green-400'
-                          }`}></div>
+                          {/* Status Indicator */}
+                          <div className={`flex-shrink-0 w-5 h-5 rounded-full flex items-center justify-center ${
+                            task.status === TaskStatus.TODO 
+                              ? 'bg-white dark:bg-slate-600 border-2 border-[#9ca3af] dark:border-slate-400 shadow-sm' 
+                              : task.status === TaskStatus.IN_PROGRESS 
+                              ? 'bg-[#3b82f6] dark:bg-blue-400 shadow-sm shadow-blue-500/20' 
+                              : task.status === TaskStatus.REVIEW 
+                              ? 'bg-[#f59e0b] dark:bg-yellow-400 shadow-sm shadow-yellow-500/20' 
+                              : 'bg-[#10b981] dark:bg-green-400 shadow-sm shadow-green-500/20'
+                          }`}>
+                            {task.status === TaskStatus.TODO && (
+                              <div className="w-2.5 h-2.5 rounded-full bg-[#6b7280] dark:bg-slate-400"></div>
+                            )}
+                          </div>
+                          
+                          {/* Task Content */}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-[#212121] dark:text-slate-100 truncate">
+                            <p className="text-sm font-semibold text-[#111827] dark:text-slate-100 truncate mb-1.5 group-hover:text-[#3b82f6] dark:group-hover:text-blue-400 transition-colors">
                               {task.title}
                             </p>
-                            <p className="text-xs text-[#757575] dark:text-slate-400">
-                              {task.status.replace('_', ' ')} • {task.priority} priority
+                            <div className="flex items-center gap-2 flex-wrap">
+                              {/* Status Badge */}
+                              <span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold capitalize bg-[#f9fafb] dark:bg-slate-700 text-[#374151] dark:text-slate-300 border border-[#e5e7eb] dark:border-slate-600 shadow-sm">
+                                {task.status.replace('_', ' ')}
+                              </span>
+                              
+                              {/* Priority Badge */}
+                              <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold capitalize shadow-sm ${
+                                task.priority === 'urgent' 
+                                  ? 'bg-[#fef2f2] dark:bg-red-500/20 text-[#b91c1c] dark:text-red-400 border border-[#fecaca] dark:border-red-500/30'
+                                  : task.priority === 'high'
+                                  ? 'bg-[#fff7ed] dark:bg-orange-500/20 text-[#c2410c] dark:text-orange-400 border border-[#fed7aa] dark:border-orange-500/30'
+                                  : task.priority === 'medium'
+                                  ? 'bg-[#fffbeb] dark:bg-yellow-500/20 text-[#b45309] dark:text-yellow-400 border border-[#fde68a] dark:border-yellow-500/30'
+                                  : 'bg-[#f0fdf4] dark:bg-green-500/20 text-[#166534] dark:text-green-400 border border-[#bbf7d0] dark:border-green-500/30'
+                              }`}>
+                                {task.priority}
+                              </span>
+                              
+                              {/* Due Date */}
                               {task.dueDate && (
                                 <>
-                                  {' • '}
-                                  Due {new Date(task.dueDate).toLocaleDateString()}
+                                  <span className={`inline-flex items-center text-xs font-medium text-[#6b7280] dark:text-slate-400 ${
+                                    task.isOverdue ? 'text-[#dc2626] dark:text-red-400' : ''
+                                  }`}>
+                                    {new Date(task.dueDate).toLocaleDateString()}
+                                  </span>
                                   {task.isOverdue && (
-                                    <span className="text-[#d32f2f] dark:text-red-400 ml-1">(Overdue)</span>
+                                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-semibold text-[#b91c1c] dark:text-red-400 bg-[#fef2f2] dark:bg-red-500/20 border border-[#fecaca] dark:border-red-500/30 shadow-sm">
+                                      Overdue
+                                    </span>
                                   )}
                                 </>
                               )}
-                            </p>
+                            </div>
                           </div>
+                          
+                          {/* Assignee Badge */}
                           {task.assignee && (
-                            <div className="text-xs text-[#757575] dark:text-slate-400">
-                              {task.assignee.profile?.firstName || task.assignee.email}
+                            <div className="flex-shrink-0">
+                              <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-800 border border-[#e5e7eb] dark:border-slate-600 shadow-sm hover:shadow-md hover:border-[#d1d5db] dark:hover:border-slate-500 transition-all duration-200 group/assignee">
+                                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#3b82f6] via-[#2563eb] to-[#1d4ed8] dark:from-blue-500 dark:via-blue-600 dark:to-blue-700 flex items-center justify-center shadow-md ring-1 ring-[#3b82f6]/20 dark:ring-blue-500/30 group-hover/assignee:ring-[#3b82f6]/30 dark:group-hover/assignee:ring-blue-500/40 transition-all">
+                                  <span className="text-[11px] font-bold text-white leading-none drop-shadow-sm">
+                                    {(task.assignee.profile?.firstName || task.assignee.email || 'U')[0].toUpperCase()}
+                                  </span>
+                                </div>
+                                <span className="text-xs font-semibold text-[#111827] dark:text-slate-200 whitespace-nowrap group-hover/assignee:text-[#030712] dark:group-hover/assignee:text-slate-100 transition-colors">
+                                  {task.assignee.profile?.firstName || task.assignee.email?.split('@')[0] || 'Unassigned'}
+                                </span>
+                              </div>
                             </div>
                           )}
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8">
-                      <CheckSquare className="h-12 w-12 text-[#9e9e9e] dark:text-slate-500 mx-auto mb-4" />
-                      <p className="text-[#757575] dark:text-slate-400 mb-4">No tasks yet</p>
+                    <div className="text-center py-12">
+                      <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#f5f5f5] dark:bg-slate-800 mb-4">
+                        <CheckSquare className="h-8 w-8 text-[#9e9e9e] dark:text-slate-500" />
+                      </div>
+                      <p className="text-base font-medium text-[#424242] dark:text-slate-300 mb-2">No tasks yet</p>
+                      <p className="text-sm text-[#757575] dark:text-slate-400 mb-6">Get started by creating your first task</p>
                       <Button
                         onClick={() => router.push('/tasks')}
-                        className="bg-[#1976d2] hover:bg-[#1565c0] text-white"
+                        className="bg-[#1976d2] hover:bg-[#1565c0] text-white shadow-md hover:shadow-lg transition-all duration-200"
                       >
                         Create Your First Task
                       </Button>

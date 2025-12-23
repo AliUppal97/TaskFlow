@@ -16,9 +16,9 @@ import {
   AlertCircle,
   Info,
   Settings,
-  User as UserIcon,
   CheckSquare,
   Trash2,
+  UserCheck,
 } from 'lucide-react';
 
 import { RoleProtectedRoute } from '@/components/auth/role-protected-route';
@@ -104,6 +104,17 @@ function AdminPageContent() {
     description: '',
     onConfirm: () => {},
   });
+  const [assignTaskDialog, setAssignTaskDialog] = useState<{
+    open: boolean;
+    userId: string | null;
+    userName: string;
+  }>({
+    open: false,
+    userId: null,
+    userName: '',
+  });
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [taskSearchQuery, setTaskSearchQuery] = useState('');
 
   // Reset page when filter changes - handled in filter change handlers
 
@@ -123,6 +134,7 @@ function AdminPageContent() {
   const {
     data: tasksResponse,
     isLoading: tasksLoading,
+    refetch: refetchTasks,
   } = useTasks({ limit: 1000 });
 
   // Fetch task stats
@@ -158,6 +170,11 @@ function AdminPageContent() {
   const assignTaskMutation = useAssignTask({
     onSuccess: () => {
       setToast({ message: 'Task assigned successfully', type: 'success' });
+      setAssignTaskDialog({ open: false, userId: null, userName: '' });
+      setSelectedTaskId(null);
+      setTaskSearchQuery('');
+      // Explicitly refetch tasks to ensure fresh data with updated assignee
+      refetchTasks();
     },
     onError: (error: Error) => {
       const message = error.message || 'Failed to assign task';
@@ -356,6 +373,43 @@ function AdminPageContent() {
     });
   };
 
+  const handleAssignTaskClick = (user: User) => {
+    const userName = user.profile?.firstName && user.profile?.lastName
+      ? `${user.profile.firstName} ${user.profile.lastName}`
+      : user.email;
+    setAssignTaskDialog({
+      open: true,
+      userId: user.id,
+      userName,
+    });
+    setSelectedTaskId(null);
+    setTaskSearchQuery('');
+  };
+
+  const handleAssignTaskConfirm = async () => {
+    if (!assignTaskDialog.userId || !selectedTaskId) {
+      setToast({ message: 'Please select a task to assign', type: 'error' });
+      return;
+    }
+
+    await assignTaskMutation.mutateAsync({
+      id: selectedTaskId,
+      assigneeId: assignTaskDialog.userId,
+    });
+  };
+
+  // Filter tasks for assignment dialog
+  const filteredTasksForAssignment = useMemo(() => {
+    if (!taskSearchQuery.trim()) {
+      return tasks;
+    }
+    const query = taskSearchQuery.toLowerCase();
+    return tasks.filter(task =>
+      task.title.toLowerCase().includes(query) ||
+      task.description?.toLowerCase().includes(query)
+    );
+  }, [tasks, taskSearchQuery]);
+
   const isLoading = usersLoading || tasksLoading || taskStatsLoading;
 
   return (
@@ -397,6 +451,137 @@ function AdminPageContent() {
                   </>
                 ) : (
                   confirmDialog.confirmText || 'Confirm'
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Assign Task Dialog */}
+        <Dialog open={assignTaskDialog.open} onOpenChange={(open) => {
+          if (!open) {
+            setAssignTaskDialog({ open: false, userId: null, userName: '' });
+            setSelectedTaskId(null);
+            setTaskSearchQuery('');
+          }
+        }}>
+          <DialogContent className="max-w-2xl max-h-[80vh]">
+            <DialogHeader>
+              <DialogTitle>Assign Task to {assignTaskDialog.userName}</DialogTitle>
+              <DialogDescription>
+                Select a task to assign to this user
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              {/* Task Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#9e9e9e] dark:text-slate-400" />
+                <Input
+                  placeholder="Search tasks..."
+                  value={taskSearchQuery}
+                  onChange={(e) => setTaskSearchQuery(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+
+              {/* Task List */}
+              <div className="border border-[#e0e0e0] dark:border-slate-700 rounded-lg max-h-[400px] overflow-y-auto">
+                {tasksLoading ? (
+                  <div className="flex items-center justify-center py-12">
+                    <Loader2 className="h-6 w-6 animate-spin text-[#1976d2]" />
+                  </div>
+                ) : filteredTasksForAssignment.length === 0 ? (
+                  <div className="text-center py-12">
+                    <CheckSquare className="h-12 w-12 mx-auto text-[#9e9e9e] dark:text-slate-500 mb-2" />
+                    <p className="text-sm text-[#757575] dark:text-slate-400">
+                      {taskSearchQuery ? 'No tasks found matching your search' : 'No tasks available'}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="divide-y divide-[#e0e0e0] dark:divide-slate-700">
+                    {filteredTasksForAssignment.map((task) => {
+                      const isSelected = selectedTaskId === task.id;
+                      const isAssignedToUser = task.assigneeId === assignTaskDialog.userId;
+                      
+                      return (
+                        <div
+                          key={task.id}
+                          onClick={() => setSelectedTaskId(task.id)}
+                          className={`p-4 cursor-pointer transition-colors ${
+                            isSelected
+                              ? 'bg-[#e3f2fd] dark:bg-blue-500/20 border-l-4 border-[#1976d2] dark:border-blue-400'
+                              : 'hover:bg-[#f5f5f5] dark:hover:bg-slate-800'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <CheckSquare className={`h-4 w-4 ${isSelected ? 'text-[#1976d2] dark:text-blue-400' : 'text-[#9e9e9e] dark:text-slate-400'}`} />
+                                <h4 className="font-medium text-[#212121] dark:text-slate-100">
+                                  {task.title}
+                                </h4>
+                                {isAssignedToUser && (
+                                  <Badge className="bg-[#e0f2f1] dark:bg-green-500/20 text-[#00796b] dark:text-green-300 border border-[#b2dfdb] dark:border-green-500/30 text-xs">
+                                    Already Assigned
+                                  </Badge>
+                                )}
+                              </div>
+                              {task.description && (
+                                <p className="text-sm text-[#757575] dark:text-slate-400 line-clamp-2 ml-6">
+                                  {task.description}
+                                </p>
+                              )}
+                              <div className="flex items-center gap-3 mt-2 ml-6">
+                                <Badge className={getTaskStatusColor(task.status)}>
+                                  {task.status.replace('_', ' ')}
+                                </Badge>
+                                <Badge className={getTaskPriorityColor(task.priority)}>
+                                  {task.priority}
+                                </Badge>
+                                {task.assignee && (
+                                  <span className="text-xs text-[#757575] dark:text-slate-400">
+                                    Current: {getAssigneeName(task)}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            {isSelected && (
+                              <CheckCircle className="h-5 w-5 text-[#1976d2] dark:text-blue-400 flex-shrink-0 ml-2" />
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setAssignTaskDialog({ open: false, userId: null, userName: '' });
+                  setSelectedTaskId(null);
+                  setTaskSearchQuery('');
+                }}
+                disabled={assignTaskMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAssignTaskConfirm}
+                disabled={assignTaskMutation.isPending || !selectedTaskId}
+              >
+                {assignTaskMutation.isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Assigning...
+                  </>
+                ) : (
+                  <>
+                    <UserCheck className="mr-2 h-4 w-4" />
+                    Assign Task
+                  </>
                 )}
               </Button>
             </DialogFooter>
@@ -734,7 +919,7 @@ function AdminPageContent() {
                                     });
                                   }}
                                   placeholder="Unassigned"
-                                  disabled={assignTaskMutation.isPending}
+                                  disabled={false}
                                   className="w-[200px]"
                                 />
                               </TableCell>
@@ -937,15 +1122,27 @@ function AdminPageContent() {
                                     {formatDate(user.createdAt)}
                                   </TableCell>
                                   <TableCell>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      onClick={() => handleStatusChange(user.id, isActive, !isActive)}
-                                      disabled={updateStatusMutation.isPending || (isCurrentUser && !isActive)}
-                                      className="border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-800"
-                                    >
-                                      {isActive ? 'Deactivate' : 'Activate'}
-                                    </Button>
+                                    <div className="flex gap-2">
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => handleAssignTaskClick(user)}
+                                        disabled={assignTaskMutation.isPending}
+                                        className="border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-800"
+                                      >
+                                        <UserCheck className="h-4 w-4 mr-1" />
+                                        Assign Task
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => handleStatusChange(user.id, isActive, !isActive)}
+                                        disabled={updateStatusMutation.isPending || (isCurrentUser && !isActive)}
+                                        className="border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-800"
+                                      >
+                                        {isActive ? 'Deactivate' : 'Activate'}
+                                      </Button>
+                                    </div>
                                   </TableCell>
                                 </TableRow>
                               );
