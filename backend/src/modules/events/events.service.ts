@@ -45,7 +45,8 @@ export class EventsService {
         `Event logged: ${eventData.type} - Actor: ${eventData.actorId} - Entity: ${eventData.entityId}`,
       );
     } catch (error: unknown) {
-      this.logger.error(`Failed to log event: ${eventData.type}`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Failed to log event: ${eventData.type} - ${errorMessage}`, error instanceof Error ? error.stack : undefined);
       // Don't throw error to avoid breaking the main flow
     }
   }
