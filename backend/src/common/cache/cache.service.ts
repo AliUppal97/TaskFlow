@@ -48,7 +48,8 @@ export class CacheService {
       return value || null;
     } catch (error: unknown) {
       // Cache errors don't break the application (graceful degradation)
-      this.logger.error(`Error getting cache key ${key}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error getting cache key ${key}: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
       return null;
     }
   }
@@ -68,7 +69,8 @@ export class CacheService {
       );
     } catch (error: unknown) {
       // Cache errors don't break the application
-      this.logger.error(`Error setting cache key ${key}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error setting cache key ${key}: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
     }
   }
 
@@ -82,7 +84,8 @@ export class CacheService {
       await this.cacheManager.del(key);
       this.logger.debug(`Cache deleted for key: ${key}`);
     } catch (error: unknown) {
-      this.logger.error(`Error deleting cache key ${key}:`, error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error deleting cache key ${key}: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
     }
   }
 
@@ -112,7 +115,8 @@ export class CacheService {
           this.logger.warn('Pattern deletion not supported by this cache store');
         }
       } catch (error: unknown) {
-        this.logger.error(`Error deleting cache pattern ${pattern}:`, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        this.logger.error(`Error deleting cache pattern ${pattern}: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
       }
   }
 
@@ -127,7 +131,8 @@ export class CacheService {
       }
       this.logger.debug('Cache cleared');
     } catch (error: unknown) {
-      this.logger.error('Error clearing cache:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error clearing cache: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
     }
   }
 
@@ -161,7 +166,8 @@ export class CacheService {
 
       return retrieved === testValue;
     } catch (error: unknown) {
-      this.logger.error('Redis health check failed:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Redis health check failed: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
       return false;
     }
   }
@@ -184,7 +190,8 @@ export class CacheService {
         storeType,
       };
     } catch (error: unknown) {
-      this.logger.error('Error getting cache stats:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      this.logger.error(`Error getting cache stats: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
       return { connected: false, storeType: 'unknown' };
     }
   }

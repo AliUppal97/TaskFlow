@@ -3,16 +3,17 @@ import { CacheOptions } from './cache.types';
 
 export function CacheResult(options: CacheOptions = {}) {
   return function (target: object, propertyName: string, descriptor: PropertyDescriptor) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const method = descriptor.value;
+    if (typeof method !== 'function') {
+      throw new Error(`CacheResult decorator can only be applied to methods`);
+    }
     const logger = new Logger(`${target.constructor.name}.${propertyName}`);
 
-    descriptor.value = async function (...args: unknown[]) {
+    descriptor.value = async function (...args: unknown[]): Promise<unknown> {
       const cacheManager = (this as { cacheManager?: { get: (key: string) => Promise<unknown>; set: (key: string, value: unknown, ttl?: number) => Promise<void> } }).cacheManager;
       if (!cacheManager) {
         logger.warn('Cache manager not found, executing method without caching');
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-        return method.apply(this, args);
+        return (method as (...args: unknown[]) => Promise<unknown>).apply(this, args);
       }
 
       // Generate cache key from method name and arguments
@@ -28,8 +29,7 @@ export function CacheResult(options: CacheOptions = {}) {
         }
 
         // Execute method
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-        const result = await method.apply(this, args);
+        const result = await (method as (...args: unknown[]) => Promise<unknown>).apply(this, args);
 
         // Cache result if condition is met
         if (!options.condition || options.condition(result)) {
@@ -37,13 +37,12 @@ export function CacheResult(options: CacheOptions = {}) {
           logger.debug(`Cache set for ${key}, TTL: ${options.ttl || 'default'}`);
         }
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return result;
       } catch (error: unknown) {
-        logger.error(`Cache operation failed for ${key}:`, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logger.error(`Cache operation failed for ${key}: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
         // If caching fails, execute method without cache
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-        return method.apply(this, args);
+        return (method as (...args: unknown[]) => Promise<unknown>).apply(this, args);
       }
     };
 
@@ -53,18 +52,19 @@ export function CacheResult(options: CacheOptions = {}) {
 
 export function InvalidateCache(pattern: string) {
   return function (target: object, propertyName: string, descriptor: PropertyDescriptor) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const method = descriptor.value;
+    if (typeof method !== 'function') {
+      throw new Error(`InvalidateCache decorator can only be applied to methods`);
+    }
     const logger = new Logger(`${target.constructor.name}.${propertyName}`);
 
-    descriptor.value = async function (...args: unknown[]) {
+    descriptor.value = async function (...args: unknown[]): Promise<unknown> {
       const cacheManager = (this as { cacheManager?: { deletePattern?: (pattern: string) => Promise<void> } }).cacheManager;
       let result: unknown;
 
       try {
         // Execute method first
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-        result = await method.apply(this, args);
+        result = await (method as (...args: unknown[]) => Promise<unknown>).apply(this, args);
 
         // Invalidate cache - use the cache service's deletePattern method for proper Redis support
         if (cacheManager && typeof cacheManager.deletePattern === 'function') {
@@ -75,7 +75,8 @@ export function InvalidateCache(pattern: string) {
 
         return result;
       } catch (error: unknown) {
-        logger.error(`Method execution or cache invalidation failed:`, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logger.error(`Method execution or cache invalidation failed: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
         throw error;
       }
     };
@@ -86,16 +87,17 @@ export function InvalidateCache(pattern: string) {
 
 export function CacheKey(key: string) {
   return function (target: object, propertyName: string, descriptor: PropertyDescriptor) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const method = descriptor.value;
+    if (typeof method !== 'function') {
+      throw new Error(`CacheKey decorator can only be applied to methods`);
+    }
     const logger = new Logger(`${target.constructor.name}.${propertyName}`);
 
-    descriptor.value = async function (...args: unknown[]) {
+    descriptor.value = async function (...args: unknown[]): Promise<unknown> {
       const cacheManager = (this as { cacheManager?: { get: (key: string) => Promise<unknown>; set: (key: string, value: unknown) => Promise<void> } }).cacheManager;
       if (!cacheManager) {
         logger.warn('Cache manager not found, executing method without caching');
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-        return method.apply(this, args);
+        return (method as (...args: unknown[]) => Promise<unknown>).apply(this, args);
       }
 
       try {
@@ -107,20 +109,18 @@ export function CacheKey(key: string) {
         }
 
         // Execute method
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-        const result = await method.apply(this, args);
+        const result = await (method as (...args: unknown[]) => Promise<unknown>).apply(this, args);
 
         // Cache result
         await cacheManager.set(key, result);
         logger.debug(`Cache set for ${key}`);
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return
         return result;
       } catch (error: unknown) {
-        logger.error(`Cache operation failed for ${key}:`, error);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logger.error(`Cache operation failed for ${key}: ${errorMessage}`, error instanceof Error ? error.stack : undefined);
         // If caching fails, execute method without cache
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-        return method.apply(this, args);
+        return (method as (...args: unknown[]) => Promise<unknown>).apply(this, args);
       }
     };
 
