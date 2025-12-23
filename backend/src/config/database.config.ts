@@ -2,6 +2,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { User } from '../entities/user.entity';
 import { Task } from '../entities/task.entity';
+import { Notification } from '../entities/notification.entity';
 
 export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOptions => ({
   type: 'postgres',
@@ -10,7 +11,7 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
   username: configService.get('database.username', 'postgres'),
   password: configService.get('database.password', 'password'),
   database: configService.get('database.name', 'taskflow'),
-  entities: [User, Task],
+  entities: [User, Task, Notification],
   synchronize: configService.get('app.nodeEnv') !== 'production', // Disable in production
   logging: configService.get('app.nodeEnv') === 'development',
   ssl: configService.get('app.nodeEnv') === 'production' ? { rejectUnauthorized: false } : false,
@@ -25,6 +26,3 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
   migrations: ['dist/migrations/*.js'],
   migrationsTableName: 'migrations',
 });
-
-
-
