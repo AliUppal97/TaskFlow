@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Bell, CheckSquare, User, AlertCircle, Info, X, Check } from 'lucide-react';
+import { Bell, CheckSquare, AlertCircle, Info, X, Check, Trash2 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { Button } from '@/components/ui/button';
@@ -10,119 +11,133 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-// Mock notification data - in a real app, this would come from an API
-const mockNotifications = [
-  {
-    id: '1',
-    type: 'task_assigned',
-    title: 'Task Assigned',
-    message: 'You have been assigned to "Implement user authentication"',
-    read: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
-    actionUrl: '/tasks',
-    metadata: { taskId: '123', taskTitle: 'Implement user authentication' }
-  },
-  {
-    id: '2',
-    type: 'task_completed',
-    title: 'Task Completed',
-    message: 'John Doe completed "Review pull request #456"',
-    read: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
-    actionUrl: '/tasks',
-    metadata: { taskId: '456', completedBy: 'John Doe' }
-  },
-  {
-    id: '3',
-    type: 'mention',
-    title: 'You were mentioned',
-    message: 'Sarah mentioned you in task "Update documentation"',
-    read: false,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
-    actionUrl: '/tasks',
-    metadata: { taskId: '789', mentionedBy: 'Sarah' }
-  },
-  {
-    id: '4',
-    type: 'deadline_approaching',
-    title: 'Deadline Approaching',
-    message: 'Task "Fix critical bug" is due in 24 hours',
-    read: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
-    actionUrl: '/tasks',
-    metadata: { taskId: '101', hoursRemaining: 24 }
-  },
-  {
-    id: '5',
-    type: 'system',
-    title: 'Welcome to TaskFlow',
-    message: 'Welcome! Your account has been successfully set up.',
-    read: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7), // 1 week ago
-    actionUrl: '/dashboard',
-    metadata: {}
-  }
-];
+import { apiClient } from '@/lib/api-client';
+import { Notification, NotificationType } from '@/types';
 
 const notificationIcons = {
-  task_assigned: CheckSquare,
-  task_completed: CheckSquare,
-  mention: User,
-  deadline_approaching: AlertCircle,
-  system: Info,
+  [NotificationType.TASK_ASSIGNED]: CheckSquare,
+  [NotificationType.TASK_COMPLETED]: CheckSquare,
+  [NotificationType.TASK_UPDATED]: CheckSquare,
+  [NotificationType.TASK_CREATED]: CheckSquare,
+  [NotificationType.TASK_DUE_SOON]: AlertCircle,
+  [NotificationType.SYSTEM]: Info,
 };
 
 const notificationColors = {
-  task_assigned: 'text-[#1976d2] dark:text-blue-400 bg-[#e3f2fd] dark:bg-blue-500/20 border border-[#bbdefb] dark:border-blue-500/30',
-  task_completed: 'text-[#00796b] dark:text-green-400 bg-[#e0f2f1] dark:bg-green-500/20 border border-[#b2dfdb] dark:border-green-500/30',
-  mention: 'text-[#7b1fa2] dark:text-purple-400 bg-[#f3e5f5] dark:bg-purple-500/20 border border-[#e1bee7] dark:border-purple-500/30',
-  deadline_approaching: 'text-[#d32f2f] dark:text-red-400 bg-[#ffebee] dark:bg-red-500/20 border border-[#ffcdd2] dark:border-red-500/30',
-  system: 'text-[#757575] dark:text-slate-400 bg-[#f5f5f5] dark:bg-slate-500/20 border border-[#e0e0e0] dark:border-slate-500/30',
+  [NotificationType.TASK_ASSIGNED]: 'text-[#1976d2] dark:text-blue-400 bg-[#e3f2fd] dark:bg-blue-500/20 border border-[#bbdefb] dark:border-blue-500/30',
+  [NotificationType.TASK_COMPLETED]: 'text-[#00796b] dark:text-green-400 bg-[#e0f2f1] dark:bg-green-500/20 border border-[#b2dfdb] dark:border-green-500/30',
+  [NotificationType.TASK_UPDATED]: 'text-[#1976d2] dark:text-blue-400 bg-[#e3f2fd] dark:bg-blue-500/20 border border-[#bbdefb] dark:border-blue-500/30',
+  [NotificationType.TASK_CREATED]: 'text-[#1976d2] dark:text-blue-400 bg-[#e3f2fd] dark:bg-blue-500/20 border border-[#bbdefb] dark:border-blue-500/30',
+  [NotificationType.TASK_DUE_SOON]: 'text-[#d32f2f] dark:text-red-400 bg-[#ffebee] dark:bg-red-500/20 border border-[#ffcdd2] dark:border-red-500/30',
+  [NotificationType.SYSTEM]: 'text-[#757575] dark:text-slate-400 bg-[#f5f5f5] dark:bg-slate-500/20 border border-[#e0e0e0] dark:border-slate-500/30',
 };
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState(mockNotifications);
   const [selectedTab, setSelectedTab] = useState('all');
-  // Calculate one week ago once when component mounts
-  const oneWeekAgo = useMemo(() => {
-    const now = new Date();
-    return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  }, []);
+  const [toast, setToast] = useState<{ message: string; type: 'delete' | 'error' } | null>(null);
+  const queryClient = useQueryClient();
+
+  // Fetch notifications
+  const { data: notificationsData, isLoading, error } = useQuery({
+    queryKey: ['notifications', selectedTab],
+    queryFn: async () => {
+      const params: any = { page: 1, limit: 100 };
+      if (selectedTab === 'unread') {
+        params.read = false;
+      } else if (selectedTab !== 'all') {
+        params.type = selectedTab;
+      }
+      return apiClient.getNotifications(params);
+    },
+  });
+
+  // Fetch notification stats
+  const { data: stats } = useQuery({
+    queryKey: ['notificationStats'],
+    queryFn: () => apiClient.getNotificationStats(),
+  });
+
+  // Mark as read mutation
+  const markAsReadMutation = useMutation({
+    mutationFn: (id: string) => apiClient.markNotificationAsRead(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['notificationStats'] });
+    },
+  });
+
+  // Mark all as read mutation
+  const markAllAsReadMutation = useMutation({
+    mutationFn: () => apiClient.markAllNotificationsAsRead(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['notificationStats'] });
+    },
+  });
+
+  // Delete notification mutation
+  const deleteNotificationMutation = useMutation({
+    mutationFn: (id: string) => apiClient.deleteNotification(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      queryClient.invalidateQueries({ queryKey: ['notificationStats'] });
+      setToast({ message: 'Notification deleted successfully', type: 'delete' });
+    },
+    onError: (error) => {
+      setToast({ 
+        message: error instanceof Error ? error.message : 'Failed to delete notification', 
+        type: 'error' 
+      });
+    },
+  });
+
+  const notifications = notificationsData?.data || [];
+  const unreadCount = stats?.unread || 0;
+  const totalCount = stats?.total || notifications.length;
+  const thisWeekCount = stats?.thisWeek || 0;
 
   const markAsRead = (notificationId: string) => {
-    setNotifications(prev =>
-      prev.map(notification =>
-        notification.id === notificationId
-          ? { ...notification, read: true }
-          : notification
-      )
-    );
+    markAsReadMutation.mutate(notificationId);
   };
 
   const markAllAsRead = () => {
-    setNotifications(prev =>
-      prev.map(notification => ({ ...notification, read: true }))
-    );
+    markAllAsReadMutation.mutate();
   };
 
   const deleteNotification = (notificationId: string) => {
-    setNotifications(prev =>
-      prev.filter(notification => notification.id !== notificationId)
-    );
+    deleteNotificationMutation.mutate(notificationId);
   };
 
-  const filteredNotifications = notifications.filter(notification => {
+  const filteredNotifications = notifications.filter((notification: Notification) => {
     if (selectedTab === 'all') return true;
     if (selectedTab === 'unread') return !notification.read;
     return notification.type === selectedTab;
   });
 
-  const unreadCount = notifications.filter(n => !n.read).length;
-
   return (
     <ProtectedRoute>
       <div className="min-h-screen bg-white dark:bg-slate-900">
+        {/* Toast Notification */}
+        {toast && (
+          <div className={`fixed top-28 right-4 z-50 flex items-center gap-3 p-4 rounded-lg border shadow-lg animate-in slide-in-from-top-5 ${
+            toast.type === 'delete'
+              ? 'bg-[#ffebee] dark:bg-red-500/20 border-[#ffcdd2] dark:border-red-500/30 text-[#d32f2f] dark:text-red-300'
+              : 'bg-[#ffebee] dark:bg-red-500/20 border-[#ffcdd2] dark:border-red-500/30 text-[#d32f2f] dark:text-red-300'
+          }`}>
+            {toast.type === 'delete' ? (
+              <Trash2 className="h-5 w-5" />
+            ) : (
+              <AlertCircle className="h-5 w-5" />
+            )}
+            <p className="text-sm font-medium">{toast.message}</p>
+            <button 
+              onClick={() => setToast(null)} 
+              className="ml-2 hover:opacity-70"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        )}
         <div className="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="flex items-center justify-between mb-8">
@@ -136,8 +151,13 @@ export default function NotificationsPage() {
               </p>
             </div>
             {unreadCount > 0 && (
-              <Button onClick={markAllAsRead} variant="outline" className="border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-800">
-                Mark all as read ({unreadCount})
+              <Button 
+                onClick={markAllAsRead} 
+                variant="outline" 
+                disabled={markAllAsReadMutation.isPending}
+                className="border-[#e0e0e0] dark:border-slate-700 text-[#212121] dark:text-slate-300 hover:bg-[#f5f5f5] dark:hover:bg-slate-800"
+              >
+                {markAllAsReadMutation.isPending ? 'Marking...' : `Mark all as read (${unreadCount})`}
               </Button>
             )}
           </div>
@@ -150,7 +170,9 @@ export default function NotificationsPage() {
                 <Bell className="h-4 w-4 text-[#1976d2] dark:text-blue-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#212121] dark:text-slate-100">{notifications.length}</div>
+                <div className="text-2xl font-bold text-[#212121] dark:text-slate-100">
+                  {isLoading ? '...' : totalCount}
+                </div>
                 <p className="text-xs text-[#757575] dark:text-slate-400">
                   All notifications
                 </p>
@@ -163,7 +185,7 @@ export default function NotificationsPage() {
                 <Bell className="h-4 w-4 text-[#d32f2f] dark:text-red-400" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold text-[#d32f2f] dark:text-red-400">{unreadCount}</div>
+                <div className="text-2xl font-bold text-[#d32f2f] dark:text-red-400">{isLoading ? '...' : unreadCount}</div>
                 <p className="text-xs text-[#757575] dark:text-slate-400">
                   Require attention
                 </p>
@@ -177,9 +199,7 @@ export default function NotificationsPage() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-[#212121] dark:text-slate-100">
-                  {notifications.filter(n =>
-                    new Date(n.createdAt) > oneWeekAgo
-                  ).length}
+                  {isLoading ? '...' : thisWeekCount}
                 </div>
                 <p className="text-xs text-[#757575] dark:text-slate-400">
                   Recent activity
@@ -193,15 +213,28 @@ export default function NotificationsPage() {
             <CardHeader>
               <Tabs value={selectedTab} onValueChange={setSelectedTab}>
                 <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="all">All ({notifications.length})</TabsTrigger>
-                  <TabsTrigger value="unread">Unread ({unreadCount})</TabsTrigger>
-                  <TabsTrigger value="task_assigned">Tasks</TabsTrigger>
-                  <TabsTrigger value="mention">Mentions</TabsTrigger>
-                  <TabsTrigger value="system">System</TabsTrigger>
+                  <TabsTrigger value="all">All ({isLoading ? '...' : totalCount})</TabsTrigger>
+                  <TabsTrigger value="unread">Unread ({isLoading ? '...' : unreadCount})</TabsTrigger>
+                  <TabsTrigger value={NotificationType.TASK_ASSIGNED}>Tasks</TabsTrigger>
+                  <TabsTrigger value={NotificationType.TASK_DUE_SOON}>Due Soon</TabsTrigger>
+                  <TabsTrigger value={NotificationType.SYSTEM}>System</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value={selectedTab} className="mt-6">
-                  {filteredNotifications.length === 0 ? (
+                  {isLoading ? (
+                    <div className="text-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1976d2] dark:border-indigo-400 mx-auto"></div>
+                      <p className="mt-4 text-sm text-[#757575] dark:text-slate-400">Loading notifications...</p>
+                    </div>
+                  ) : error ? (
+                    <div className="text-center py-12">
+                      <AlertCircle className="mx-auto h-12 w-12 text-[#d32f2f] dark:text-red-400" />
+                      <h3 className="mt-2 text-sm font-medium text-[#212121] dark:text-slate-100">Error loading notifications</h3>
+                      <p className="mt-1 text-sm text-[#757575] dark:text-slate-400">
+                        Please try refreshing the page.
+                      </p>
+                    </div>
+                  ) : filteredNotifications.length === 0 ? (
                     <div className="text-center py-12">
                       <Bell className="mx-auto h-12 w-12 text-[#9e9e9e] dark:text-slate-600" />
                       <h3 className="mt-2 text-sm font-medium text-[#212121] dark:text-slate-100">No notifications</h3>
@@ -213,9 +246,9 @@ export default function NotificationsPage() {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {filteredNotifications.map((notification, index) => {
-                        const IconComponent = notificationIcons[notification.type as keyof typeof notificationIcons];
-                        const colorClass = notificationColors[notification.type as keyof typeof notificationColors];
+                      {filteredNotifications.map((notification: Notification, index: number) => {
+                        const IconComponent = notificationIcons[notification.type];
+                        const colorClass = notificationColors[notification.type];
 
                         return (
                           <div key={notification.id}>
@@ -240,6 +273,7 @@ export default function NotificationsPage() {
                                         size="sm"
                                         variant="ghost"
                                         onClick={() => markAsRead(notification.id)}
+                                        disabled={markAsReadMutation.isPending}
                                         className="text-xs text-[#212121] dark:text-slate-300 hover:text-[#212121] dark:hover:text-slate-100 hover:bg-[#f5f5f5] dark:hover:bg-slate-700"
                                       >
                                         <Check className="h-3 w-3 mr-1" />
@@ -250,6 +284,7 @@ export default function NotificationsPage() {
                                       size="sm"
                                       variant="ghost"
                                       onClick={() => deleteNotification(notification.id)}
+                                      disabled={deleteNotificationMutation.isPending}
                                       className="text-[#d32f2f] dark:text-red-400 hover:text-[#c62828] dark:hover:text-red-300 text-xs hover:bg-[#ffebee] dark:hover:bg-red-900/20"
                                     >
                                       <X className="h-3 w-3" />
@@ -263,18 +298,20 @@ export default function NotificationsPage() {
 
                                 <div className="flex items-center justify-between mt-2">
                                   <p className="text-xs text-[#9e9e9e] dark:text-slate-500">
-                                    {formatDistanceToNow(notification.createdAt, { addSuffix: true })}
+                                    {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                                   </p>
-                                  <Button
-                                    size="sm"
-                                    variant="link"
-                                    className="text-xs p-0 h-auto text-[#1976d2] dark:text-indigo-400 hover:text-[#1565c0] dark:hover:text-indigo-300"
-                                    asChild
-                                  >
-                                    <a href={notification.actionUrl}>
-                                      View details →
-                                    </a>
-                                  </Button>
+                                  {notification.actionUrl && (
+                                    <Button
+                                      size="sm"
+                                      variant="link"
+                                      className="text-xs p-0 h-auto text-[#1976d2] dark:text-indigo-400 hover:text-[#1565c0] dark:hover:text-indigo-300"
+                                      asChild
+                                    >
+                                      <a href={notification.actionUrl}>
+                                        View details →
+                                      </a>
+                                    </Button>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -296,5 +333,3 @@ export default function NotificationsPage() {
     </ProtectedRoute>
   );
 }
-
-
