@@ -14,6 +14,7 @@ export * from './interfaces/websocket.types';
 export * from './interfaces/settings.types';
 export * from './interfaces/api.types';
 export * from './interfaces/form.types';
+export * from './interfaces/notification.types';
 
 // Common types
 export * from './common';

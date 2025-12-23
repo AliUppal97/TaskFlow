@@ -9,6 +9,7 @@ export interface User {
   email: string;
   role: UserRole;
   profile: UserProfile;
+  isActive?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
