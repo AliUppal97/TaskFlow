@@ -13,11 +13,12 @@ import { PolicyContext, ResourceOwnerPolicy } from '../interfaces/policy.interfa
  * - Read: Creator, assignee, or admin
  * - Update: Creator, assignee, or admin
  * - Delete: Creator or admin (assignees cannot delete)
- * - Assign: Creator, assignee, or admin
+ * - Assign: Admin only (only admins can change task assignees)
  * 
  * Rationale:
  * - Assignees can update tasks they're working on (collaboration)
  * - Only creators can delete (prevents accidental deletion by assignees)
+ * - Only admins can assign tasks (centralized task management)
  * - Admins have full access (system administration)
  * 
  * Usage: Applied via @UsePolicy(TaskPolicy) decorator
@@ -100,15 +101,11 @@ export class TaskPolicy implements ResourceOwnerPolicy<Task> {
   }
 
   /**
-   * Assign permission: Creators, assignees, and admins can assign tasks
-   * Allows reassignment by current assignee (workflow flexibility)
+   * Assign permission: Only admins can assign tasks
+   * Restricts assignee changes to admin users only for better task management control
    */
   canAssign(user: User, task: Task): boolean {
-    if (user.role === UserRole.ADMIN) {
-      return true;
-    }
-
-    return task.creatorId === user.id || task.assigneeId === user.id;
+    return user.role === UserRole.ADMIN;
   }
 
   /**
@@ -119,6 +116,3 @@ export class TaskPolicy implements ResourceOwnerPolicy<Task> {
     return task.creatorId === user.id;
   }
 }
-
-
-
