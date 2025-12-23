@@ -72,6 +72,19 @@ export function useProfile(options?: UseQueryOptions<User>) {
   });
 }
 
+export function useUpdateProfile(options?: UseMutationOptions<User, Error, { firstName?: string; lastName?: string; avatar?: string }>) {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: apiClient.updateProfile.bind(apiClient),
+    onSuccess: (data) => {
+      // Update the profile cache
+      queryClient.setQueryData(queryKeys.auth.profile(), data);
+    },
+    ...options,
+  });
+}
+
 // Task Hooks
 /**
  * Fetch tasks list with filtering and pagination
@@ -210,8 +223,37 @@ export const usersQueryKeys = {
 export function useUsers(params?: UserQueryParams) {
   return useQuery({
     queryKey: usersQueryKeys.list(params),
-    queryFn: () => apiClient.get<PaginatedResponse<User>>('/users', { params }),
+    queryFn: async () => {
+      const response = await apiClient.get<PaginatedResponse<User>>('/users', { params });
+      return response.data;
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function useUpdateUserRole(options?: UseMutationOptions<User, Error, { userId: string; role: string }>) {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ userId, role }) => apiClient.updateUserRole(userId, role),
+    onSuccess: () => {
+      // Invalidate users list to refetch
+      queryClient.invalidateQueries({ queryKey: usersQueryKeys.all() });
+    },
+    ...options,
+  });
+}
+
+export function useUpdateUserStatus(options?: UseMutationOptions<User, Error, { userId: string; isActive: boolean }>) {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: ({ userId, isActive }) => apiClient.updateUserStatus(userId, isActive),
+    onSuccess: () => {
+      // Invalidate users list to refetch
+      queryClient.invalidateQueries({ queryKey: usersQueryKeys.all() });
+    },
+    ...options,
   });
 }
 

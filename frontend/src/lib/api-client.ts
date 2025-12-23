@@ -11,6 +11,9 @@ import {
   TaskStats,
   PaginatedResponse,
   ApiResponse,
+  Notification,
+  NotificationQueryParams,
+  NotificationStats,
 } from '@/types';
 
 /**
@@ -246,6 +249,11 @@ class ApiClient {
     return data as User;
   }
 
+  async updateProfile(profileData: { firstName?: string; lastName?: string; avatar?: string }): Promise<User> {
+    const response = await this.client.patch<ApiResponse<User>>('/auth/profile', profileData);
+    return response.data.data || response.data as unknown as User;
+  }
+
   // Task methods
   async getTasks(params?: TaskQueryParams): Promise<PaginatedResponse<Task>> {
     const response = await this.client.get<ApiResponse<PaginatedResponse<Task>> | PaginatedResponse<Task>>('/tasks', { params });
@@ -321,6 +329,70 @@ class ApiClient {
   async getTaskStats(): Promise<TaskStats> {
     const response = await this.client.get<ApiResponse<TaskStats>>('/tasks/stats');
     return response.data.data || response.data as unknown as TaskStats;
+  }
+
+  // User management methods (Admin only)
+  async updateUserRole(userId: string, role: string): Promise<User> {
+    const response = await this.client.patch<ApiResponse<User>>(`/users/${userId}/role`, { role });
+    return response.data.data || response.data as unknown as User;
+  }
+
+  async updateUserStatus(userId: string, isActive: boolean): Promise<User> {
+    const response = await this.client.patch<ApiResponse<User>>(`/users/${userId}/status`, { isActive });
+    return response.data.data || response.data as unknown as User;
+  }
+
+  // Notification methods
+  async getNotifications(params?: NotificationQueryParams): Promise<PaginatedResponse<Notification>> {
+    const response = await this.client.get<ApiResponse<PaginatedResponse<Notification>> | PaginatedResponse<Notification>>('/notifications', { params });
+    
+    const responseData = response.data;
+    
+    // Handle both wrapped (ApiResponse) and direct (PaginatedResponse) formats
+    if (responseData && typeof responseData === 'object' && 'data' in responseData && 'success' in responseData) {
+      const apiResponse = responseData as ApiResponse<PaginatedResponse<Notification>>;
+      if (apiResponse.data) {
+        return apiResponse.data;
+      }
+    }
+    
+    if (responseData && typeof responseData === 'object' && 'data' in responseData && 'pagination' in responseData) {
+      return responseData as PaginatedResponse<Notification>;
+    }
+    
+    return {
+      data: [],
+      pagination: {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+      },
+    };
+  }
+
+  async getNotification(id: string): Promise<Notification> {
+    const response = await this.client.get<ApiResponse<Notification>>(`/notifications/${id}`);
+    return response.data.data || response.data as unknown as Notification;
+  }
+
+  async markNotificationAsRead(id: string): Promise<Notification> {
+    const response = await this.client.patch<ApiResponse<Notification>>(`/notifications/${id}`, { read: true });
+    return response.data.data || response.data as unknown as Notification;
+  }
+
+  async markAllNotificationsAsRead(): Promise<{ count: number; message: string }> {
+    const response = await this.client.patch<ApiResponse<{ count: number; message: string }>>('/notifications/read/all');
+    return response.data.data || response.data as unknown as { count: number; message: string };
+  }
+
+  async deleteNotification(id: string): Promise<void> {
+    await this.client.delete(`/notifications/${id}`);
+  }
+
+  async getNotificationStats(): Promise<NotificationStats> {
+    const response = await this.client.get<ApiResponse<NotificationStats>>('/notifications/stats');
+    return response.data.data || response.data as unknown as NotificationStats;
   }
 
   // Generic request methods
