@@ -26,20 +26,34 @@ export class LoggingInterceptor implements NestInterceptor {
     );
 
     return next.handle().pipe(
-      tap((data) => {
+      tap(() => {
         const duration = Date.now() - startTime;
-        const statusCode = response.statusCode;
+        // Type-safe access to response statusCode
+        const statusCode = 
+          response && 
+          typeof response === 'object' && 
+          'statusCode' in response && 
+          typeof (response as { statusCode?: unknown }).statusCode === 'number'
+            ? (response as { statusCode: number }).statusCode
+            : 200;
 
         this.logger.log(
           `Response: ${method} ${url} - Status: ${statusCode} - Duration: ${duration}ms - User: ${userId}`,
         );
 
-        // Add request metadata to request object for event logging
-        if (request.eventMetadata) {
-          request.eventMetadata.userAgent = userAgent;
-          request.eventMetadata.ipAddress = ip;
-        } else {
-          request.eventMetadata = {
+        // Add request metadata to event logging - type-safe access
+        if (
+          request &&
+          typeof request === 'object' &&
+          'eventMetadata' in request &&
+          request.eventMetadata &&
+          typeof request.eventMetadata === 'object'
+        ) {
+          const metadata = request.eventMetadata as { userAgent?: string; ipAddress?: string; timestamp?: Date };
+          metadata.userAgent = userAgent;
+          metadata.ipAddress = ip;
+        } else if (request && typeof request === 'object') {
+          (request as { eventMetadata?: { userAgent: string; ipAddress: string; timestamp: Date } }).eventMetadata = {
             userAgent,
             ipAddress: ip,
             timestamp: new Date(),

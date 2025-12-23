@@ -18,15 +18,14 @@ export class TransactionInterceptor implements NestInterceptor {
 
   constructor(private dataSource: DataSource) {}
 
-  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<unknown>> {
     const queryRunner = this.dataSource.createQueryRunner();
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     // Add transaction manager to request context
     const request = context.switchToHttp().getRequest();
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    (request).transactionalEntityManager = queryRunner.manager;
+    request.transactionalEntityManager = queryRunner.manager;
 
     return next.handle().pipe(
       tap(async () => {

@@ -69,7 +69,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
         message = 'Database query failed';
       }
 
-      this.logger.error(`Database query error: ${exception.message}`, exception.stack);
+      const stackTrace = exception instanceof Error && exception.stack ? exception.stack : undefined;
+      this.logger.error(`Database query error: ${exception.message}`, stackTrace);
     } else if (exception instanceof EntityNotFoundError) {
       status = HttpStatus.NOT_FOUND;
       code = 'ENTITY_NOT_FOUND';
@@ -78,7 +79,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       code = 'DATABASE_ERROR';
       message = 'Database operation failed';
-      this.logger.error(`TypeORM error: ${exception.message}`, exception.stack);
+      const stackTrace = exception instanceof Error && exception.stack ? exception.stack : undefined;
+      this.logger.error(`TypeORM error: ${exception.message}`, stackTrace);
     } else if (exception instanceof Error) {
       // Generic error handling
       if (exception.name === 'ValidationError') {
@@ -96,15 +98,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
         message = 'Access denied';
       } else {
         // Log unexpected errors
-        this.logger.error(`Unexpected error: ${exception.message}`, exception.stack);
+        const stackTrace = exception.stack || undefined;
+        this.logger.error(`Unexpected error: ${exception.message}`, stackTrace);
         message = 'An unexpected error occurred';
       }
     }
 
     // Log the error
-    const logLevel: 'error' | 'warn' = status >= 500 ? 'error' : 'warn';
+    // Type-safe enum comparison - convert enum to number for comparison
+    const statusCode = typeof status === 'number' ? status : Number(status);
+    const logLevel: 'error' | 'warn' = statusCode >= 500 ? 'error' : 'warn';
     this.logger[logLevel](
-      `${request.method} ${request.url} - ${status} ${code}: ${message}`,
+      `${request.method} ${request.url} - ${statusCode} ${code}: ${message}`,
       exception instanceof Error ? exception.stack : String(exception)
     );
 

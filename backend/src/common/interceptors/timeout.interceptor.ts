@@ -34,7 +34,11 @@ export class TimeoutInterceptor implements NestInterceptor {
         if (error instanceof TimeoutError) {
           return throwError(() => new RequestTimeoutException('Request timeout'));
         }
-        return throwError(() => error);
+        // Type-safe error handling: ensure we're throwing a proper Error
+        if (error instanceof Error) {
+          return throwError(() => error);
+        }
+        return throwError(() => new Error(String(error)));
       })
     );
   }

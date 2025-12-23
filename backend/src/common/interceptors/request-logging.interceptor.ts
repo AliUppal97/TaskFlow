@@ -17,7 +17,17 @@ export class RequestLoggingInterceptor implements NestInterceptor {
     const request = context.switchToHttp().getRequest<Request>();
     const { method, url, ip, headers } = request;
     const userAgent = headers['user-agent'] || '';
-    const userId = (request as any).user?.id || 'anonymous';
+    // Type-safe access to user property
+    const userId = 
+      request && 
+      typeof request === 'object' && 
+      'user' in request && 
+      request.user && 
+      typeof request.user === 'object' && 
+      'id' in request.user && 
+      typeof (request.user as { id?: unknown }).id === 'string'
+        ? (request.user as { id: string }).id
+        : 'anonymous';
 
     const startTime = Date.now();
 
@@ -26,9 +36,17 @@ export class RequestLoggingInterceptor implements NestInterceptor {
     );
 
     return next.handle().pipe(
-      tap((response) => {
+      tap(() => {
         const duration = Date.now() - startTime;
-        const statusCode = context.switchToHttp().getResponse().statusCode;
+        // Type-safe access to response statusCode
+        const response = context.switchToHttp().getResponse();
+        const statusCode = 
+          response && 
+          typeof response === 'object' && 
+          'statusCode' in response && 
+          typeof (response as { statusCode?: unknown }).statusCode === 'number'
+            ? (response as { statusCode: number }).statusCode
+            : 200;
 
         const logLevel = statusCode >= 500 ? 'error' : statusCode >= 400 ? 'warn' : 'log';
         this.logger[logLevel](
