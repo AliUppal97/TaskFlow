@@ -253,38 +253,48 @@ Before starting, ensure you have:
 
 #### 2.4 Configure Backend Service
 
-1. **Set Root Directory:**
+**⚠️ IMPORTANT:** Before configuring, ensure you have the configuration files in your `backend` folder:
+- ✅ `.nvmrc` file (specifies Node.js version)
+- ✅ `nixpacks.toml` file (helps Railway detect build process)
+- ✅ `package.json` (with build and start scripts)
+
+These files are already included in the repository. If Railway still can't detect your app, follow the steps below.
+
+1. **Set Root Directory (CRITICAL):**
    - After Railway imports your repo, you'll see your project dashboard
    - Click on the service that was created (or create a new service if needed)
    - Go to **"Settings"** tab
    - Scroll to **"Root Directory"** section
-   - Set it to: `backend`
+   - **Set it to: `backend`** (this is crucial!)
    - Click **"Save"**
    - This tells Railway where your backend code is located
+   - ⚠️ **If Root Directory is not set to `backend`, Railway will fail to detect your Node.js app**
 
 2. **Verify Build Settings:**
-   - Railway auto-detects Node.js projects
+   - Railway should auto-detect Node.js projects, but if it doesn't:
    - Go to **"Settings"** → **"Deploy"** tab
-   - Verify these settings:
+   - Look for **"Build Command"** and **"Start Command"** sections
+   - If empty or incorrect, set them manually:
      - **Build Command:** `npm install && npm run build`
      - **Start Command:** `npm run start:prod`
-   - If not set, add them manually:
-     - Click **"Add Variable"** or edit build settings
-     - Set build command: `npm install && npm run build`
-     - Set start command: `npm run start:prod`
+   - Click **"Save"** if you made changes
 
-3. **Set Node.js Version (Optional but Recommended):**
+3. **Set Node.js Version:**
+   - The `.nvmrc` file in the backend folder should handle this automatically
+   - If Railway still doesn't detect it, add as environment variable:
    - Go to **"Variables"** tab
    - Click **"+ New Variable"**
    - Name: `NODE_VERSION`
-   - Value: `18` (or your preferred version)
-   - Click **"Add"**
-   
-   **Alternative:** Create `.nvmrc` file in your backend folder:
-   ```bash
-   # In backend/.nvmrc
-   18
-   ```
+   - Value: `18`
+   - Click **"Add"`
+
+**If Railway Still Can't Detect Your App:**
+
+If you see errors like "Railpack could not determine how to build the app":
+1. **Verify Root Directory is set:** Go to Settings → Root Directory = `backend`
+2. **Check that `nixpacks.toml` exists:** This file helps Railway detect the build process
+3. **Verify `package.json` exists:** Railway needs this to detect Node.js projects
+4. **Redeploy:** After fixing settings, Railway will auto-redeploy
 
 #### 2.5 Set Up Databases in Railway (Optional but Recommended)
 
@@ -537,6 +547,44 @@ After you deploy your frontend to Vercel:
    - Should work without CORS errors
 
 #### 2.12 Troubleshooting Common Issues
+
+**Issue: Railway Build Detection Fails - "Railpack could not determine how to build the app"**
+
+**Symptoms:** Railway logs show:
+- `▲ Script start.sh not found`
+- `X Railpack could not determine how to build the app`
+- Build fails immediately
+
+**Solutions (in order):**
+
+1. **Set Root Directory (MOST IMPORTANT):**
+   - Go to Railway → Your Service → **"Settings"** tab
+   - Find **"Root Directory"** section
+   - **Set it to: `backend`** (not empty, not `/`, but exactly `backend`)
+   - Click **"Save"**
+   - Railway will auto-redeploy
+
+2. **Verify Configuration Files Exist:**
+   - Ensure these files exist in your `backend` folder:
+     - ✅ `package.json` (with `build` and `start:prod` scripts)
+     - ✅ `.nvmrc` (contains `18`)
+     - ✅ `nixpacks.toml` (Railway build configuration)
+   - If missing, commit and push them to GitHub
+
+3. **Manually Set Build Commands:**
+   - Go to **"Settings"** → **"Deploy"** tab
+   - Set **Build Command:** `npm install && npm run build`
+   - Set **Start Command:** `npm run start:prod`
+   - Click **"Save"**
+
+4. **Check Repository Structure:**
+   - Ensure your GitHub repo has the `backend` folder at the root
+   - Verify `backend/package.json` exists
+   - Railway needs to find `package.json` in the root directory you specify
+
+5. **Force Redeploy:**
+   - After making changes, go to **"Deployments"** tab
+   - Click **"Redeploy"** or push a new commit to trigger deployment
 
 **Issue: Deployment Fails**
 - **Check logs** for specific error messages
