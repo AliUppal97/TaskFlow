@@ -37,3 +37,4 @@ export interface NotificationQueryParams {
   type?: NotificationType;
 }
 
+
