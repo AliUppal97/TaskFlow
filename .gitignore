@@ -356,12 +356,13 @@ backup/
 backups/
 *.backup
 
-# Archive files
+# Archive files (typically not needed in repository)
 *.zip
 *.tar
 *.tar.gz
 *.rar
 *.7z
+# Note: If you need to commit specific archives, use: !path/to/file.zip
 
 # Generated documentation
 docs/build/
