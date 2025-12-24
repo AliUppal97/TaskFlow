@@ -67,3 +67,4 @@ UPDATE users SET role = 'admin' WHERE email = 'your-email@example.com';
 
 See [docs/ADMIN_SETUP.md](./docs/ADMIN_SETUP.md) for detailed documentation and troubleshooting.
 
+
