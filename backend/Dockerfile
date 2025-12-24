@@ -7,8 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY tsconfig*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install ALL dependencies (including devDependencies needed for build)
+RUN npm ci
 
 # Copy source code
 COPY src/ ./src/
@@ -53,9 +53,6 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 # Start application
 ENTRYPOINT ["dumb-init", "--"]
 CMD ["npm", "run", "start:prod"]
-
-
-
 
 
 
