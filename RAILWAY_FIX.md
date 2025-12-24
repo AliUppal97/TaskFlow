@@ -1,28 +1,68 @@
 # Quick Fix for Railway Build Detection Issue
 
 ## Problem
-Railway shows error: "Railpack could not determine how to build the app"
+Railway shows error: "Railpack could not determine how to build the app" or "Script start.sh not found"
 
-## Solution Steps (Do These in Order)
+## ⚠️ CRITICAL: Root Directory Must Be Set!
 
-### Step 1: Commit and Push Configuration Files
+**90% of Railway build failures are caused by Root Directory not being set correctly!**
+
+### Step 1: Set Root Directory in Railway (DO THIS FIRST!)
+
+**This is the #1 fix - do this before anything else!**
+
+1. Go to Railway Dashboard: https://railway.app/dashboard
+2. Click on your project (e.g., "miraculous-dream" or "splendid-rejoicing")
+3. Click on the **"TaskFlow"** service
+4. Click the **"Settings"** tab (at the top)
+5. Scroll down to find **"Root Directory"** section
+6. **Current value might be:** Empty, `/`, or something else
+7. **Change it to exactly:** `backend` (no slash, no quotes, just the word `backend`)
+8. Click **"Save"** button
+9. Railway will automatically trigger a new deployment
+
+**Visual Guide:**
+```
+Railway Dashboard → Your Project → TaskFlow Service → Settings Tab
+
+┌─────────────────────────────────────┐
+│ Root Directory                      │
+│ ┌─────────────────────────────────┐ │
+│ │ backend                         │ │  ← Type exactly "backend"
+│ └─────────────────────────────────┘ │
+│                                     │
+│ [Save]                              │  ← Click Save
+└─────────────────────────────────────┘
+```
+
+**Why This Matters:**
+- Without Root Directory = `backend`, Railway looks at your repo root
+- Railway can't find `backend/package.json` 
+- Railway can't detect it's a Node.js project
+- Build fails immediately
+
+### Step 2: Commit and Push Configuration Files
 
 Make sure these files are committed and pushed to GitHub:
 
 ```bash
-git add backend/.nvmrc backend/nixpacks.toml backend/Procfile
+# Check status
+git status
+
+# Add Railway config files
+git add backend/.nvmrc 
+git add backend/nixpacks.toml 
+git add backend/Procfile
+git add backend/start.sh
+
+# Commit
 git commit -m "Add Railway configuration files"
+
+# Push to GitHub
 git push origin main
 ```
 
-### Step 2: Set Root Directory in Railway (CRITICAL!)
-
-1. Go to Railway Dashboard → Your Project → TaskFlow Service
-2. Click **"Settings"** tab
-3. Scroll to **"Root Directory"** section
-4. **Set it to exactly: `backend`** (not `/backend`, not empty, just `backend`)
-5. Click **"Save"**
-6. Railway will automatically redeploy
+Railway will automatically detect the push and redeploy.
 
 ### Step 3: Manually Set Build Commands (If Still Failing)
 
