@@ -20,7 +20,7 @@ export const getDatabaseConfig = (configService: ConfigService): TypeOrmModuleOp
     max: 20, // Maximum number of connections
     min: 5,  // Minimum number of connections
     idleTimeoutMillis: 30000,
-    connectionTimeoutMillis: 2000,
+    connectionTimeoutMillis: 10000, // Increased to 10 seconds for Railway
   },
   // Migrations (when we add them)
   migrations: ['dist/migrations/*.js'],
